@@ -56,8 +56,11 @@ final class EnchantEventRuleService {
                     && enchantRuleCoreService.hasSeekerForbiddenEnchant(addition)) {
                 event.setResult(null);
             }
-            if ((enchantStateServiceSupplier.get().getEnchantLevel(base, EnchantType.EXPLOSIVE_REACTION) > 0
-                    || enchantStateServiceSupplier.get().getEnchantLevel(base, EnchantType.DRAGONS_BREATH) > 0)
+            if (enchantStateServiceSupplier.get().getEnchantLevel(base, EnchantType.NO_FALL) > 0
+                    && enchantRuleCoreService.hasNoFallForbiddenEnchant(addition)) {
+                event.setResult(null);
+            }
+            if (enchantRuleCoreService.hasAnyNoOtherEnchant(base)
                     && enchantRuleCoreService.itemHasAnyEnchant(addition)) {
                 event.setResult(null);
             }
@@ -97,8 +100,7 @@ final class EnchantEventRuleService {
                 }
             }
         }
-        if (enchantStateServiceSupplier.get().getEnchantLevel(event.getItem(), EnchantType.EXPLOSIVE_REACTION) > 0
-                || enchantStateServiceSupplier.get().getEnchantLevel(event.getItem(), EnchantType.DRAGONS_BREATH) > 0) {
+        if (enchantRuleCoreService.hasAnyNoOtherEnchant(event.getItem())) {
             event.setCancelled(true);
             return;
         }
@@ -114,6 +116,14 @@ final class EnchantEventRuleService {
         if (enchantStateServiceSupplier.get().getEnchantLevel(event.getItem(), EnchantType.THE_SEEKER) > 0) {
             for (Enchantment enchantment : event.getEnchantsToAdd().keySet()) {
                 if (enchantment == Enchantment.UNBREAKING || enchantment == Enchantment.MENDING) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+        if (enchantStateServiceSupplier.get().getEnchantLevel(event.getItem(), EnchantType.NO_FALL) > 0) {
+            for (Enchantment enchantment : event.getEnchantsToAdd().keySet()) {
+                if (enchantment == Enchantment.FEATHER_FALLING || enchantment == Enchantment.MENDING) {
                     event.setCancelled(true);
                     return;
                 }
@@ -139,6 +149,13 @@ final class EnchantEventRuleService {
             ItemMeta meta = event.getItem().getItemMeta();
             if (meta != null && enchantRuleCoreService.hasSeekerForbiddenEnchant(meta)) {
                 enchantRuleCoreService.stripSeekerForbiddenEnchants(meta);
+                event.getItem().setItemMeta(meta);
+            }
+        }
+        if (enchantStateServiceSupplier.get().getEnchantLevel(event.getItem(), EnchantType.NO_FALL) > 0) {
+            ItemMeta meta = event.getItem().getItemMeta();
+            if (meta != null && enchantRuleCoreService.hasNoFallForbiddenEnchant(meta)) {
+                enchantRuleCoreService.stripNoFallForbiddenEnchants(meta);
                 event.getItem().setItemMeta(meta);
             }
         }

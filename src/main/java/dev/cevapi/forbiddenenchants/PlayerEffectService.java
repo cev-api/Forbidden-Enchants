@@ -17,8 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
@@ -125,17 +123,17 @@ final class PlayerEffectService {
             if (!(nearby instanceof LivingEntity living) || nearby.getUniqueId().equals(player.getUniqueId())) {
                 continue;
             }
-            living.damage(6.0D);
+            living.damage(20.0D, player);
         }
 
-        ItemMeta meta = sword.getItemMeta();
-        if (meta instanceof Damageable damageable) {
-            int max = sword.getType().getMaxDurability();
-            int targetDamage = (int) Math.floor(max * 0.95D);
-            damageable.setDamage(Math.max(damageable.getDamage(), targetDamage));
-            sword.setItemMeta(meta);
+        ItemStack main = player.getInventory().getItemInMainHand();
+        if (main.getType() == sword.getType() && main.isSimilar(sword)) {
+            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+        } else {
+            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
         }
-        player.sendActionBar(Component.text("Sonic Panic detonated your blade!", NamedTextColor.DARK_AQUA));
+        world.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, SoundCategory.PLAYERS, 1.4F, 0.5F);
+        player.sendActionBar(Component.text("Sonic Panic shattered your blade!", NamedTextColor.DARK_AQUA));
     }
 
     void applyCreepersInfluence(@NotNull Player player) {

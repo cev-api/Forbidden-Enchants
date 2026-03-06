@@ -47,6 +47,9 @@ final class EnchantRuleCoreService {
         if (type == EnchantType.MIASMA && hasMiasmaIncompatibleEnchant(meta)) {
             return false;
         }
+        if (type == EnchantType.NO_FALL && hasNoFallForbiddenEnchant(meta)) {
+            return false;
+        }
         if (type.requiresNoOtherEnchantsOnItem() && hasAnyEnchantBesides(meta, type)) {
             return false;
         }
@@ -136,12 +139,41 @@ final class EnchantRuleCoreService {
         return hasMendingOrUnbreaking(meta);
     }
 
+    boolean hasNoFallForbiddenEnchant(@NotNull ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && hasNoFallForbiddenEnchant(meta);
+    }
+
+    boolean hasNoFallForbiddenEnchant(@NotNull ItemMeta meta) {
+        return hasMendingOrFeatherFalling(meta);
+    }
+
     boolean itemHasAnyEnchant(@Nullable ItemStack item) {
         if (item == null || item.getType() == Material.AIR) {
             return false;
         }
         ItemMeta meta = item.getItemMeta();
         return meta != null && itemHasAnyEnchant(meta);
+    }
+
+    boolean hasAnyNoOtherEnchant(@Nullable ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) {
+            return false;
+        }
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && hasAnyNoOtherEnchant(meta);
+    }
+
+    boolean hasAnyNoOtherEnchant(@NotNull ItemMeta meta) {
+        for (EnchantType type : EnchantType.values()) {
+            if (!type.requiresNoOtherEnchantsOnItem()) {
+                continue;
+            }
+            if (enchantStateService.getStoredEnchantLevel(meta, type) > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     boolean itemHasAnyEnchant(@NotNull ItemMeta meta) {
@@ -154,6 +186,15 @@ final class EnchantRuleCoreService {
 
     void stripSeekerForbiddenEnchants(@NotNull ItemMeta meta) {
         stripMendingAndUnbreaking(meta);
+    }
+
+    void stripNoFallForbiddenEnchants(@NotNull ItemMeta meta) {
+        meta.removeEnchant(Enchantment.MENDING);
+        meta.removeEnchant(Enchantment.FEATHER_FALLING);
+        if (meta instanceof EnchantmentStorageMeta storageMeta) {
+            storageMeta.removeStoredEnchant(Enchantment.MENDING);
+            storageMeta.removeStoredEnchant(Enchantment.FEATHER_FALLING);
+        }
     }
 
     void rebuildCustomLore(@NotNull ItemMeta meta) {
@@ -261,6 +302,17 @@ final class EnchantRuleCoreService {
         if (meta instanceof EnchantmentStorageMeta storageMeta) {
             return storageMeta.hasStoredEnchant(Enchantment.MENDING)
                     || storageMeta.hasStoredEnchant(Enchantment.UNBREAKING);
+        }
+        return false;
+    }
+
+    private boolean hasMendingOrFeatherFalling(@NotNull ItemMeta meta) {
+        if (meta.hasEnchant(Enchantment.MENDING) || meta.hasEnchant(Enchantment.FEATHER_FALLING)) {
+            return true;
+        }
+        if (meta instanceof EnchantmentStorageMeta storageMeta) {
+            return storageMeta.hasStoredEnchant(Enchantment.MENDING)
+                    || storageMeta.hasStoredEnchant(Enchantment.FEATHER_FALLING);
         }
         return false;
     }

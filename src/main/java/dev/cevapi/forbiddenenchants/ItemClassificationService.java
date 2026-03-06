@@ -40,6 +40,7 @@ final class ItemClassificationService {
             case HOE -> isHoe(stack);
             case AXE -> isAxe(stack);
             case MACE -> isMace(stack);
+            case BRUSH -> isBrush(stack);
             case NAMETAG -> isNameTag(stack);
             case LEAD -> isLead(stack);
             case SHIELD -> isShield(stack);
@@ -95,7 +96,7 @@ final class ItemClassificationService {
 
         ItemStack probe = new ItemStack(material);
         return switch (type.slot) {
-            case HELMET, CHESTPLATE, ELYTRA, LEGGINGS, BOOTS, ARMOR, COMPASS, RANGED, TRIDENT, SPEAR, HOE, AXE, MACE, NAMETAG, LEAD, SHIELD, TOTEM ->
+            case HELMET, CHESTPLATE, ELYTRA, LEGGINGS, BOOTS, ARMOR, COMPASS, RANGED, TRIDENT, SPEAR, HOE, AXE, MACE, BRUSH, NAMETAG, LEAD, SHIELD, TOTEM ->
                     isArmorPieceForSlot(probe, type.slot);
             case SWORD -> isSword(probe);
         };
@@ -127,6 +128,10 @@ final class ItemClassificationService {
 
     private boolean isMace(@Nullable ItemStack stack) {
         return stack != null && stack.getType() == Material.MACE;
+    }
+
+    private boolean isBrush(@Nullable ItemStack stack) {
+        return stack != null && stack.getType() == Material.BRUSH;
     }
 }
 

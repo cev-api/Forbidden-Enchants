@@ -15,6 +15,7 @@ public enum ArmorSlot {
     HOE,
     AXE,
     MACE,
+    BRUSH,
     NAMETAG,
     LEAD,
     SHIELD,

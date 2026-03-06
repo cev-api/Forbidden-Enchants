@@ -51,7 +51,7 @@ final class FeMenuService {
             inventory.setItem(slot, plugin.toMenuDisplayItem(pageItems.get(slot)));
         }
 
-        inventory.setItem(FE_MENU_PREV_SLOT, plugin.createMenuNavPane(safePage > 0, true));
+        inventory.setItem(FE_MENU_PREV_SLOT, plugin.createMenuNavPane(totalPages > 1, true));
         inventory.setItem(FE_MENU_NEXT_SLOT, plugin.createMenuNavPane(safePage + 1 < totalPages, false));
         player.openInventory(inventory);
     }
@@ -83,8 +83,12 @@ final class FeMenuService {
         int pageStep = event.isRightClick() ? 5 : 1;
 
         if (rawSlot == FE_MENU_PREV_SLOT) {
-            if (holder.page() > 0) {
-                openMenu(player, holder.page() - pageStep);
+            if (totalPages > 1) {
+                int target = (holder.page() - pageStep) % totalPages;
+                if (target < 0) {
+                    target += totalPages;
+                }
+                openMenu(player, target);
             }
             return;
         }

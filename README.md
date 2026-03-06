@@ -2,7 +2,7 @@
 
 ![AI LOGO LOL](https://i.imgur.com/w8nRrWX.png)
 
-Forbidden Enchants is a set of 48 original custom enchants for Paper (with more planned), designed to feel truly forbidden: many are borderline cheat-powerful, while others are deliberately cursed and punishing. Because this is a Paper plugin (not a datapack), it has access to stronger runtime hooks and mechanics than datapacks normally allow.
+Forbidden Enchants is a set of 53 original custom enchants for Paper (with more planned), designed to feel truly forbidden: many are borderline cheat-powerful, while others are deliberately cursed and punishing. Because this is a Paper plugin (not a datapack), it has access to stronger runtime hooks and mechanics than datapacks normally allow.
 
 The core selling point is the admin GUI workflow: a creative-style browser for books/items, a structure injector editor that lets you add, remove, and tune loot injection on the fly for any structure (including datapack structures), and a librarian trade editor for custom forbidden-book offers at exact costs.
 
@@ -18,7 +18,7 @@ The core selling point is the admin GUI workflow: a creative-style browser for b
 - `/fe toggles` GUI for per-enchant enable/disable controls (usage and chest/vault spawning), with aliases `settings` and `enchanttoggles`.
 - Generate both enchant books and pre-enchanted gear items directly.
 - Anvil application flow for helmets, chestplates, and boots.
-- 48 custom enchants with level support where configured.
+- 53 custom enchants with level support where configured.
 - Loot-table compatible book detection via `custom_model_data`.
 - Loot-table compatible gear detection via `custom_model_data` fallback.
 - Helmet-only balancing rules for the vision enchants.
@@ -250,7 +250,8 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Pocket Dimension | Leggings | I | At 5% health or lower, teleports you ~50 blocks to a safe location and then breaks the leggings. |
 | Petty Thief | Hoe | I | 1/10 chance on PvP hit to steal a random inventory item. On mob hit, 1/10 chance to grant a themed drop item. |
 | Lumberjack | Axe | I | Breaking the bottom log fells the connected tree (logs + leaves) and applies durability equal to 50% of the full block break cost. |
-| Sonic Panic | Sword | I | At 15% health or lower, triggers a radial sonic blast and drops sword durability to 5%. |
+| Sonic Panic | Sword | I | At 50% health or lower, triggers a warden-strength radial sonic blast and shatters the sword. |
+| No Fall | Boots | I | Negates all fall damage. If the fall would have killed you, consume 25% boot durability instead. Incompatible with Feather Falling and Mending. |
 | Creepers Influence | Helmet | I | Nearby creepers prioritize exploding other mobs; if no other mobs are nearby they self-detonate. |
 | Staff Of The Evoker | Spear | I | Spear jabs and left-click casts send a longer forward line of evoker fangs, even out of melee range, and the fangs damage mobs. |
 | Vexatious | Helmet | I-III | Maintains 1/2/3 bound vex allies. Extra vexes require pristine helmet durability. |
@@ -274,6 +275,10 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Knockback | Shield | I | Blocking a melee hit knocks the attacker back with strong force (roughly Knockback II feel). |
 | Ricochet | Shield | I | While blocking: 55% chance to reflect arrows, 100% reflect vs ghast and shulker projectiles. |
 | Shockwave | Totem of Undying | I | On totem pop, emits a shockwave that pushes nearby mobs/players back and deals 3 hearts. |
+| Proud Warrior | Chestplate (Binding Curse) | I | On first hit from mob/player, detonates roughly 2x TNT force, leaves wearer at 1 HP, and breaks the chestplate. |
+| Sisko's Solution | Chestplate (Binding Curse) | I | Near 3+ villagers, black smoke spreads villager-to-villager, applies wither damage in the cloud, and summons wither skeletons that ignore the wearer until all linked villagers die. |
+| Borg Technology | Chestplate | I | Adapts on repeated hits: after 3 matching hits, gains a barrier against that attack profile until 337 blocks of movement are traveled. |
+| Warp 9.5 | Boots | I | On bedrock, grants extreme speed, degrades over travel distance, and breaks after about 3333 blocks of warp travel. |
 
 
 ## What Can / Can't Be Applied
@@ -281,9 +286,9 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Item | Can apply | Can't apply / behavior notes |
 |---|---|---|
 | Helmets | Vision set: Divine Vision **or** Miners Intuition **or** Loot Sense **or** Aquatic Sacrifice **or** The Hated One; plus Creepers Influence / Vexatious / Wololo / The Seeker | Vision-set enchants are mutually exclusive with each other. Wololo applies Binding Curse automatically. The Seeker blocks Mending/Unbreaking. |
-| Chestplates | Extended Grasp **or** Void Grasp **or** Miasma Form, plus The Unyielding and/or Evokers Revenge | Grasp/Miasma Form are mutually exclusive. Evokers Revenge applies Binding Curse automatically. |
+| Chestplates | Extended Grasp **or** Void Grasp **or** Miasma Form, plus The Unyielding and/or Evokers Revenge; also Proud Warrior, Sisko's Solution, Borg Technology | Grasp/Miasma Form are mutually exclusive. Evokers Revenge, Proud Warrior, and Sisko's Solution apply Binding Curse automatically. Proud Warrior / Sisko's Solution / Borg Technology must be solo enchants on the item. |
 | Leggings | Full Pockets, Pocket Dimension | Can coexist on the same leggings. |
-| Boots | Masquerade **or** Ascension, plus Forbidden Agility and/or Locked Out | Masquerade/Ascension are mutually exclusive. Locked Out applies Binding Curse automatically. |
+| Boots | Masquerade **or** Ascension, plus Forbidden Agility and/or Locked Out; also Warp 9.5 and No Fall | Masquerade/Ascension are mutually exclusive. Locked Out applies Binding Curse automatically. Warp 9.5 must be a solo enchant on the item. No Fall is incompatible with Feather Falling and Mending. |
 | Swords | Incite Fear, Blindness, Sonic Panic | Can coexist on the same sword. |
 | Bow/Crossbow | Miasma **or** Charm **or** Dragons Breath **or** Explosive Reaction | Mutually exclusive with each other. Miasma is additionally incompatible with Power, Punch, Flame, Infinity, Multishot, Quick Charge, Piercing. Dragons Breath and Explosive Reaction are now incompatible with any other enchant (vanilla or custom). |
 | Tridents/Spears | Withering Strike, Staff Of The Evoker | Withering Strike applies to tridents only and triggers on thrown-trident hits. Staff Of The Evoker expects spear-type materials if available; trident fallback is used on non-1.21.11/no-spear-material setups and applies on melee and left-click cast. |
@@ -350,6 +355,11 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Knockback | Ricochet | None (custom-enchant conflict-wise) |
 | Ricochet | Knockback | None (custom-enchant conflict-wise) |
 | Shockwave | Mujahideen | None (custom-enchant conflict-wise) |
+| Proud Warrior | None (must be sole enchant on the chestplate) | Any other vanilla/custom enchant |
+| Sisko's Solution | None (must be sole enchant on the chestplate) | Any other vanilla/custom enchant |
+| No Fall | Masquerade or Ascension, Forbidden Agility, Locked Out, Warp 9.5 | Feather Falling, Mending |
+| Borg Technology | None (must be sole enchant on the chestplate) | Any other vanilla/custom enchant |
+| Warp 9.5 | None (must be sole enchant on the boots) | Any other vanilla/custom enchant |
 
 
 
@@ -467,6 +477,11 @@ Type index order:
 46. `shield_knockback`
 47. `ricochet`
 48. `shockwave`
+49. `proud_warrior`
+50. `siskos_solution`
+51. `no_fall`
+52. `borg_technology`
+53. `warp_9_5`
 
 So the generated IDs are:
 
@@ -518,6 +533,11 @@ So the generated IDs are:
 - Knockback I: `930461`
 - Ricochet I: `930471`
 - Shockwave I: `930481`
+- Proud Warrior I: `930491`
+- Sisko's Solution I: `930501`
+- No Fall I: `930511`
+- Borg Technology I: `930521`
+- Warp 9.5 I: `930531`
 
 ## Notes / Caveats
 

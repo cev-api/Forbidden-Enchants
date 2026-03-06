@@ -31,11 +31,11 @@ public final class SonicPanicEnchant extends BaseForbiddenEnchant {
 
     @Override
     public @NotNull String effectDescription(int level) {
-        return "At 15% health or lower, emits a radial sonic blast and drops sword to 5% durability.";
+        return "At 50% health or lower, emits a warden-strength radial sonic blast and shatters the sword.";
     }
 
     public boolean shouldTrigger(int level, double postDamageHealth, double maxHealth, boolean sword) {
-        return sword && level > 0 && postDamageHealth <= maxHealth * 0.15D;
+        return sword && level > 0 && postDamageHealth <= maxHealth * 0.50D;
     }
 
     public long cooldownTicks() {

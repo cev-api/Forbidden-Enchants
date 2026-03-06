@@ -36,6 +36,7 @@ public final class SlotParsingUtil {
             case "hoe" -> ArmorSlot.HOE;
             case "axe" -> ArmorSlot.AXE;
             case "mace" -> ArmorSlot.MACE;
+            case "brush" -> ArmorSlot.BRUSH;
             case "nametag", "name_tag", "name-tag" -> ArmorSlot.NAMETAG;
             case "lead", "leash" -> ArmorSlot.LEAD;
             case "shield" -> ArmorSlot.SHIELD;
@@ -75,6 +76,7 @@ public final class SlotParsingUtil {
             case HOE -> "hoe";
             case AXE -> "axe";
             case MACE -> "mace";
+            case BRUSH -> "brush";
             case NAMETAG -> "name tag";
             case LEAD -> "lead";
             case SHIELD -> "shield";

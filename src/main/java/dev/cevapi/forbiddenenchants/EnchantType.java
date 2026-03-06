@@ -4,6 +4,7 @@ import dev.cevapi.forbiddenenchants.enchants.AppliedCurseEnchant;
 import dev.cevapi.forbiddenenchants.enchants.AquaticSacrificeEnchant;
 import dev.cevapi.forbiddenenchants.enchants.AscensionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.BlindnessEnchant;
+import dev.cevapi.forbiddenenchants.enchants.BorgTechnologyEnchant;
 import dev.cevapi.forbiddenenchants.enchants.CharmEnchant;
 import dev.cevapi.forbiddenenchants.enchants.CharmedPetEnchant;
 import dev.cevapi.forbiddenenchants.enchants.CreepersInfluenceEnchant;
@@ -32,12 +33,15 @@ import dev.cevapi.forbiddenenchants.enchants.MiasmaEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MiasmaFormEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MinersIntuitionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MujahideenEnchant;
+import dev.cevapi.forbiddenenchants.enchants.NoFallEnchant;
 import dev.cevapi.forbiddenenchants.enchants.PettyThiefEnchant;
 import dev.cevapi.forbiddenenchants.enchants.PocketDimensionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.PocketSeekerEnchant;
+import dev.cevapi.forbiddenenchants.enchants.ProudWarriorEnchant;
 import dev.cevapi.forbiddenenchants.enchants.RicochetEnchant;
 import dev.cevapi.forbiddenenchants.enchants.ShieldKnockbackEnchant;
 import dev.cevapi.forbiddenenchants.enchants.ShockwaveEnchant;
+import dev.cevapi.forbiddenenchants.enchants.SiskosSolutionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.SonicPanicEnchant;
 import dev.cevapi.forbiddenenchants.enchants.StaffOfTheEvokerEnchant;
 import dev.cevapi.forbiddenenchants.enchants.TemporalSicknessEnchant;
@@ -49,6 +53,7 @@ import dev.cevapi.forbiddenenchants.enchants.VoidGraspEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WingClipperEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WitheringStrikeEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WololoEnchant;
+import dev.cevapi.forbiddenenchants.enchants.WarpNineFiveEnchant;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -109,7 +114,12 @@ public enum EnchantType {
     MUJAHIDEEN(45, new MujahideenEnchant()),
     SHIELD_KNOCKBACK(46, new ShieldKnockbackEnchant()),
     RICOCHET(47, new RicochetEnchant()),
-    SHOCKWAVE(48, new ShockwaveEnchant());
+    SHOCKWAVE(48, new ShockwaveEnchant()),
+    PROUD_WARRIOR(49, new ProudWarriorEnchant()),
+    SISKOS_SOLUTION(50, new SiskosSolutionEnchant()),
+    NO_FALL(51, new NoFallEnchant()),
+    BORG_TECHNOLOGY(52, new BorgTechnologyEnchant()),
+    WARP_NINE_FIVE(53, new WarpNineFiveEnchant());
 
     private static final Map<String, EnchantType> BY_ARG = new HashMap<>();
     private static final Map<Integer, EnchantType> BY_MODEL_TYPE_INDEX = new HashMap<>();
@@ -150,13 +160,22 @@ public enum EnchantType {
                 LOCKED_OUT,
                 EVOKERS_REVENGE,
                 GREED,
-                TEMPORAL_SICKNESS
+                TEMPORAL_SICKNESS,
+                PROUD_WARRIOR,
+                SISKOS_SOLUTION
         ));
 
         STRIPS_VANILLA_ENCHANTS.addAll(EnumSet.of(DIVINE_VISION, MINERS_INTUITION, LOOT_SENSE));
         STRIPS_MENDING_UNBREAKING.addAll(EnumSet.of(HEALING_TOUCH, THE_SEEKER));
 
-        REQUIRES_NO_OTHER_ENCHANTS.addAll(EnumSet.of(DRAGONS_BREATH, EXPLOSIVE_REACTION));
+        REQUIRES_NO_OTHER_ENCHANTS.addAll(EnumSet.of(
+                DRAGONS_BREATH,
+                EXPLOSIVE_REACTION,
+                PROUD_WARRIOR,
+                SISKOS_SOLUTION,
+                BORG_TECHNOLOGY,
+                WARP_NINE_FIVE
+        ));
         REQUIRES_SOLO_ON_TRIDENT.add(WITHERING_STRIKE);
     }
 

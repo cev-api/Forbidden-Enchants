@@ -236,6 +236,26 @@ public final class EnchantList {
         return (ShockwaveEnchant) EnchantType.SHOCKWAVE.definition();
     }
 
+    public @NotNull ProudWarriorEnchant proudWarrior() {
+        return (ProudWarriorEnchant) EnchantType.PROUD_WARRIOR.definition();
+    }
+
+    public @NotNull SiskosSolutionEnchant siskosSolution() {
+        return (SiskosSolutionEnchant) EnchantType.SISKOS_SOLUTION.definition();
+    }
+
+    public @NotNull NoFallEnchant noFall() {
+        return (NoFallEnchant) EnchantType.NO_FALL.definition();
+    }
+
+    public @NotNull BorgTechnologyEnchant borgTechnology() {
+        return (BorgTechnologyEnchant) EnchantType.BORG_TECHNOLOGY.definition();
+    }
+
+    public @NotNull WarpNineFiveEnchant warpNineFive() {
+        return (WarpNineFiveEnchant) EnchantType.WARP_NINE_FIVE.definition();
+    }
+
     public @NotNull List<ForbiddenEnchantDefinition> all() {
         return all;
     }

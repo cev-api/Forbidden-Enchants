@@ -121,6 +121,7 @@ public final class EnchantMaterialCatalog {
                     Material.GOLDEN_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE
             );
             case MACE -> List.of(Material.MACE);
+            case BRUSH -> List.of(Material.BRUSH);
             case NAMETAG -> List.of(Material.NAME_TAG);
             case LEAD -> List.of(Material.LEAD);
             case SHIELD -> List.of(Material.SHIELD);
@@ -173,6 +174,7 @@ public final class EnchantMaterialCatalog {
             case HOE -> "a hoe";
             case AXE -> "an axe";
             case MACE -> "a mace";
+            case BRUSH -> "a brush";
             case NAMETAG -> "a name tag";
             case LEAD -> "a lead";
             case SHIELD -> "a shield";
