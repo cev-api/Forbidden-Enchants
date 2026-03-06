@@ -176,20 +176,16 @@ final class StructureInjectorRuntimeService {
     }
 
     private @Nullable ItemStack createRandomForbiddenBook(@Nullable Predicate<EnchantType> typeFilter) {
-        List<EnchantType> types = new ArrayList<>();
-        for (EnchantType type : EnchantType.values()) {
-            if (!plugin.isRetiredEnchant(type) && plugin.isEnchantSpawnEnabled(type)
-                    && (typeFilter == null || typeFilter.test(type))) {
-                types.add(type);
-            }
-        }
-        if (types.isEmpty()) {
+        List<WeightedBookEntry> books = weightedBookEntries(typeFilter);
+        if (books.isEmpty()) {
             return null;
         }
 
-        EnchantType type = types.get(ThreadLocalRandom.current().nextInt(types.size()));
-        int level = ThreadLocalRandom.current().nextInt(1, type.maxLevel + 1);
-        return plugin.createBook(type, level);
+        WeightedBookEntry selected = pickWeightedBook(books);
+        if (selected == null) {
+            return null;
+        }
+        return plugin.createBook(selected.type(), selected.level());
     }
 
     private @Nullable ItemStack createRandomInjectedLoot(@NotNull InjectorLootMode mode, @NotNull InjectorMysteryState mysteryState) {
@@ -239,6 +235,10 @@ final class StructureInjectorRuntimeService {
     }
 
     private @Nullable ItemStack createRandomMysteryBook(@Nullable Predicate<EnchantType> typeFilter) {
+        if (plugin.isInjectorRarityApplyToItems()) {
+            return createWeightedMysteryBook(typeFilter);
+        }
+
         List<ArmorSlot> slots = new ArrayList<>();
         for (EnchantType type : EnchantType.values()) {
             if (!plugin.isRetiredEnchant(type)
@@ -255,11 +255,11 @@ final class StructureInjectorRuntimeService {
         for (ArmorSlot slot : slots) {
             for (int attempts = 0; attempts < 6; attempts++) {
                 ItemStack mystery = plugin.createMysteryBook(slot);
-                EnchantType hidden = detectStoredEnchantType(mystery);
-                if (hidden == null || plugin.isRetiredEnchant(hidden) || !plugin.isEnchantSpawnEnabled(hidden)) {
+                BookSpec hidden = detectStoredBookSpec(mystery);
+                if (hidden == null || plugin.isRetiredEnchant(hidden.type()) || !plugin.isEnchantSpawnEnabled(hidden.type())) {
                     continue;
                 }
-                if (typeFilter != null && !typeFilter.test(hidden)) {
+                if (typeFilter != null && !typeFilter.test(hidden.type())) {
                     continue;
                 }
                 return mystery;
@@ -269,6 +269,10 @@ final class StructureInjectorRuntimeService {
     }
 
     private @Nullable ItemStack createRandomEnchantedItem(@Nullable Predicate<EnchantType> typeFilter) {
+        if (plugin.isInjectorRarityApplyToItems()) {
+            return createWeightedEnchantedItem(typeFilter);
+        }
+
         List<EnchantType> types = new ArrayList<>();
         for (EnchantType type : EnchantType.values()) {
             if (!plugin.isRetiredEnchant(type) && plugin.isEnchantSpawnEnabled(type)
@@ -300,6 +304,10 @@ final class StructureInjectorRuntimeService {
     }
 
     private @Nullable ItemStack createRandomMysteryItem(@Nullable Predicate<EnchantType> typeFilter) {
+        if (plugin.isInjectorRarityApplyToItems()) {
+            return createWeightedMysteryItem(typeFilter);
+        }
+
         List<String> materials = new ArrayList<>(EnchantMaterialCatalog.allEnchantableMaterialSuggestions());
         if (materials.isEmpty()) {
             return null;
@@ -315,11 +323,11 @@ final class StructureInjectorRuntimeService {
                 if (mystery == null) {
                     continue;
                 }
-                EnchantType hidden = detectStoredEnchantType(mystery);
-                if (hidden == null || plugin.isRetiredEnchant(hidden) || !plugin.isEnchantSpawnEnabled(hidden)) {
+                BookSpec hidden = detectStoredBookSpec(mystery);
+                if (hidden == null || plugin.isRetiredEnchant(hidden.type()) || !plugin.isEnchantSpawnEnabled(hidden.type())) {
                     continue;
                 }
-                if (typeFilter != null && !typeFilter.test(hidden)) {
+                if (typeFilter != null && !typeFilter.test(hidden.type())) {
                     continue;
                 }
                 return mystery;
@@ -328,14 +336,115 @@ final class StructureInjectorRuntimeService {
         return null;
     }
 
-    private @Nullable EnchantType detectStoredEnchantType(@NotNull ItemStack item) {
+    private @Nullable ItemStack createWeightedEnchantedItem(@Nullable Predicate<EnchantType> typeFilter) {
+        List<WeightedBookEntry> books = weightedBookEntries(typeFilter);
+        if (books.isEmpty()) {
+            return null;
+        }
+
+        for (int attempts = 0; attempts < 24; attempts++) {
+            WeightedBookEntry selected = pickWeightedBook(books);
+            if (selected == null) {
+                return null;
+            }
+            List<String> materialNames = new ArrayList<>(EnchantMaterialCatalog.materialSuggestions(selected.type()));
+            Collections.shuffle(materialNames);
+            for (String materialName : materialNames) {
+                Material material = SlotParsingUtil.parseMaterial(materialName);
+                if (material == null || material == Material.AIR) {
+                    continue;
+                }
+                ItemStack generated = plugin.createEnchantedItem(selected.type(), selected.level(), material);
+                if (generated != null) {
+                    return generated;
+                }
+            }
+        }
+        return null;
+    }
+
+    private @Nullable ItemStack createWeightedMysteryBook(@Nullable Predicate<EnchantType> typeFilter) {
+        List<WeightedBookEntry> books = weightedBookEntries(typeFilter);
+        if (books.isEmpty()) {
+            return null;
+        }
+
+        for (int attempts = 0; attempts < 32; attempts++) {
+            WeightedBookEntry selected = pickWeightedBook(books);
+            if (selected == null) {
+                return null;
+            }
+            ItemStack mystery = plugin.createMysteryBook(selected.type().slot);
+            BookSpec hidden = detectStoredBookSpec(mystery);
+            if (hidden == null) {
+                continue;
+            }
+            if (hidden.type() == selected.type() && hidden.level() == selected.level()) {
+                return mystery;
+            }
+        }
+        return null;
+    }
+
+    private @Nullable ItemStack createWeightedMysteryItem(@Nullable Predicate<EnchantType> typeFilter) {
+        List<WeightedBookEntry> books = weightedBookEntries(typeFilter);
+        if (books.isEmpty()) {
+            return null;
+        }
+
+        for (int attempts = 0; attempts < 32; attempts++) {
+            WeightedBookEntry selected = pickWeightedBook(books);
+            if (selected == null) {
+                return null;
+            }
+            List<String> materialNames = new ArrayList<>(EnchantMaterialCatalog.materialSuggestions(selected.type()));
+            Collections.shuffle(materialNames);
+            for (String materialName : materialNames) {
+                Material material = SlotParsingUtil.parseMaterial(materialName);
+                if (material == null || material == Material.AIR) {
+                    continue;
+                }
+                ItemStack mystery = plugin.createMysteryItem(material);
+                if (mystery == null) {
+                    continue;
+                }
+                BookSpec hidden = detectStoredBookSpec(mystery);
+                if (hidden == null) {
+                    continue;
+                }
+                if (hidden.type() == selected.type() && hidden.level() == selected.level()) {
+                    return mystery;
+                }
+            }
+        }
+        return null;
+    }
+
+    private @NotNull List<WeightedBookEntry> weightedBookEntries(@Nullable Predicate<EnchantType> typeFilter) {
+        List<WeightedBookEntry> books = new ArrayList<>();
+        for (EnchantType type : EnchantType.values()) {
+            if (!plugin.isRetiredEnchant(type) && plugin.isEnchantSpawnEnabled(type)
+                    && (typeFilter == null || typeFilter.test(type))) {
+                for (int level = 1; level <= type.maxLevel; level++) {
+                    double weight = plugin.injectorBookRarityWeight(type, level);
+                    if (weight > 0.0D) {
+                        books.add(new WeightedBookEntry(type, level, weight));
+                    }
+                }
+            }
+        }
+        return books;
+    }
+
+    private @Nullable BookSpec detectStoredBookSpec(@NotNull ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
             return null;
         }
         for (EnchantType type : EnchantType.values()) {
-            if (plugin.getStoredEnchantLevel(meta, type) > 0) {
-                return type;
+            int level = plugin.getStoredEnchantLevel(meta, type);
+            if (level > 0) {
+                return new BookSpec(type, level);
             }
         }
         return null;
@@ -370,6 +479,29 @@ final class StructureInjectorRuntimeService {
                 && holderBlock.getX() == block.getX()
                 && holderBlock.getY() == block.getY()
                 && holderBlock.getZ() == block.getZ();
+    }
+
+    private @Nullable WeightedBookEntry pickWeightedBook(@NotNull List<WeightedBookEntry> books) {
+        double totalWeight = 0.0D;
+        for (WeightedBookEntry book : books) {
+            totalWeight += book.weight();
+        }
+        if (totalWeight <= 0.0D) {
+            return null;
+        }
+
+        double roll = ThreadLocalRandom.current().nextDouble(totalWeight);
+        double cumulative = 0.0D;
+        for (WeightedBookEntry book : books) {
+            cumulative += book.weight();
+            if (roll <= cumulative) {
+                return book;
+            }
+        }
+        return books.get(books.size() - 1);
+    }
+
+    private record WeightedBookEntry(@NotNull EnchantType type, int level, double weight) {
     }
 }
 

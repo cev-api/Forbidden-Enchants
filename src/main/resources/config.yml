@@ -2,6 +2,7 @@ structure_injector:
   enabled: false
   default_chance: 5.0
   notify_on_add: false
+  rarity_apply_to_items: true
   vaults:
     enabled: false
     normal_chance: 7.5
@@ -17,3 +18,13 @@ structure_injector:
     minecraft:trial_chambers: item_only
   mystery_state:
     minecraft:trial_chambers: mystery_only
+  book_rarity: {}
+
+librarian_trades:
+  enabled: false
+  trades:
+    - enchant: divine_vision
+      level: 1
+      chance: 25.0
+      emeralds: 16
+      books: 1

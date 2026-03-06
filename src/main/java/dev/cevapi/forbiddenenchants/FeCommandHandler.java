@@ -18,10 +18,12 @@ import java.util.Locale;
 final class FeCommandHandler implements CommandExecutor, TabCompleter {
     private final ForbiddenEnchantsPlugin plugin;
     private final InjectorCommandHandler injectorCommandHandler;
+    private final LibrarianTradeCommandHandler librarianTradeCommandHandler;
 
     FeCommandHandler(@NotNull ForbiddenEnchantsPlugin plugin) {
         this.plugin = plugin;
         this.injectorCommandHandler = new InjectorCommandHandler(plugin);
+        this.librarianTradeCommandHandler = new LibrarianTradeCommandHandler(plugin);
     }
 
     @Override
@@ -51,6 +53,7 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
             case "mysterybook" -> handleGiveMysteryBook(sender, args);
             case "mysteryitem" -> handleGiveMysteryItem(sender, args);
             case "injector", "structureinjector" -> injectorCommandHandler.handleCommand(sender, args);
+            case "librarian", "librariantrades", "libtrades" -> librarianTradeCommandHandler.handleCommand(sender, args);
             default -> {
                 plugin.sendFeError(sender, "Unknown subcommand. Use /" + label + " help");
                 yield true;
@@ -64,7 +67,7 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
                                                 @NotNull String alias,
                                                 @NotNull String[] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("help", "list", "gui", "menu", "toggles", "settings", "enchanttoggles", "give", "givebook", "giveitem", "mysterybook", "mysteryitem", "injector"), new ArrayList<>());
+            return StringUtil.copyPartialMatches(args[0], List.of("help", "list", "gui", "menu", "toggles", "settings", "enchanttoggles", "give", "givebook", "giveitem", "mysterybook", "mysteryitem", "injector", "librarian"), new ArrayList<>());
         }
 
         boolean isGiveBook = args[0].equalsIgnoreCase("give") || args[0].equalsIgnoreCase("givebook");
@@ -76,12 +79,18 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
                 || args[0].equalsIgnoreCase("settings")
                 || args[0].equalsIgnoreCase("enchanttoggles");
         boolean isInjector = args[0].equalsIgnoreCase("injector") || args[0].equalsIgnoreCase("structureinjector");
+        boolean isLibrarian = args[0].equalsIgnoreCase("librarian")
+                || args[0].equalsIgnoreCase("librariantrades")
+                || args[0].equalsIgnoreCase("libtrades");
 
         if (isInjector && args.length == 2) {
             return injectorCommandHandler.tabComplete(args);
         }
         if (isInjector && (args.length == 3 || args.length == 4)) {
             return injectorCommandHandler.tabComplete(args);
+        }
+        if (isLibrarian) {
+            return librarianTradeCommandHandler.tabComplete(args);
         }
 
         if (args.length == 2 && (isGiveBook || isGiveItem)) {

@@ -78,6 +78,8 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     private final Map<NamespacedKey, Double> structureInjectChances = new HashMap<>();
     private final Map<NamespacedKey, InjectorLootMode> structureInjectLootModes = new HashMap<>();
     private final Map<NamespacedKey, InjectorMysteryState> structureInjectMysteryStates = new HashMap<>();
+    private final Map<String, Double> injectorBookRarityWeights = new HashMap<>();
+    private final List<LibrarianTradeEntry> librarianTrades = new ArrayList<>();
     private final List<Structure> allStructures = new ArrayList<>();
     private final CompassTrackingService compassTrackingService = new CompassTrackingService();
     private final MysteryItemService mysteryItemService = new MysteryItemService(
@@ -90,6 +92,8 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     private final FeCatalogService feCatalogService = new FeCatalogService(this);
     private final FePresentationService fePresentationService = new FePresentationService(this);
     private final InjectorMenuService injectorMenuService = new InjectorMenuService(this);
+    private final InjectorBookRarityMenuService injectorBookRarityMenuService = new InjectorBookRarityMenuService();
+    private final LibrarianTradeMenuService librarianTradeMenuService = new LibrarianTradeMenuService(this);
     private final EnchantToggleMenuService enchantToggleMenuService = new EnchantToggleMenuService(this);
     private final FeMenuService feMenuService = new FeMenuService(this);
     private final EnchantBookFactoryService enchantBookFactoryService = new EnchantBookFactoryService(this);
@@ -105,6 +109,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     );
     private final ConfigPersistenceService configPersistenceService = new ConfigPersistenceService(this);
     private final StructureInjectorRuntimeService structureInjectorRuntimeService = new StructureInjectorRuntimeService(this);
+    private final LibrarianTradeService librarianTradeService = new LibrarianTradeService(this);
     private final PocketDimensionService pocketDimensionService = new PocketDimensionService();
     private final TemporalSicknessService temporalSicknessService = new TemporalSicknessService(
             this::enchantStateServiceInternal,
@@ -254,6 +259,8 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     private InjectorLootMode trialVaultOminousLootMode = InjectorLootMode.ALL;
     private InjectorMysteryState trialVaultNormalMysteryState = InjectorMysteryState.ALL;
     private InjectorMysteryState trialVaultOminousMysteryState = InjectorMysteryState.ALL;
+    private boolean injectorRarityApplyToItems = true;
+    private boolean librarianTradesEnabled;
     private long tickCounter;
 
     @Override
@@ -278,12 +285,16 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         try {
             loadStructureInjectorSettings();
             loadEnchantToggleSettings();
+            loadLibrarianTradeSettings();
         } catch (Throwable t) {
             structureInjectorEnabled = false;
             structureInjectChances.clear();
             structureInjectLootModes.clear();
             structureInjectMysteryStates.clear();
-            getLogger().warning("Structure injector disabled due to startup error: " + t.getClass().getSimpleName() + ": " + t.getMessage());
+            injectorBookRarityWeights.clear();
+            librarianTradesEnabled = false;
+            librarianTrades.clear();
+            getLogger().warning("Config-backed admin systems disabled due to startup error: " + t.getClass().getSimpleName() + ": " + t.getMessage());
         }
         ensureMenuPagesBuilt();
 
@@ -299,7 +310,10 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
                 charmedPetInteractionService,
                 feMenuService,
                 injectorMenuService,
+                injectorBookRarityMenuService,
+                librarianTradeMenuService,
                 enchantToggleMenuService,
+                librarianTradeService,
                 enchantEventRuleService,
                 graspCombatService
         ), this);
@@ -346,6 +360,8 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         structureInjectChances.clear();
         structureInjectLootModes.clear();
         structureInjectMysteryStates.clear();
+        injectorBookRarityWeights.clear();
+        librarianTrades.clear();
         allStructures.clear();
         enchantStateService.clearToggles();
         vexatiousService.cleanupAll();
@@ -366,6 +382,14 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
 
     void saveEnchantToggleSettings() {
         configPersistenceService.saveEnchantToggleSettings();
+    }
+
+    private void loadLibrarianTradeSettings() {
+        configPersistenceService.loadLibrarianTradeSettings();
+    }
+
+    void saveLibrarianTradeSettings() {
+        configPersistenceService.saveLibrarianTradeSettings();
     }
 
     private void runTickEffects() {
@@ -541,6 +565,10 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
 
     ItemStack createBook(@NotNull EnchantType type, int level) {
         return enchantBookFactoryService.createBook(type, level);
+    }
+
+    @Nullable BookSpec readBookSpec(@Nullable ItemStack stack) {
+        return enchantBookFactoryService.readBookSpec(stack);
     }
 
     @Nullable ItemStack createEnchantedItem(@NotNull EnchantType type, int level, @NotNull Material material) {
@@ -807,6 +835,37 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         return structureInjectMysteryStates;
     }
 
+    @NotNull Map<String, Double> injectorBookRarityWeights() {
+        return injectorBookRarityWeights;
+    }
+
+    boolean isInjectorRarityApplyToItems() {
+        return injectorRarityApplyToItems;
+    }
+
+    void setInjectorRarityApplyToItems(boolean applyToItems) {
+        injectorRarityApplyToItems = applyToItems;
+    }
+
+    double injectorBookRarityWeight(@NotNull EnchantType type, int level) {
+        return injectorBookRarityWeights.getOrDefault(injectorBookRarityKey(type, level), 1.0D);
+    }
+
+    void setInjectorBookRarityWeight(@NotNull EnchantType type, int level, double weight) {
+        String key = injectorBookRarityKey(type, level);
+        double clamped = Math.max(0.0D, Math.min(1000.0D, weight));
+        double rounded = Math.round(clamped * 10.0D) / 10.0D;
+        if (rounded <= 0.0D || Math.abs(rounded - 1.0D) < 0.0001D) {
+            injectorBookRarityWeights.remove(key);
+            return;
+        }
+        injectorBookRarityWeights.put(key, rounded);
+    }
+
+    @NotNull String injectorBookRarityKey(@NotNull EnchantType type, int level) {
+        return type.arg + ":" + level;
+    }
+
     @NotNull InjectorLootMode structureInjectLootMode(@NotNull NamespacedKey key) {
         return structureInjectLootModes.getOrDefault(key, InjectorLootMode.ALL);
     }
@@ -846,6 +905,14 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         injectorMenuService.openMenu(target, InjectorMenuMode.CONFIGURED, 0);
     }
 
+    void openInjectorBookRarityMenu(@NotNull Player target, int page) {
+        injectorBookRarityMenuService.openMenu(target, this, page);
+    }
+
+    void openLibrarianTradeMenu(@NotNull Player target, int page) {
+        librarianTradeMenuService.openMenu(target, page);
+    }
+
     void disableStructureInjectorDueToRuntimeError(@NotNull Throwable t) {
         structureInjectorEnabled = false;
         getLogger().warning("Structure injector disabled at runtime due to error: " + t.getClass().getSimpleName() + ": " + t.getMessage());
@@ -853,6 +920,18 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
 
     boolean isMaterialValidForEnchant(@NotNull Material material, @NotNull EnchantType type) {
         return itemClassificationService.isMaterialValidForEnchant(material, type);
+    }
+
+    boolean isLibrarianTradesEnabled() {
+        return librarianTradesEnabled;
+    }
+
+    void setLibrarianTradesEnabled(boolean enabled) {
+        librarianTradesEnabled = enabled;
+    }
+
+    @NotNull List<LibrarianTradeEntry> librarianTrades() {
+        return librarianTrades;
     }
 
     public void giveOrDrop(@NotNull Player target, @NotNull ItemStack item) {

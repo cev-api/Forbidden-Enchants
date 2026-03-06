@@ -113,6 +113,64 @@ final class InjectorMenuHolder implements InventoryHolder {
     }
 }
 
+final class InjectorBookRarityMenuHolder implements InventoryHolder {
+    private final int page;
+    private Inventory inventory;
+
+    InjectorBookRarityMenuHolder(int page) {
+        this.page = page;
+    }
+
+    int page() {
+        return page;
+    }
+
+    void attach(@NotNull Inventory inventory) {
+        this.inventory = inventory;
+    }
+
+    @Override
+    public @NotNull Inventory getInventory() {
+        return Objects.requireNonNull(inventory, "injector rarity menu inventory");
+    }
+}
+
+final class LibrarianTradeMenuHolder implements InventoryHolder {
+    private final LibrarianTradeMenuMode mode;
+    private final int page;
+    private Inventory inventory;
+
+    LibrarianTradeMenuHolder(@NotNull LibrarianTradeMenuMode mode, int page) {
+        this.mode = mode;
+        this.page = page;
+    }
+
+    @NotNull LibrarianTradeMenuMode mode() {
+        return mode;
+    }
+
+    int page() {
+        return page;
+    }
+
+    void attach(@NotNull Inventory inventory) {
+        this.inventory = inventory;
+    }
+
+    @Override
+    public @NotNull Inventory getInventory() {
+        return Objects.requireNonNull(inventory, "librarian menu inventory");
+    }
+}
+
+enum LibrarianTradeMenuMode {
+    CONFIGURED,
+    ALL
+}
+
+record LibrarianTradeEntry(@NotNull EnchantType type, int level, double chancePercent, int emeraldCost, int bookCost) {
+}
+
 record BookSpec(EnchantType type, int level) {
 }
 

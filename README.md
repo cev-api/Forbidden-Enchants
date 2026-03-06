@@ -1,11 +1,10 @@
 # Forbidden Enchants (Paper 1.21.x)
 
+![AI LOGO LOL](https://i.imgur.com/w8nRrWX.png)
+
 Forbidden Enchants is a set of 48 original custom enchants for Paper (with more planned), designed to feel truly forbidden: many are borderline cheat-powerful, while others are deliberately cursed and punishing. Because this is a Paper plugin (not a datapack), it has access to stronger runtime hooks and mechanics than datapacks normally allow.
 
-The core selling point is the two-GUI workflow: a creative-style browser for books/items, and a structure injector editor that lets you add, remove, and tune loot injection on the fly for any structure (including datapack structures), with per-structure chance plus book/item/curse/mystery mode controls; trial vault support is included, and villager-trade support is planned.
-
-![FEGUI](https://i.imgur.com/gSMVJu6.png)
-![FEINJECTOR](https://i.imgur.com/nmPbD8G.png)
+The core selling point is the admin GUI workflow: a creative-style browser for books/items, a structure injector editor that lets you add, remove, and tune loot injection on the fly for any structure (including datapack structures), and a librarian trade editor for custom forbidden-book offers at exact costs.
 
 ## Features
 
@@ -13,6 +12,9 @@ The core selling point is the two-GUI workflow: a creative-style browser for boo
 - `/fe gui` paged creative style inventory menu sorted by enchant type.
 - `/fe injector` command suite for structure/vault injection setup (`help`, `status|list`, `enable`, `disable`, `add`, `set|chance`, `remove`, `clear`, `defaultchance|default`, `vault`, `gui|menu`).
 - `/fe injector gui` visual editor for injector structure lists and per-structure chance tuning.
+- `/fe librarian` command suite for librarian trade blend setup (`help`, `status|list`, `enable`, `disable`, `add`, `remove`, `clear`, `gui|menu`).
+- `/fe librarian gui` visual editor with all-book + configured views, per-book chance, and cost tuning.
+- Librarian blend mode keeps vanilla/datapack trade generation and appends configured forbidden-book offers by per-trade chance.
 - `/fe toggles` GUI for per-enchant enable/disable controls (usage and chest/vault spawning), with aliases `settings` and `enchanttoggles`.
 - Generate both enchant books and pre-enchanted gear items directly.
 - Anvil application flow for helmets, chestplates, and boots.
@@ -73,6 +75,9 @@ Output jar:
 /fe mysteryitem <material> [player]
 /fe injector <...>
 /fe structureinjector <...>
+/fe librarian <...>
+/fe librariantrades <...>
+/fe libtrades <...>
 /fe toggles [player]
 /fe settings [player]
 /fe enchanttoggles [player]
@@ -102,6 +107,21 @@ Permission: `forbiddenenchants.admin` (default: op).
 /fe injector defaultchance <chance>
 /fe injector default <chance>
 /fe injector vault <status|enable|disable|normal|ominous|both> [chance]
+```
+
+#### Librarian subcommands:
+
+```text
+/fe librarian help
+/fe librarian status
+/fe librarian list
+/fe librarian enable
+/fe librarian disable
+/fe librarian gui [player]
+/fe librarian menu [player]
+/fe librarian add <enchant> <level> <chance> <emeralds> [books]
+/fe librarian remove <index>
+/fe librarian clear
 ```
 
 #### Examples:
@@ -141,43 +161,66 @@ Permission: `forbiddenenchants.admin` (default: op).
 /fe injector vault ominous 20
 /fe injector vault both 15
 /fe injector gui
+/fe librarian status
+/fe librarian enable
+/fe librarian add divine_vision 1 25 24 1
+/fe librarian add void_grasp 1 15 32 2
+/fe librarian gui
+/fe librarian remove 2
 /fe toggles
 ```
 
-#### Injector notes:
+## 3 Main GUI Menus
+
+This plugin has three main admin GUIs, each for a different workflow:
+
+1. `/fe gui` (Creative-style admin picker)
+   - Purpose: manually give forbidden books/items to players for admin distribution, balancing checks, and testing.
+   - Layout: one enchant type per page (book first, then compatible pre-enchanted items).
+   - Controls: click item to claim; left/right page arrows (left-click = 1 page, right-click = 5 pages).
+
+   ![FEGUI](https://i.imgur.com/gSMVJu6.png)
+
+2. `/fe injector gui` (Structure/vault loot injector editor)
+   - Purpose: configure runtime loot injection so forbidden books/items appear in structure chests and trial vault rewards.
+   - Supports all structures and configured-only view modes.
+   - Includes an `Enchantment Rarity Editor` button to tune weighted rarity for each enchantment level.
+   - Rarity editor includes a back button and an `Apply Weights To Enchanted Items` toggle (default: ON).
+   - Per-entry controls:
+     - Left/Right clicks: increase/decrease chance
+     - `Q`: cycle loot type (`books -> items -> all`)
+     - `Ctrl+Q`: cycle curse state (`all -> cursed -> uncursed`)
+     - `F`: cycle mystery state (`all -> mystery_only -> non_mystery_only`)
+   - Includes global enable toggle, notify toggle, clear-all, and normal/ominous vault entries.
+
+   ![FEINJECTOR](https://i.imgur.com/nmPbD8G.png)
+
+3. `/fe librarian gui` (Librarian trade blend editor)
+   - Purpose: configure forbidden books to be added into librarian trades while keeping vanilla/datapack trade generation.
+   - Supports all-books and configured-only view modes.
+   - Per-book controls:
+     - Left/Right clicks: increase/decrease trade chance
+     - `Q`/`Ctrl+Q`: increase/decrease emerald cost
+     - `F`: increase required book cost
+     - Middle click: disable/remove that configured trade
+
+    ![LIBRARY](https://i.imgur.com/WSySbwU.png)
+
+
+#### Config + injector notes:
 
 - Supports comma-separated structure lists for `add` and `remove`.
 - Structure keys can be short (`trial_chambers`) or full namespaced (`minecraft:trial_chambers`).
 - Config persistence:
   - `structure_injector.*` stores injector enable/chance/structure settings.
+  - `structure_injector.book_rarity.*` stores per-book-level rarity weights for injector book rolls.
+  - `structure_injector.rarity_apply_to_items` toggles whether rarity weights apply to books only (`false`) or books + enchanted items (`true`).
   - `enchant_controls.*` stores per-enchant `use_enabled` + `spawn_enabled` toggles.
+  - `librarian_trades.*` stores librarian trade enable state + configured offers (chance + costs).
 - Defaults:
   - Structure injector default chance: `5.0%`.
   - Trial vault default chance fallback: `7.5%` for normal and ominous when config values are missing.
-- GUI editor `/fe injector gui` lets you:
-  - Switch between all structures and configured-only lists
-  - Add/remove structures
-  - Raise/lower chance per structure with click controls
-  - Press `Q` (drop click) on a structure entry to cycle loot type: `books -> items -> all`
-  - Press `Ctrl+Q` on a structure entry to cycle curse state: `all -> cursed -> uncursed`
-  - Press `F` while hovering a structure entry to cycle mystery state: `all -> mystery_only -> non_mystery_only`
-  - The same `Q` / `Ctrl+Q` / `F` mode controls also apply to normal and ominous vault entries.
-  - Toggle chest add action-bar message on/off
-  - Toggle injector enabled/disabled
-  - Configure normal and ominous trial vaults as list entries (same as structures)
-  - Trial vault entries use `trial_key` and `ominous_trial_key` icons
-- Trial vault injector:
-  - Normal vault and ominous vault are configured from the main injector list like structures.
-  - A non-zero vault chance means that vault entry is active.
-  - Requires interacting with the correct key (`trial_key` or `ominous_trial_key`).
-  - Gives a bonus random forbidden enchanted book directly to the player inventory on proc.
-
-#### Creative Style GUI notes:
-  - Accessible with the command `/fe gui`.
-  - One enchant type per page (books first, then pre-enchanted gear for that enchant).
-  - Click an item to claim it instantly.
-  - Uses only two white glass-pane page controls (far left and far right bottom corners).
-  - Left-click arrows for 1-page step, right-click arrows for 5-page jump, and `/fe gui` reopens your last viewed page.
+  - Injector rarity toggle default: `true` (weights apply to both books and enchanted items).
 
 ## Enchants
 
@@ -496,8 +539,9 @@ The plugin is split into focused layers:
 - **Rules and item pipeline**: `EnchantStateService`, `EnchantRuleCoreService`, `EnchantEventRuleService`, `EnchantBookFactoryService`, `MysteryItemService`.
 - **Feature services**: combat/mob/effect systems (`GraspCombatService`, `WitheringStrikeService`, `VexatiousService`, `FullPocketsService`, `TemporalSicknessService`, etc.).
 - **Injector subsystem**: `StructureInjectorRuntimeService`, `InjectorCommandHandler`, `InjectorMenuService`, `InjectorLootMode`, `InjectorMysteryState`.
+- **Librarian trade subsystem**: `LibrarianTradeService`, `LibrarianTradeCommandHandler`, `LibrarianTradeMenuService`.
 - **Presentation/admin UX**: `FeCommandHandler`, `FePresentationService`, `FeMenuService`, `FeCatalogService`, `EnchantToggleMenuService`, `InjectorMessagingUtil`.
-- **Persistence**: `ConfigPersistenceService` for `structure_injector.*` and `enchant_controls.*`.
+- **Persistence**: `ConfigPersistenceService` for `structure_injector.*`, `enchant_controls.*`, and `librarian_trades.*`.
 
 ## Project Structure
 
@@ -507,7 +551,8 @@ The plugin is split into focused layers:
   - `EnchantType.java`: canonical enchant registry + compatibility metadata.
   - `StructureInjectorRuntimeService.java`: structure/vault loot injection runtime.
   - `InjectorCommandHandler.java`, `InjectorMenuService.java`: injector CLI + GUI.
-  - `ConfigPersistenceService.java`: load/save of injector and per-enchant toggle config.
+  - `LibrarianTradeService.java`, `LibrarianTradeCommandHandler.java`, `LibrarianTradeMenuService.java`: librarian trade runtime + CLI + GUI.
+  - `ConfigPersistenceService.java`: load/save of injector, per-enchant toggle, and librarian trade config.
   - `PluginModels.java`: inventory holders/records for GUI/runtime model objects.
   - `*Service.java`: focused subsystems (combat, effects, lifecycle, utility, etc.).
 - `src/main/java/dev/cevapi/forbiddenenchants/enchants/`
@@ -516,7 +561,7 @@ The plugin is split into focused layers:
   - one class per enchant (`*Enchant.java`)
 - `src/main/resources/`
   - `plugin.yml`: command + plugin metadata
-  - `config.yml`: persisted defaults/state (`structure_injector`, `enchant_controls`)
+  - `config.yml`: persisted defaults/state (`structure_injector`, `enchant_controls`, `librarian_trades`)
 - `examples/`
   - all datapack-style loot table examples (books + mystery books/items + weighted/category pools)
 
@@ -586,3 +631,8 @@ For mystery entries, include `minecraft:custom_data` with:
 
 Note: this repository currently has no scaffold script for new enchants; add them manually with the steps above.
 
+## Enchantment Requests
+
+![Kawaii](https://i.imgur.com/8BsLBc6.png)
+
+I am open to requests for new enchants! Just send a message via GitHub!

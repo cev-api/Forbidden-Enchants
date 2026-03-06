@@ -27,6 +27,7 @@ final class InjectorMenuService {
     private static final int INJECTOR_MENU_ENABLE_SLOT = 47;
     private static final int INJECTOR_MENU_NOTIFY_SLOT = 48;
     private static final int INJECTOR_MENU_MODE_SLOT = 49;
+    private static final int INJECTOR_MENU_RARITY_SLOT = 50;
     private static final int INJECTOR_MENU_CLEAR_SLOT = 51;
     private static final int INJECTOR_MENU_NEXT_SLOT = 53;
     private static final double DEFAULT_VAULT_INJECT_CHANCE = 7.5D;
@@ -61,6 +62,7 @@ final class InjectorMenuService {
         inventory.setItem(INJECTOR_MENU_PREV_SLOT, createNavPane(safePage > 0, true));
         inventory.setItem(INJECTOR_MENU_NEXT_SLOT, createNavPane(safePage + 1 < totalPages, false));
         inventory.setItem(INJECTOR_MENU_MODE_SLOT, createModePane(mode));
+        inventory.setItem(INJECTOR_MENU_RARITY_SLOT, createRarityPane());
         inventory.setItem(INJECTOR_MENU_ENABLE_SLOT, createEnabledPane());
         inventory.setItem(INJECTOR_MENU_NOTIFY_SLOT, createNotifyPane());
         inventory.setItem(INJECTOR_MENU_CLEAR_SLOT, createClearPane());
@@ -108,6 +110,10 @@ final class InjectorMenuService {
         if (rawSlot == INJECTOR_MENU_MODE_SLOT) {
             InjectorMenuMode nextMode = holder.mode() == InjectorMenuMode.CONFIGURED ? InjectorMenuMode.ALL : InjectorMenuMode.CONFIGURED;
             openMenu(player, nextMode, 0);
+            return;
+        }
+        if (rawSlot == INJECTOR_MENU_RARITY_SLOT) {
+            plugin.openInjectorBookRarityMenu(player, 0);
             return;
         }
         if (rawSlot == INJECTOR_MENU_ENABLE_SLOT) {
@@ -201,13 +207,13 @@ final class InjectorMenuService {
             if (current <= 0.0D) {
                 current = DEFAULT_VAULT_INJECT_CHANCE;
             } else {
-                current += event.isShiftClick() ? 5.0D : 1.0D;
+                current = adjustChance(current, true, event.isShiftClick());
             }
         } else if (event.getClick().isRightClick()) {
             if (current <= 0.0D) {
                 return;
             }
-            current -= event.isShiftClick() ? 5.0D : 1.0D;
+            current = adjustChance(current, false, event.isShiftClick());
         } else {
             return;
         }
@@ -271,7 +277,7 @@ final class InjectorMenuService {
             if (current == null) {
                 current = plugin.getStructureInjectDefaultChance();
             }
-            current += event.isShiftClick() ? 5.0D : 1.0D;
+            current = adjustChance(current, true, event.isShiftClick());
             plugin.structureInjectChances().put(key, clampChance(current));
             plugin.saveStructureInjectorSettings();
             openMenu(player, holder.mode(), holder.page());
@@ -282,7 +288,7 @@ final class InjectorMenuService {
             if (current == null) {
                 return;
             }
-            current -= event.isShiftClick() ? 5.0D : 1.0D;
+            current = adjustChance(current, false, event.isShiftClick());
             plugin.structureInjectChances().put(key, clampChance(current));
             plugin.saveStructureInjectorSettings();
             openMenu(player, holder.mode(), holder.page());
@@ -340,9 +346,9 @@ final class InjectorMenuService {
             lore.add(Component.text("Mystery state: " + vaultMystery.id(), vaultMystery == InjectorMysteryState.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE));
             lore.add(Component.text("Acts like structure injector entry.", NamedTextColor.DARK_GRAY));
             lore.add(Component.empty());
-            lore.add(Component.text("Left: +1% (or add with default)", NamedTextColor.GRAY));
-            lore.add(Component.text("Shift+Left: +5%", NamedTextColor.GRAY));
-            lore.add(Component.text("Right: -1%    Shift+Right: -5%", NamedTextColor.GRAY));
+            lore.add(Component.text("Left: +1% (+0.1% below 1%)", NamedTextColor.GRAY));
+            lore.add(Component.text("Shift+Left: +5% (+0.5% below 5%)", NamedTextColor.GRAY));
+            lore.add(Component.text("Right: -1% (-0.1% below 1%, min 0.1%)", NamedTextColor.GRAY));
             lore.add(Component.text("Middle: remove entry (set 0%)", NamedTextColor.GRAY));
             lore.add(Component.text("Drop (Q): cycle loot type", NamedTextColor.GRAY));
             lore.add(Component.text("Ctrl+Q: cycle curse state", NamedTextColor.GRAY));
@@ -372,9 +378,9 @@ final class InjectorMenuService {
         lore.add(Component.text("Combined mode: " + lootMode.id() + " + " + mysteryState.id(), NamedTextColor.DARK_GRAY));
         lore.add(Component.text("Mode: " + (mode == InjectorMenuMode.CONFIGURED ? "Configured only" : "All structures"), NamedTextColor.DARK_GRAY));
         lore.add(Component.empty());
-        lore.add(Component.text("Left: +1% (or add with default)", NamedTextColor.GRAY));
-        lore.add(Component.text("Shift+Left: +5%", NamedTextColor.GRAY));
-        lore.add(Component.text("Right: -1%    Shift+Right: -5%", NamedTextColor.GRAY));
+        lore.add(Component.text("Left: +1% (+0.1% below 1%)", NamedTextColor.GRAY));
+        lore.add(Component.text("Shift+Left: +5% (+0.5% below 5%)", NamedTextColor.GRAY));
+        lore.add(Component.text("Right: -1% (-0.1% below 1%, min 0.1%)", NamedTextColor.GRAY));
         lore.add(Component.text("Middle: remove structure", NamedTextColor.GRAY));
         lore.add(Component.text("Drop (Q): cycle loot type", NamedTextColor.GRAY));
         lore.add(Component.text("Ctrl+Q: cycle curse state", NamedTextColor.GRAY));
@@ -424,6 +430,20 @@ final class InjectorMenuService {
         return item;
     }
 
+    private @NotNull ItemStack createRarityPane() {
+        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.displayName(Component.text("Enchantment Rarity Editor", NamedTextColor.AQUA));
+            meta.lore(List.of(
+                    Component.text("Click to edit weighted rarity for each enchantment level.", NamedTextColor.GRAY),
+                    Component.text("Higher weight = more common in injector books.", NamedTextColor.DARK_GRAY)
+            ));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
     private @NotNull ItemStack createNotifyPane() {
         boolean enabled = plugin.isStructureInjectNotifyOnAdd();
         ItemStack item = new ItemStack(enabled ? Material.BELL : Material.NOTE_BLOCK);
@@ -455,6 +475,30 @@ final class InjectorMenuService {
             return 0.0D;
         }
         return Math.max(0.0D, Math.min(100.0D, chance));
+    }
+
+    private static double adjustChance(double current, boolean increase, boolean shift) {
+        double safe = clampChance(current);
+        if (safe <= 0.0D) {
+            return safe;
+        }
+
+        double step;
+        if (shift) {
+            step = increase ? (safe < 5.0D ? 0.5D : 5.0D) : (safe <= 5.0D ? 0.5D : 5.0D);
+        } else {
+            step = increase ? (safe < 1.0D ? 0.1D : 1.0D) : (safe <= 1.0D ? 0.1D : 1.0D);
+        }
+
+        double changed = increase ? safe + step : safe - step;
+        if (!increase && changed < 0.1D) {
+            changed = 0.1D;
+        }
+        return roundToTenths(clampChance(changed));
+    }
+
+    private static double roundToTenths(double value) {
+        return Math.round(value * 10.0D) / 10.0D;
     }
 }
 

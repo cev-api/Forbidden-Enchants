@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityKnockbackEvent;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.VillagerAcquireTradeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -49,7 +50,10 @@ final class ForbiddenEnchantsListener implements Listener {
     private final CharmedPetInteractionService charmedPetInteractionService;
     private final FeMenuService feMenuService;
     private final InjectorMenuService injectorMenuService;
+    private final InjectorBookRarityMenuService injectorBookRarityMenuService;
+    private final LibrarianTradeMenuService librarianTradeMenuService;
     private final EnchantToggleMenuService enchantToggleMenuService;
+    private final LibrarianTradeService librarianTradeService;
     private final EnchantEventRuleService enchantEventRuleService;
     private final GraspCombatService graspCombatService;
 
@@ -64,7 +68,10 @@ final class ForbiddenEnchantsListener implements Listener {
                               @NotNull CharmedPetInteractionService charmedPetInteractionService,
                               @NotNull FeMenuService feMenuService,
                               @NotNull InjectorMenuService injectorMenuService,
+                              @NotNull InjectorBookRarityMenuService injectorBookRarityMenuService,
+                              @NotNull LibrarianTradeMenuService librarianTradeMenuService,
                               @NotNull EnchantToggleMenuService enchantToggleMenuService,
+                              @NotNull LibrarianTradeService librarianTradeService,
                               @NotNull EnchantEventRuleService enchantEventRuleService,
                               @NotNull GraspCombatService graspCombatService) {
         this.tickCounterSupplier = tickCounterSupplier;
@@ -78,7 +85,10 @@ final class ForbiddenEnchantsListener implements Listener {
         this.charmedPetInteractionService = charmedPetInteractionService;
         this.feMenuService = feMenuService;
         this.injectorMenuService = injectorMenuService;
+        this.injectorBookRarityMenuService = injectorBookRarityMenuService;
+        this.librarianTradeMenuService = librarianTradeMenuService;
         this.enchantToggleMenuService = enchantToggleMenuService;
+        this.librarianTradeService = librarianTradeService;
         this.enchantEventRuleService = enchantEventRuleService;
         this.graspCombatService = graspCombatService;
     }
@@ -242,6 +252,20 @@ final class ForbiddenEnchantsListener implements Listener {
     public void onInjectorMenuDrag(@NotNull InventoryDragEvent event) { injectorMenuService.onMenuDrag(event); }
 
     @EventHandler(ignoreCancelled = true)
+    public void onInjectorRarityMenuClick(@NotNull InventoryClickEvent event) {
+        injectorBookRarityMenuService.onMenuClick(event, ForbiddenEnchantsPlugin.instance());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onInjectorRarityMenuDrag(@NotNull InventoryDragEvent event) { injectorBookRarityMenuService.onMenuDrag(event); }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onLibrarianTradeMenuClick(@NotNull InventoryClickEvent event) { librarianTradeMenuService.onMenuClick(event); }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onLibrarianTradeMenuDrag(@NotNull InventoryDragEvent event) { librarianTradeMenuService.onMenuDrag(event); }
+
+    @EventHandler(ignoreCancelled = true)
     public void onEnchantToggleMenuClick(@NotNull InventoryClickEvent event) { enchantToggleMenuService.onMenuClick(event); }
 
     @EventHandler(ignoreCancelled = true)
@@ -255,6 +279,9 @@ final class ForbiddenEnchantsListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerItemDamage(@NotNull PlayerItemDamageEvent event) { enchantEventRuleService.onPlayerItemDamage(event); }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onVillagerAcquireTrade(@NotNull VillagerAcquireTradeEvent event) { librarianTradeService.onVillagerAcquireTrade(event); }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onGraspInteract(@NotNull PlayerInteractEvent event) { graspCombatService.onGraspInteract(event); }
