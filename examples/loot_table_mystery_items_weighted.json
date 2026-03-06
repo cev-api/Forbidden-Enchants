@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": "forbiddenenchants:examples/loot_table_mystery_items_armor",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "forbiddenenchants:examples/loot_table_mystery_items_weapons_tools",
+          "weight": 35
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "forbiddenenchants:examples/loot_table_mystery_items_utility",
+          "weight": 15
+        }
+      ]
+    }
+  ]
+}

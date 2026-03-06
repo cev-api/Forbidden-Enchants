@@ -1,0 +1,19 @@
+structure_injector:
+  enabled: false
+  default_chance: 5.0
+  notify_on_add: false
+  vaults:
+    enabled: false
+    normal_chance: 7.5
+    ominous_chance: 12.5
+    normal_loot_mode: all
+    ominous_loot_mode: all
+    normal_mystery_state: all
+    ominous_mystery_state: all
+  structures:
+    minecraft:trial_chambers: 12.5
+    minecraft:ancient_city: 8.0
+  loot_mode:
+    minecraft:trial_chambers: item_only
+  mystery_state:
+    minecraft:trial_chambers: mystery_only

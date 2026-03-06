@@ -1,0 +1,509 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": "vb:items/enchanted_golden_chorus_fruit",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "vb:items/enderman_soul"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "vb:items/disc/tall"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "vb:items/dragonstone_upgrade_smithing_template"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:spire_armor_trim_smithing_template",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:eye_armor_trim_smithing_template",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Divine Vision I",
+                  "color": "aqua",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930011.0
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Miners Intuition I",
+                  "color": "gold",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930021.0
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Loot Sense I",
+                  "color": "yellow",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930031.0
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Extended Grasp I",
+                  "color": "light_purple",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930041.0
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Void Grasp I",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930051.0
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Masquerade I",
+                  "color": "dark_green",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930061.0
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Ascension I",
+                  "color": "white",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930071.0
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Incite Fear I",
+                  "color": "red",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930081.0
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_helmet",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Divine Vision II",
+                  "color": "aqua",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930012.0
+                  ]
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_helmet",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Miners Intuition II",
+                  "color": "gold",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930022.0
+                  ]
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:chainmail_helmet",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Loot Sense II",
+                  "color": "yellow",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930032.0
+                  ]
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_chestplate",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Extended Grasp I",
+                  "color": "light_purple",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930041.0
+                  ]
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_chestplate",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Void Grasp I",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930051.0
+                  ]
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_boots",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Masquerade I",
+                  "color": "dark_green",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930061.0
+                  ]
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_boots",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Ascension I",
+                  "color": "white",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930071.0
+                  ]
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_sword",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Incite Fear II",
+                  "color": "red",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930082.0
+                  ]
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Divine Insight I",
+                  "color": "aqua",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930091.0
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Miasma I",
+                  "color": "dark_gray",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930101.0
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_sword",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Divine Insight I",
+                  "color": "aqua",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930091.0
+                  ]
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:crossbow",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden Miasma I",
+                  "color": "dark_gray",
+                  "italic": false
+                },
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930101.0
+                  ]
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": "vb:antigravity"
+            }
+          ],
+          "name": "minecraft:book"
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}
+

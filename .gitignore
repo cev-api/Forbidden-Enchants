@@ -1,0 +1,35 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# IntelliJ / JetBrains
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Java
+*.class
+
+# Local env/secrets
+.env
+.env.*

@@ -1,0 +1,196 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:compass",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Compass)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930411.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:name_tag",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Name Tag)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930421.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:lead",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Lead)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930441.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:shield",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Shield)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930471.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:totem_of_undying",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Totem Of Undying)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930481.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+name: ForbiddenEnchants
+version: 1.0.0
+main: dev.cevapi.forbiddenenchants.ForbiddenEnchantsPlugin
+api-version: '1.21'
+author: CevAPI
+
+commands:
+  fe:
+    description: Forbidden Enchants admin tools.
+    usage: /fe help
+
+permissions:
+  forbiddenenchants.admin:
+    default: op
+

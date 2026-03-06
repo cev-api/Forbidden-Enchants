@@ -1,0 +1,825 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:wooden_sword",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Wooden Sword)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930081.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:stone_sword",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Stone Sword)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930081.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_sword",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Iron Sword)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930081.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:golden_sword",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Golden Sword)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930081.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_sword",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Diamond Sword)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930081.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_sword",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Netherite Sword)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930081.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bow",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Bow)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930101.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:crossbow",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Crossbow)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930101.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:trident",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Trident)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930151.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:wooden_hoe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Wooden Hoe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930161.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:stone_hoe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Stone Hoe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930161.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_hoe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Iron Hoe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930161.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:golden_hoe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Golden Hoe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930161.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_hoe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Diamond Hoe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930161.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_hoe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Netherite Hoe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930161.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:wooden_axe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Wooden Axe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930331.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:stone_axe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Stone Axe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930331.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_axe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Iron Axe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930331.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:golden_axe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Golden Axe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930331.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_axe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Diamond Axe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930331.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_axe",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Netherite Axe)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930331.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:mace",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Forbidden ???????? (Mace)",
+                  "color": "dark_purple",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Mystery enchant bound to this item.",
+                    "color": "gray",
+                    "italic": false
+                  },
+                  {
+                    "text": "You know the item type, not the enchant.",
+                    "color": "dark_gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_model_data": {
+                  "floats": [
+                    930381.0
+                  ]
+                },
+                "minecraft:custom_data": {
+                  "forbiddenenchants:mystery_item": 1
+                },
+                "minecraft:enchantment_glint_override": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
