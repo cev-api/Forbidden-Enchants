@@ -138,7 +138,7 @@ final class EnchantToggleMenuService {
         boolean spawnEnabled = plugin.isEnchantSpawnEnabled(type);
         boolean fullyEnabled = useEnabled && spawnEnabled;
 
-        ItemStack item = new ItemStack(fullyEnabled ? Material.ENCHANTED_BOOK : Material.BARRIER);
+        ItemStack item = new ItemStack(useEnabled ? toggleIcon(type) : Material.BARRIER);
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
             return item;
@@ -156,6 +156,31 @@ final class EnchantToggleMenuService {
         meta.lore(lore);
         item.setItemMeta(meta);
         return item;
+    }
+
+    private @NotNull Material toggleIcon(@NotNull EnchantType type) {
+        if (type.isAnvilOnlyUtilityBook()) {
+            return Material.WRITABLE_BOOK;
+        }
+        return switch (type.slot) {
+            case HELMET -> Material.NETHERITE_HELMET;
+            case CHESTPLATE, ELYTRA, ARMOR -> Material.NETHERITE_CHESTPLATE;
+            case LEGGINGS -> Material.NETHERITE_LEGGINGS;
+            case BOOTS -> Material.NETHERITE_BOOTS;
+            case COMPASS -> Material.COMPASS;
+            case SWORD -> Material.NETHERITE_SWORD;
+            case RANGED -> Material.CROSSBOW;
+            case TRIDENT, SPEAR -> Material.TRIDENT;
+            case HOE -> Material.NETHERITE_HOE;
+            case AXE -> Material.NETHERITE_AXE;
+            case MACE -> Material.MACE;
+            case BRUSH -> Material.BRUSH;
+            case NAMETAG -> Material.NAME_TAG;
+            case LEAD -> Material.LEAD;
+            case SHIELD -> Material.SHIELD;
+            case TOTEM -> Material.TOTEM_OF_UNDYING;
+            case POTION -> Material.POTION;
+        };
     }
 }
 

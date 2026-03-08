@@ -140,7 +140,7 @@ final class LibrarianTradeCommandHandler {
             if (sub.equals("add")) {
                 List<String> enchants = new ArrayList<>();
                 for (EnchantType type : plugin.activeEnchantTypes()) {
-                    if (!plugin.isRetiredEnchant(type)) {
+                    if (!plugin.isRetiredEnchant(type) && !type.isAnvilOnlyUtilityBook()) {
                         enchants.add(type.arg);
                     }
                 }
@@ -228,7 +228,7 @@ final class LibrarianTradeCommandHandler {
 
     private @Nullable EnchantType parseEnchantType(@NotNull CommandSender sender, @NotNull String arg) {
         EnchantType type = EnchantType.fromArg(arg);
-        if (type == null || plugin.isRetiredEnchant(type)) {
+        if (type == null || plugin.isRetiredEnchant(type) || type.isAnvilOnlyUtilityBook()) {
             plugin.sendFeError(sender, "Unknown enchant: " + arg);
             return null;
         }

@@ -41,6 +41,7 @@ public final class SlotParsingUtil {
             case "lead", "leash" -> ArmorSlot.LEAD;
             case "shield" -> ArmorSlot.SHIELD;
             case "totem", "totem_of_undying" -> ArmorSlot.TOTEM;
+            case "potion", "spell_potion", "spell" -> ArmorSlot.POTION;
             default -> null;
         };
     }
@@ -81,6 +82,7 @@ public final class SlotParsingUtil {
             case LEAD -> "lead";
             case SHIELD -> "shield";
             case TOTEM -> "totem";
+            case POTION -> "potion";
         };
     }
 }

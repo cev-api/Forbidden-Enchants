@@ -42,7 +42,7 @@ final class HostileSpawnService {
 
             double raiderChance = level >= 2 ? 0.70D : 0.35D;
             EntityType type = ThreadLocalRandom.current().nextDouble() < raiderChance
-                    ? randomRaiderType()
+                    ? randomRaiderType(level)
                     : randomHostileType();
             Entity created = world.spawnEntity(spawn, type);
             if (created instanceof Mob mob) {
@@ -126,12 +126,20 @@ final class HostileSpawnService {
         return !location.clone().add(0.0D, -1.0D, 0.0D).getBlock().isPassable();
     }
 
-    private @NotNull EntityType randomRaiderType() {
-        EntityType[] raiders = new EntityType[]{
+    private @NotNull EntityType randomRaiderType(int level) {
+        EntityType[] raiders = level >= 2
+                ? new EntityType[]{
                 EntityType.PILLAGER,
                 EntityType.VINDICATOR,
                 EntityType.WITCH,
                 EntityType.ILLUSIONER,
+                EntityType.EVOKER,
+                EntityType.RAVAGER
+        }
+                : new EntityType[]{
+                EntityType.PILLAGER,
+                EntityType.VINDICATOR,
+                EntityType.WITCH,
                 EntityType.EVOKER,
                 EntityType.RAVAGER
         };

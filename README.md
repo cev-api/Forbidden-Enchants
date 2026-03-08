@@ -2,14 +2,14 @@
 
 ![AI LOGO LOL](https://i.imgur.com/w8nRrWX.png)
 
-Forbidden Enchants is a set of 53 original custom enchants for Paper (with more planned), designed to feel truly forbidden: many are borderline cheat-powerful, while others are deliberately cursed and punishing. Because this is a Paper plugin (not a datapack), it has access to stronger runtime hooks and mechanics than datapacks normally allow.
+Forbidden Enchants is a set of 63 original custom enchants for Paper (with more planned), designed to feel truly forbidden: many are borderline cheat-powerful, while others are deliberately cursed and punishing. Because this is a Paper plugin (not a datapack), it has access to stronger runtime hooks and mechanics than datapacks normally allow.
 
 The core selling point is the admin GUI workflow: a creative-style browser for books/items, a structure injector editor that lets you add, remove, and tune loot injection on the fly for any structure (including datapack structures), and a librarian trade editor for custom forbidden-book offers at exact costs.
 
 ## Features
 
 - Fancy `/fe` admin command with help/list output and colored feedback.
-- `/fe gui` paged creative style inventory menu sorted by enchant type.
+- `/fe gui` paged creative style inventory menu sorted by enchant type, with quick category filters.
 - `/fe injector` command suite for structure/vault injection setup (`help`, `status|list`, `enable`, `disable`, `add`, `set|chance`, `remove`, `clear`, `defaultchance|default`, `vault`, `gui|menu`).
 - `/fe injector gui` visual editor for injector structure lists and per-structure chance tuning.
 - `/fe librarian` command suite for librarian trade blend setup (`help`, `status|list`, `enable`, `disable`, `add`, `remove`, `clear`, `gui|menu`).
@@ -18,7 +18,7 @@ The core selling point is the admin GUI workflow: a creative-style browser for b
 - `/fe toggles` GUI for per-enchant enable/disable controls (usage and chest/vault spawning), with aliases `settings` and `enchanttoggles`.
 - Generate both enchant books and pre-enchanted gear items directly.
 - Anvil application flow for helmets, chestplates, and boots.
-- 53 custom enchants with level support where configured.
+- 63 custom enchants with level support where configured.
 - Loot-table compatible book detection via `custom_model_data`.
 - Loot-table compatible gear detection via `custom_model_data` fallback.
 - Helmet-only balancing rules for the vision enchants.
@@ -170,22 +170,29 @@ Permission: `forbiddenenchants.admin` (default: op).
 /fe toggles
 ```
 
-## 3 Main GUI Menus
+## 4 Main GUI Menus
 
-This plugin has three main admin GUIs, each for a different workflow:
+This plugin has four main admin GUIs, each for a different workflow:
 
 1. `/fe gui` (Creative-style admin picker)
    - Purpose: manually give forbidden books/items to players for admin distribution, balancing checks, and testing.
    - Layout: one enchant type per page (book first, then compatible pre-enchanted items).
    - Controls: click item to claim; left/right page arrows (left-click = 1 page, right-click = 5 pages).
+   - Bottom-row category buttons: `Armors`, `Weapons`, `Totems`, `Books`, `Potions`, `Other`, and `Return` (back to default all-enchants view).
 
-   ![FEGUI](https://i.imgur.com/gSMVJu6.png)
+   ![FEGUI](https://i.imgur.com/ejhJdgf.png)
 
 2. `/fe injector gui` (Structure/vault loot injector editor)
    - Purpose: configure runtime loot injection so forbidden books/items appear in structure chests and trial vault rewards.
    - Supports all structures and configured-only view modes.
    - Includes an `Enchantment Rarity Editor` button to tune weighted rarity for each enchantment level.
    - Rarity editor includes a back button and an `Apply Weights To Enchanted Items` toggle (default: ON).
+   - Rarity editor controls:
+     - Left/Right: `+/-0.1` weight (`Shift`: `+/-1.0`)
+     - `Q`/`Ctrl+Q`: multiply weight by `x2` / `x0.5`
+     - `Middle`: reset weight to `1.0`
+     - `Double-click`: set weight to `0.0` (disabled)
+     - `F`: toggle per-enchant `spawn_enabled` directly from the rarity editor
    - Per-entry controls:
      - Left/Right clicks: increase/decrease chance
      - `Q`: cycle loot type (`books -> items -> all`)
@@ -193,7 +200,8 @@ This plugin has three main admin GUIs, each for a different workflow:
      - `F`: cycle mystery state (`all -> mystery_only -> non_mystery_only`)
    - Includes global enable toggle, notify toggle, clear-all, and normal/ominous vault entries.
 
-   ![FEINJECTOR](https://i.imgur.com/nmPbD8G.png)
+   ![FEINJECTOR](https://i.imgur.com/cezNrCQ.png)
+   ![Rarity](https://i.imgur.com/lKuUTJI.png)
 
 3. `/fe librarian gui` (Librarian trade blend editor)
    - Purpose: configure forbidden books to be added into librarian trades while keeping vanilla/datapack trade generation.
@@ -204,8 +212,17 @@ This plugin has three main admin GUIs, each for a different workflow:
      - `F`: increase required book cost
      - Middle click: disable/remove that configured trade
 
-    ![LIBRARY](https://i.imgur.com/WSySbwU.png)
+    ![LIBRARY](https://i.imgur.com/GP1eJwi.png)
 
+4. `/fe toggles` (Per-enchant runtime/spawn controls)
+   - Purpose: toggle each enchant's runtime usage and injector spawn state without editing config files manually.
+   - Shows all enchant families, including potion enchants and utility books (not only standard enchanted-book entries).
+   - Per-entry controls:
+     - Left-click: toggle `use_enabled`
+     - Right-click: toggle `spawn_enabled`
+     - Middle-click: toggle both together
+
+    ![Toggles](https://i.imgur.com/wge3afS.png)
 
 #### Config + injector notes:
 
@@ -216,6 +233,7 @@ This plugin has three main admin GUIs, each for a different workflow:
   - `structure_injector.book_rarity.*` stores per-book-level rarity weights for injector book rolls.
   - `structure_injector.rarity_apply_to_items` toggles whether rarity weights apply to books only (`false`) or books + enchanted items (`true`).
   - `enchant_controls.*` stores per-enchant `use_enabled` + `spawn_enabled` toggles.
+  - `spawn_enabled` can be toggled from `/fe toggles` and from the injector rarity editor (`F` on an entry).
   - `librarian_trades.*` stores librarian trade enable state + configured offers (chance + costs).
 - Defaults:
   - Structure injector default chance: `5.0%`.
@@ -242,7 +260,7 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Miasma Form | Chestplate | I | Sneak to enter smoke form: hides gear visuals, phases through 1-block walls (costs 2 damage), cannot attack/interact, immune to non-fire damage, ignored by mobs except blazes. |
 | The Unyielding | Chestplate | I | Prevents pushback from damage, explosions, wind bursts, and flowing-water push. Compatible with other chest enchants. |
 | Aquatic Sacrifice | Helmet (Binding Curse) | I | Underwater breathing/speed/mining buffs and +2 damage underwater; outside water you slowly take drowning-style damage. |
-| The Hated One | Helmet (Binding Curse) | I-II | I: reduced aggro/loot pressure. II: full aggro pressure, extra hostile/raider spawns, and much higher loot/equipment drops. |
+| The Hated One | Helmet (Binding Curse) | I-II | I: reduced aggro/loot pressure. II: full aggro pressure (including illusioners in raider waves), and much higher loot/equipment drops. |
 | Withering Strike | Trident | I | Thrown-trident hits apply withering that ticks every 3 seconds until cured. |
 | Healing Touch | Hoe | I | Hits heal instead of harm, cure wither, and grant golden-apple-like regen/absorption; user takes 1 heart self-damage. Undead take double damage, wither skeletons convert to normal skeletons, and zombie villagers can be cured. Starts at full durability but degrades quickly; no Mending/Unbreaking. |
 | Full Pockets | Leggings | I-IV | On first open of a world container, adds bonus rare loot with a `10% * level` chance (max 40%). Also pulls XP orbs within 30 blocks toward you. |
@@ -251,6 +269,7 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Petty Thief | Hoe | I | 1/10 chance on PvP hit to steal a random inventory item. On mob hit, 1/10 chance to grant a themed drop item. |
 | Lumberjack | Axe | I | Breaking the bottom log fells the connected tree (logs + leaves) and applies durability equal to 50% of the full block break cost. |
 | Sonic Panic | Sword | I | At 50% health or lower, triggers a warden-strength radial sonic blast and shatters the sword. |
+| Tracker | Sword | I | On hit, target leaves a breadcrumb particle trail (up to 30 blocks) for 1 minute. Re-hits do not extend time. |
 | No Fall | Boots | I | Negates all fall damage. If the fall would have killed you, consume 25% boot durability instead. Incompatible with Feather Falling and Mending. |
 | Creepers Influence | Helmet | I | Nearby creepers prioritize exploding other mobs; if no other mobs are nearby they self-detonate. |
 | Staff Of The Evoker | Spear | I | Spear jabs and left-click casts send a longer forward line of evoker fangs, even out of melee range, and the fangs damage mobs. |
@@ -258,6 +277,7 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Wololo | Helmet (Binding Curse) | I | Sheep within 3 blocks recolor once; each conversion costs you 1 heart. |
 | Locked Out | Boots (Binding Curse) | I | Blocks interaction with doors/buttons/switches/portals; Nether portal use breaks the portal block, End portal use is denied. |
 | Evokers Revenge | Chestplate (Binding Curse) | I | Random evokers spawn near you every few minutes; each evoker you kill increases future spawn count. |
+| Illusioners Revenge | Chestplate (Binding Curse) | I | Random illusioners spawn near you every few minutes; each illusioner you kill increases future spawn count. |
 | The Seeker | Helmet | I | Shows only the player you are most lined up with (about a 20 degree FOV): `PlayerName 125m`. If no one is in view alignment, nothing is shown. Helmet loses 10% durability per 100 blocks traveled. Mending/Unbreaking are blocked/stripped. |
 | Disarm | Axe | I | 1/20 chance to force main-hand drop from players/mobs; unarmed mobs are feared for 3 seconds. |
 | Marked | Bow/Crossbow | I | Hit players glow for 30 seconds; your subsequent damage to that marked player is increased by 25%. |
@@ -275,10 +295,18 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Knockback | Shield | I | Blocking a melee hit knocks the attacker back with strong force (roughly Knockback II feel). |
 | Ricochet | Shield | I | While blocking: 55% chance to reflect arrows, 100% reflect vs ghast and shulker projectiles. |
 | Shockwave | Totem of Undying | I | On totem pop, emits a shockwave that pushes nearby mobs/players back and deals 3 hearts. |
+| The Pretender | Totem of Undying | I | On totem pop, fakes death (loot drop + death message), then gives 30s silent invisibility/regeneration while hostile mobs ignore you. |
 | Proud Warrior | Chestplate (Binding Curse) | I | On first hit from mob/player, detonates roughly 2x TNT force, leaves wearer at 1 HP, and breaks the chestplate. |
 | Sisko's Solution | Chestplate (Binding Curse) | I | Near 3+ villagers, black smoke spreads villager-to-villager, applies wither damage in the cloud, and summons wither skeletons that ignore the wearer until all linked villagers die. |
 | Borg Technology | Chestplate | I | Adapts on repeated hits: after 3 matching hits, gains a barrier against that attack profile until 337 blocks of movement are traveled. |
 | Warp 9.5 | Boots | I | On bedrock, grants extreme speed, degrades over travel distance, and breaks after about 3333 blocks of warp travel. |
+| Out Of Phase | Potion (spell) | I | Crafted by combining a water bottle + Out Of Phase book in an anvil. Drink for 1 minute phasing through entities and 1-block walls. |
+| Silence | Potion (spell) | I | Crafted by combining a water bottle + Silence book in an anvil. Drink to silence nearby players for 15s (potions/pearls/totems/enchanting blocked). |
+| Quitter | Potion (spell) | I | Crafted by combining a water bottle + Quitter book in an anvil. Drink to fake-leave for 30s and return automatically. |
+| Infected | Potion (spell) | I | Crafted by combining a water bottle + Infected book in an anvil. Drink to zombify nearby mobs/villagers for 30s, then revert. |
+| Joint Sleep | Potion (spell) | I | Crafted by combining a water bottle + Joint Sleep book in an anvil. Warps to nearest other-player bed; if none, places 2 beds ahead or gives beds. |
+| The Duplicator | Utility Book | I | Anvil utility: duplicates the left-slot item stack. Rejects non-empty shulker boxes and non-empty bundles. Book is consumed. |
+| The Philosophers Book | Utility Book | I-III | I: iron -> gold, II: gold -> diamond, III: diamond -> netherite (ingot/block equivalents, same amount). Book is consumed. |
 
 
 ## What Can / Can't Be Applied
@@ -286,10 +314,10 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Item | Can apply | Can't apply / behavior notes |
 |---|---|---|
 | Helmets | Vision set: Divine Vision **or** Miners Intuition **or** Loot Sense **or** Aquatic Sacrifice **or** The Hated One; plus Creepers Influence / Vexatious / Wololo / The Seeker | Vision-set enchants are mutually exclusive with each other. Wololo applies Binding Curse automatically. The Seeker blocks Mending/Unbreaking. |
-| Chestplates | Extended Grasp **or** Void Grasp **or** Miasma Form, plus The Unyielding and/or Evokers Revenge; also Proud Warrior, Sisko's Solution, Borg Technology | Grasp/Miasma Form are mutually exclusive. Evokers Revenge, Proud Warrior, and Sisko's Solution apply Binding Curse automatically. Proud Warrior / Sisko's Solution / Borg Technology must be solo enchants on the item. |
+| Chestplates | Extended Grasp **or** Void Grasp **or** Miasma Form, plus The Unyielding and/or Evokers Revenge and/or Illusioners Revenge; also Proud Warrior, Sisko's Solution, Borg Technology | Grasp/Miasma Form are mutually exclusive. Evokers Revenge, Illusioners Revenge, Proud Warrior, and Sisko's Solution apply Binding Curse automatically. Proud Warrior / Sisko's Solution / Borg Technology must be solo enchants on the item. |
 | Leggings | Full Pockets, Pocket Dimension | Can coexist on the same leggings. |
 | Boots | Masquerade **or** Ascension, plus Forbidden Agility and/or Locked Out; also Warp 9.5 and No Fall | Masquerade/Ascension are mutually exclusive. Locked Out applies Binding Curse automatically. Warp 9.5 must be a solo enchant on the item. No Fall is incompatible with Feather Falling and Mending. |
-| Swords | Incite Fear, Blindness, Sonic Panic | Can coexist on the same sword. |
+| Swords | Incite Fear, Blindness, Sonic Panic, Tracker | Can coexist on the same sword. |
 | Bow/Crossbow | Miasma **or** Charm **or** Dragons Breath **or** Explosive Reaction | Mutually exclusive with each other. Miasma is additionally incompatible with Power, Punch, Flame, Infinity, Multishot, Quick Charge, Piercing. Dragons Breath and Explosive Reaction are now incompatible with any other enchant (vanilla or custom). |
 | Tridents/Spears | Withering Strike, Staff Of The Evoker | Withering Strike applies to tridents only and triggers on thrown-trident hits. Staff Of The Evoker expects spear-type materials if available; trident fallback is used on non-1.21.11/no-spear-material setups and applies on melee and left-click cast. |
 | Elytra | Launch | Enables double-jump launch while grounded and drains 5% durability per launch. |
@@ -300,7 +328,8 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Name Tags | Charmed Pet **or** Applied Curse | Charmed Pet and Applied Curse are mutually exclusive. |
 | Leads | Get Over Here! | Allows enchanted leads to leash villagers (must sneak-right-click). |
 | Shields | Knockback, Ricochet | Can coexist on one shield. |
-| Totem Of Undying | Shockwave, Mujahideen | Triggers when the enchanted totem is consumed. |
+| Totem Of Undying | Shockwave, Mujahideen, The Pretender | Triggers when the enchanted totem is consumed. |
+| Potions (Water Bottles in anvil) | Out Of Phase **or** Silence **or** Quitter **or** Infected **or** Joint Sleep | Spell potions are mutually exclusive with each other and crafted via water bottle + matching enchanted book. |
 | Wrong slot items | None | Anvil/book and `giveitem` validation prevent wrong-slot application. |
 
 ## Per-Enchant Compatibility Matrix
@@ -332,12 +361,14 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Petty Thief | None (single hoe custom enchant in current set) | Healing Touch |
 | Lumberjack | None (single axe custom enchant in current set) | None (custom-enchant conflict-wise) |
 | Sonic Panic | Incite Fear, Blindness | None (custom-enchant conflict-wise) |
+| Tracker | Incite Fear, Blindness, Sonic Panic, Wing Clipper | None (custom-enchant conflict-wise) |
 | Creepers Influence | Most other helmet enchants except helmet-exclusives below | None (custom-enchant conflict-wise) |
 | Staff Of The Evoker | Withering Strike | None (custom-enchant conflict-wise) |
 | Vexatious | Most other helmet enchants except helmet-exclusives below | None (custom-enchant conflict-wise) |
 | Wololo | Most other helmet enchants except helmet-exclusives below | None (custom-enchant conflict-wise) |
 | Locked Out | Masquerade or Ascension, Forbidden Agility | None (custom-enchant conflict-wise) |
 | Evokers Revenge | The Unyielding, and one of Extended Grasp/Void Grasp/Miasma Form | None (custom-enchant conflict-wise) |
+| Illusioners Revenge | The Unyielding, and one of Extended Grasp/Void Grasp/Miasma Form | None (custom-enchant conflict-wise) |
 | The Seeker | Most other helmet enchants except helmet-exclusives below | Mending, Unbreaking |
 | Disarm | Lumberjack | None (custom-enchant conflict-wise) |
 | Marked | Miasma or Charm (unless blocked by other ranged exclusivity) | Dragons Breath, Explosive Reaction (by ranged exclusivity) |
@@ -355,11 +386,19 @@ This plugin has three main admin GUIs, each for a different workflow:
 | Knockback | Ricochet | None (custom-enchant conflict-wise) |
 | Ricochet | Knockback | None (custom-enchant conflict-wise) |
 | Shockwave | Mujahideen | None (custom-enchant conflict-wise) |
+| The Pretender | Shockwave, Mujahideen | None (custom-enchant conflict-wise) |
 | Proud Warrior | None (must be sole enchant on the chestplate) | Any other vanilla/custom enchant |
 | Sisko's Solution | None (must be sole enchant on the chestplate) | Any other vanilla/custom enchant |
 | No Fall | Masquerade or Ascension, Forbidden Agility, Locked Out, Warp 9.5 | Feather Falling, Mending |
 | Borg Technology | None (must be sole enchant on the chestplate) | Any other vanilla/custom enchant |
 | Warp 9.5 | None (must be sole enchant on the boots) | Any other vanilla/custom enchant |
+| Out Of Phase | None (single spell potion enchant) | Silence, Quitter, Infected |
+| Silence | None (single spell potion enchant) | Out Of Phase, Quitter, Infected |
+| Quitter | None (single spell potion enchant) | Out Of Phase, Silence, Infected |
+| Infected | None (single spell potion enchant) | Out Of Phase, Silence, Quitter |
+| Joint Sleep | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected |
+| The Duplicator | N/A (anvil transform book) | N/A |
+| The Philosophers Book | N/A (anvil transform book) | N/A |
 
 
 
@@ -482,6 +521,16 @@ Type index order:
 51. `no_fall`
 52. `borg_technology`
 53. `warp_9_5`
+54. `tracker`
+55. `the_pretender`
+56. `out_of_phase`
+57. `silence`
+58. `quitter`
+59. `infected`
+60. `the_duplicator`
+61. `the_philosophers_book`
+62. `joint_sleep`
+63. `illusioners_revenge`
 
 So the generated IDs are:
 
@@ -538,6 +587,16 @@ So the generated IDs are:
 - No Fall I: `930511`
 - Borg Technology I: `930521`
 - Warp 9.5 I: `930531`
+- Tracker I: `930541`
+- The Pretender I: `930551`
+- Out Of Phase I: `930561`
+- Silence I: `930571`
+- Quitter I: `930581`
+- Infected I: `930591`
+- The Duplicator I: `930601`
+- The Philosophers Book I/II/III: `930611`, `930612`, `930613`
+- Joint Sleep I: `930621`
+- Illusioners Revenge I: `930631`
 
 ## Notes / Caveats
 

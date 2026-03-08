@@ -126,6 +126,7 @@ public final class EnchantMaterialCatalog {
             case LEAD -> List.of(Material.LEAD);
             case SHIELD -> List.of(Material.SHIELD);
             case TOTEM -> List.of(Material.TOTEM_OF_UNDYING);
+            case POTION -> List.of(Material.POTION);
         };
     }
 
@@ -179,6 +180,7 @@ public final class EnchantMaterialCatalog {
             case LEAD -> "a lead";
             case SHIELD -> "a shield";
             case TOTEM -> "a totem of undying";
+            case POTION -> "a water bottle";
         };
     }
 

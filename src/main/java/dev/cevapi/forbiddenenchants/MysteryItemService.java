@@ -173,7 +173,9 @@ final class MysteryItemService {
     private @NotNull List<EnchantType> enchantsForSlot(@NotNull ArmorSlot slot) {
         List<EnchantType> matches = new ArrayList<>();
         for (EnchantType type : EnchantType.values()) {
-            if (type.slot == slot && !enchantStateServiceSupplier.get().isRetiredEnchant(type)) {
+            if (type.slot == slot
+                    && !type.isAnvilOnlyUtilityBook()
+                    && !enchantStateServiceSupplier.get().isRetiredEnchant(type)) {
                 matches.add(type);
             }
         }

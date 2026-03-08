@@ -84,6 +84,9 @@ final class FePresentationService {
     void sendEnchantList(@NotNull CommandSender sender) {
         sender.sendMessage(Component.text("Forbidden Enchants", NamedTextColor.LIGHT_PURPLE));
         for (EnchantType type : plugin.activeEnchantTypes()) {
+            if (type.isAnvilOnlyUtilityBook()) {
+                continue;
+            }
             String range = type.maxLevel == 1 ? "I" : "I-" + RomanNumeralUtil.toRoman(type.maxLevel);
             sender.sendMessage(Component.text("- " + type.arg + " (" + range + ")", type.color)
                     .append(Component.text(" | " + type.slotDescription(), NamedTextColor.DARK_GRAY)));

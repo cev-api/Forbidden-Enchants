@@ -108,6 +108,7 @@ final class PlayerLifecycleService {
         shockwaveTotemArmedUntil.remove(player.getUniqueId());
         EnchantList.INSTANCE.mujahideen().clearFor(player.getUniqueId());
         EnchantList.INSTANCE.evokersRevenge().clearFor(player.getUniqueId());
+        EnchantList.INSTANCE.illusionersRevenge().clearFor(player.getUniqueId());
         fullForceSmashWindowUntil.remove(player.getUniqueId());
         charmedPetInteractionService.clearToggleDedupForPlayer(player.getUniqueId());
         vexatiousAssistTargets.remove(player.getUniqueId());

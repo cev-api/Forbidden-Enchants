@@ -256,6 +256,46 @@ public final class EnchantList {
         return (WarpNineFiveEnchant) EnchantType.WARP_NINE_FIVE.definition();
     }
 
+    public @NotNull TrackerEnchant tracker() {
+        return (TrackerEnchant) EnchantType.TRACKER.definition();
+    }
+
+    public @NotNull ThePretenderEnchant thePretender() {
+        return (ThePretenderEnchant) EnchantType.THE_PRETENDER.definition();
+    }
+
+    public @NotNull OutOfPhaseEnchant outOfPhase() {
+        return (OutOfPhaseEnchant) EnchantType.OUT_OF_PHASE.definition();
+    }
+
+    public @NotNull SilenceEnchant silence() {
+        return (SilenceEnchant) EnchantType.SILENCE.definition();
+    }
+
+    public @NotNull QuitterEnchant quitter() {
+        return (QuitterEnchant) EnchantType.QUITTER.definition();
+    }
+
+    public @NotNull InfectedEnchant infected() {
+        return (InfectedEnchant) EnchantType.INFECTED.definition();
+    }
+
+    public @NotNull JointSleepEnchant jointSleep() {
+        return (JointSleepEnchant) EnchantType.JOINT_SLEEP.definition();
+    }
+
+    public @NotNull IllusionersRevengeEnchant illusionersRevenge() {
+        return (IllusionersRevengeEnchant) EnchantType.ILLUSIONERS_REVENGE.definition();
+    }
+
+    public @NotNull TheDuplicatorEnchant theDuplicator() {
+        return (TheDuplicatorEnchant) EnchantType.THE_DUPLICATOR.definition();
+    }
+
+    public @NotNull ThePhilosophersBookEnchant thePhilosophersBook() {
+        return (ThePhilosophersBookEnchant) EnchantType.THE_PHILOSOPHERS_BOOK.definition();
+    }
+
     public @NotNull List<ForbiddenEnchantDefinition> all() {
         return all;
     }

@@ -193,6 +193,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
             travelDurabilityDistance,
             lastPlayerDeathLocations
     );
+    private final SpellEffectService spellEffectService = new SpellEffectService(this);
     private final ItemClassificationService itemClassificationService = new ItemClassificationService(this);
     private final NameTagLeadService nameTagLeadService = new NameTagLeadService(
             this::enchantStateServiceInternal,
@@ -315,7 +316,8 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
                 enchantToggleMenuService,
                 librarianTradeService,
                 enchantEventRuleService,
-                graspCombatService
+                graspCombatService,
+                spellEffectService
         ), this);
 
         if (getCommand("fe") != null) {
@@ -400,6 +402,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         tickMaintenanceService.processMarkedTargets(tickCounter);
         enchantmentAllyService.processTick(tickCounter);
         tickMaintenanceService.processCharmedPets();
+        spellEffectService.processTick(tickCounter);
         enchantLifecycleHooksService.processTick(tickCounter);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -408,6 +411,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
             tickMaintenanceService.processFullForceSmashWindow(player, tickCounter);
             temporalSicknessService.processTick(player, tickCounter);
             dev.cevapi.forbiddenenchants.enchants.EnchantList.INSTANCE.dispatchPlayerTick(player, tickCounter);
+            spellEffectService.onPlayerTick(player, tickCounter);
             tickMaintenanceService.processTravelDurability(player);
             tickMaintenanceService.processCompassEffects(player);
         }
@@ -855,7 +859,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         String key = injectorBookRarityKey(type, level);
         double clamped = Math.max(0.0D, Math.min(1000.0D, weight));
         double rounded = Math.round(clamped * 10.0D) / 10.0D;
-        if (rounded <= 0.0D || Math.abs(rounded - 1.0D) < 0.0001D) {
+        if (Math.abs(rounded - 1.0D) < 0.0001D) {
             injectorBookRarityWeights.remove(key);
             return;
         }

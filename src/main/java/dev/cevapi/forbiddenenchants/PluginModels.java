@@ -15,14 +15,20 @@ import java.util.UUID;
 
 final class FeMenuHolder implements InventoryHolder {
     private final int page;
+    private final FeMenuCategory category;
     private Inventory inventory;
 
-    FeMenuHolder(int page) {
+    FeMenuHolder(int page, @NotNull FeMenuCategory category) {
         this.page = page;
+        this.category = category;
     }
 
     int page() {
         return page;
+    }
+
+    @NotNull FeMenuCategory category() {
+        return category;
     }
 
     void attach(@NotNull Inventory inventory) {
@@ -33,6 +39,16 @@ final class FeMenuHolder implements InventoryHolder {
     public @NotNull Inventory getInventory() {
         return Objects.requireNonNull(inventory, "menu inventory");
     }
+}
+
+enum FeMenuCategory {
+    ALL,
+    ARMORS,
+    WEAPONS,
+    TOTEMS,
+    BOOKS,
+    POTIONS,
+    OTHER
 }
 
 final class EnchantToggleMenuHolder implements InventoryHolder {

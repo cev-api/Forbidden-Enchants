@@ -95,6 +95,7 @@ public abstract class BaseForbiddenEnchant implements ForbiddenEnchantDefinition
             case LEAD -> "Apply to a lead in an anvil.";
             case SHIELD -> "Apply to a shield in an anvil.";
             case TOTEM -> "Apply to a totem of undying in an anvil.";
+            case POTION -> "Apply to a water bottle in an anvil to craft a spell potion.";
         };
     }
 }

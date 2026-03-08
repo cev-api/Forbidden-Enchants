@@ -23,6 +23,8 @@ import dev.cevapi.forbiddenenchants.enchants.GraveRobberEnchant;
 import dev.cevapi.forbiddenenchants.enchants.GreedEnchant;
 import dev.cevapi.forbiddenenchants.enchants.HealingTouchEnchant;
 import dev.cevapi.forbiddenenchants.enchants.InciteFearEnchant;
+import dev.cevapi.forbiddenenchants.enchants.IllusionersRevengeEnchant;
+import dev.cevapi.forbiddenenchants.enchants.JointSleepEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LaunchEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LockedOutEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LootSenseEnchant;
@@ -34,26 +36,34 @@ import dev.cevapi.forbiddenenchants.enchants.MiasmaFormEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MinersIntuitionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MujahideenEnchant;
 import dev.cevapi.forbiddenenchants.enchants.NoFallEnchant;
+import dev.cevapi.forbiddenenchants.enchants.OutOfPhaseEnchant;
 import dev.cevapi.forbiddenenchants.enchants.PettyThiefEnchant;
 import dev.cevapi.forbiddenenchants.enchants.PocketDimensionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.PocketSeekerEnchant;
 import dev.cevapi.forbiddenenchants.enchants.ProudWarriorEnchant;
+import dev.cevapi.forbiddenenchants.enchants.QuitterEnchant;
 import dev.cevapi.forbiddenenchants.enchants.RicochetEnchant;
 import dev.cevapi.forbiddenenchants.enchants.ShieldKnockbackEnchant;
 import dev.cevapi.forbiddenenchants.enchants.ShockwaveEnchant;
+import dev.cevapi.forbiddenenchants.enchants.SilenceEnchant;
 import dev.cevapi.forbiddenenchants.enchants.SiskosSolutionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.SonicPanicEnchant;
 import dev.cevapi.forbiddenenchants.enchants.StaffOfTheEvokerEnchant;
 import dev.cevapi.forbiddenenchants.enchants.TemporalSicknessEnchant;
 import dev.cevapi.forbiddenenchants.enchants.TheHatedOneEnchant;
+import dev.cevapi.forbiddenenchants.enchants.TheDuplicatorEnchant;
+import dev.cevapi.forbiddenenchants.enchants.ThePhilosophersBookEnchant;
+import dev.cevapi.forbiddenenchants.enchants.ThePretenderEnchant;
 import dev.cevapi.forbiddenenchants.enchants.TheSeekerEnchant;
 import dev.cevapi.forbiddenenchants.enchants.TheUnyieldingEnchant;
+import dev.cevapi.forbiddenenchants.enchants.TrackerEnchant;
 import dev.cevapi.forbiddenenchants.enchants.VexatiousEnchant;
 import dev.cevapi.forbiddenenchants.enchants.VoidGraspEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WingClipperEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WitheringStrikeEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WololoEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WarpNineFiveEnchant;
+import dev.cevapi.forbiddenenchants.enchants.InfectedEnchant;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -119,7 +129,17 @@ public enum EnchantType {
     SISKOS_SOLUTION(50, new SiskosSolutionEnchant()),
     NO_FALL(51, new NoFallEnchant()),
     BORG_TECHNOLOGY(52, new BorgTechnologyEnchant()),
-    WARP_NINE_FIVE(53, new WarpNineFiveEnchant());
+    WARP_NINE_FIVE(53, new WarpNineFiveEnchant()),
+    TRACKER(54, new TrackerEnchant()),
+    THE_PRETENDER(55, new ThePretenderEnchant()),
+    OUT_OF_PHASE(56, new OutOfPhaseEnchant()),
+    SILENCE(57, new SilenceEnchant()),
+    QUITTER(58, new QuitterEnchant()),
+    INFECTED(59, new InfectedEnchant()),
+    THE_DUPLICATOR(60, new TheDuplicatorEnchant()),
+    THE_PHILOSOPHERS_BOOK(61, new ThePhilosophersBookEnchant()),
+    JOINT_SLEEP(62, new JointSleepEnchant()),
+    ILLUSIONERS_REVENGE(63, new IllusionersRevengeEnchant());
 
     private static final Map<String, EnchantType> BY_ARG = new HashMap<>();
     private static final Map<Integer, EnchantType> BY_MODEL_TYPE_INDEX = new HashMap<>();
@@ -150,6 +170,7 @@ public enum EnchantType {
         setExclusiveGroup("hoe_primary", HEALING_TOUCH, PETTY_THIEF);
         setExclusiveGroup("compass_primary", GRAVE_ROBBER, POCKET_SEEKER);
         setExclusiveGroup("nametag_primary", CHARMED_PET, APPLIED_CURSE);
+        setExclusiveGroup("potion_primary", OUT_OF_PHASE, SILENCE, QUITTER, INFECTED, JOINT_SLEEP);
 
         addMutualIncompatibility(DRAGONS_BREATH, EXPLOSIVE_REACTION);
 
@@ -159,6 +180,7 @@ public enum EnchantType {
                 WOLOLO,
                 LOCKED_OUT,
                 EVOKERS_REVENGE,
+                ILLUSIONERS_REVENGE,
                 GREED,
                 TEMPORAL_SICKNESS,
                 PROUD_WARRIOR,
@@ -233,6 +255,10 @@ public enum EnchantType {
 
     public boolean requiresSoloOnTrident() {
         return REQUIRES_SOLO_ON_TRIDENT.contains(this);
+    }
+
+    public boolean isAnvilOnlyUtilityBook() {
+        return this == THE_DUPLICATOR || this == THE_PHILOSOPHERS_BOOK;
     }
 
     public boolean conflictsWith(@NotNull EnchantType other) {

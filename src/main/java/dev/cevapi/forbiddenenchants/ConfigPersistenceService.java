@@ -180,7 +180,7 @@ final class ConfigPersistenceService {
         }
         plugin.getConfig().set("structure_injector.book_rarity", null);
         for (Map.Entry<String, Double> entry : plugin.injectorBookRarityWeights().entrySet()) {
-            if (entry.getValue() != null && entry.getValue() > 0.0D) {
+            if (entry.getValue() != null && entry.getValue() >= 0.0D) {
                 plugin.getConfig().set("structure_injector.book_rarity." + entry.getKey(), entry.getValue());
             }
         }

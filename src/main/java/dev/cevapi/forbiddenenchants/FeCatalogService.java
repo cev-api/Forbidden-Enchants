@@ -47,6 +47,14 @@ final class FeCatalogService {
     private void rebuildMenuItems() {
         menuPages.clear();
         for (EnchantType type : plugin.activeEnchantTypes()) {
+            if (type.isAnvilOnlyUtilityBook()) {
+                List<ItemStack> pageItems = new ArrayList<>();
+                for (int level = 1; level <= type.maxLevel; level++) {
+                    pageItems.add(plugin.createBook(type, level));
+                }
+                menuPages.add(pageItems);
+                continue;
+            }
             List<Material> guiMaterials = guiMaterialsForType(type);
             List<ItemStack> pageItems = new ArrayList<>();
             pageItems.add(plugin.createMysteryBook(type.slot));

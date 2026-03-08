@@ -15,6 +15,7 @@ final class EnchantLifecycleHooksService {
         EnchantList.INSTANCE.theSeeker().resetAll();
         EnchantList.INSTANCE.forbiddenAgility().resetAll(Bukkit.getOnlinePlayers());
         EnchantList.INSTANCE.evokersRevenge().resetAll();
+        EnchantList.INSTANCE.illusionersRevenge().resetAll();
         EnchantList.INSTANCE.mujahideen().resetAll();
     }
 

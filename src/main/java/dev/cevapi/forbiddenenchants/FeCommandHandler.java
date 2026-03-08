@@ -96,6 +96,9 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         if (args.length == 2 && (isGiveBook || isGiveItem)) {
             List<String> options = new ArrayList<>();
             for (EnchantType type : plugin.activeEnchantTypes()) {
+                if (type.isAnvilOnlyUtilityBook()) {
+                    continue;
+                }
                 options.add(type.arg);
             }
             return StringUtil.copyPartialMatches(args[1], options, new ArrayList<>());
@@ -179,7 +182,7 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
 
     private @Nullable EnchantType parseEnchantType(@NotNull CommandSender sender, @NotNull String arg) {
         EnchantType type = EnchantType.fromArg(arg);
-        if (type == null || plugin.isRetiredEnchant(type)) {
+        if (type == null || plugin.isRetiredEnchant(type) || type.isAnvilOnlyUtilityBook()) {
             plugin.sendFeError(sender, "Unknown enchant: " + arg);
             return null;
         }

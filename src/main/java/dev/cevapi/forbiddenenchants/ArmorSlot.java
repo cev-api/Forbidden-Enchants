@@ -19,6 +19,7 @@ public enum ArmorSlot {
     NAMETAG,
     LEAD,
     SHIELD,
-    TOTEM
+    TOTEM,
+    POTION
 }
 

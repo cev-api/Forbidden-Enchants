@@ -5,10 +5,15 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.block.ShulkerBox;
+import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
@@ -67,7 +72,28 @@ final class EnchantEventRuleService {
             return;
         }
 
+        if (book.type() == EnchantType.THE_DUPLICATOR) {
+            ItemStack result = buildDuplicatorResult(base);
+            event.setResult(result);
+            if (result != null) {
+                inventory.setRepairCost(64);
+            }
+            return;
+        }
+        if (book.type() == EnchantType.THE_PHILOSOPHERS_BOOK) {
+            ItemStack result = buildPhilosopherResult(base, book.level());
+            event.setResult(result);
+            if (result != null) {
+                inventory.setRepairCost(32 + Math.max(0, (book.level() - 1) * 16));
+            }
+            return;
+        }
+
         if (!itemClassificationServiceSupplier.get().isArmorPieceForSlot(base, book.type().slot)) {
+            event.setResult(null);
+            return;
+        }
+        if (book.type().slot == ArmorSlot.POTION && !isWaterBottle(base)) {
             event.setResult(null);
             return;
         }
@@ -159,6 +185,120 @@ final class EnchantEventRuleService {
                 event.getItem().setItemMeta(meta);
             }
         }
+    }
+
+    private boolean isWaterBottle(@NotNull ItemStack item) {
+        if (item.getType() != Material.POTION) {
+            return false;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (!(meta instanceof PotionMeta potionMeta)) {
+            return false;
+        }
+        return potionMeta.getBasePotionType() == PotionType.WATER;
+    }
+
+    private ItemStack buildDuplicatorResult(@NotNull ItemStack base) {
+        if (isFilledShulker(base) || isFilledBundle(base) || isArmorOrWeapon(base.getType())) {
+            return null;
+        }
+        ItemStack result = base.clone();
+        int doubled = Math.max(1, Math.min(127, base.getAmount() * 2));
+        result.setAmount(doubled);
+        return result;
+    }
+
+    private ItemStack buildPhilosopherResult(@NotNull ItemStack base, int level) {
+        int clampedLevel = Math.max(1, Math.min(3, level));
+        return switch (clampedLevel) {
+            case 1 -> {
+                if (base.getType() == Material.IRON_INGOT) {
+                    yield new ItemStack(Material.GOLD_INGOT, base.getAmount());
+                }
+                if (base.getType() == Material.IRON_BLOCK) {
+                    yield new ItemStack(Material.GOLD_BLOCK, base.getAmount());
+                }
+                yield null;
+            }
+            case 2 -> {
+                if (base.getType() == Material.GOLD_INGOT) {
+                    yield new ItemStack(Material.DIAMOND, base.getAmount());
+                }
+                if (base.getType() == Material.GOLD_BLOCK) {
+                    yield new ItemStack(Material.DIAMOND_BLOCK, base.getAmount());
+                }
+                yield null;
+            }
+            default -> {
+                if (base.getType() == Material.DIAMOND) {
+                    yield new ItemStack(Material.NETHERITE_INGOT, base.getAmount());
+                }
+                if (base.getType() == Material.DIAMOND_BLOCK) {
+                    yield new ItemStack(Material.NETHERITE_BLOCK, base.getAmount());
+                }
+                yield null;
+            }
+        };
+    }
+
+    private boolean isFilledShulker(@NotNull ItemStack stack) {
+        if (!stack.getType().name().endsWith("SHULKER_BOX")) {
+            return false;
+        }
+        ItemMeta meta = stack.getItemMeta();
+        if (!(meta instanceof BlockStateMeta blockStateMeta)) {
+            return false;
+        }
+        if (!(blockStateMeta.getBlockState() instanceof ShulkerBox shulkerBox)) {
+            return false;
+        }
+        Inventory inventory = shulkerBox.getInventory();
+        for (ItemStack item : inventory.getContents()) {
+            if (item != null && item.getType() != Material.AIR) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isFilledBundle(@NotNull ItemStack stack) {
+        if (stack.getType() != EnchantMaterialCatalog.materialIfPresent("BUNDLE")) {
+            return false;
+        }
+        ItemMeta meta = stack.getItemMeta();
+        if (meta == null) {
+            return false;
+        }
+        try {
+            java.lang.reflect.Method getItems = meta.getClass().getMethod("getItems");
+            Object value = getItems.invoke(meta);
+            if (value instanceof java.util.Collection<?> collection) {
+                return !collection.isEmpty();
+            }
+        } catch (Throwable ignored) {
+        }
+        return false;
+    }
+
+    private boolean isArmorOrWeapon(@NotNull Material type) {
+        String name = type.name();
+        if (name.endsWith("_HELMET")
+                || name.endsWith("_CHESTPLATE")
+                || name.endsWith("_LEGGINGS")
+                || name.endsWith("_BOOTS")
+                || type == Material.ELYTRA
+                || type == Material.TURTLE_HELMET) {
+            return true;
+        }
+        return name.endsWith("_SWORD")
+                || name.endsWith("_AXE")
+                || name.endsWith("_HOE")
+                || type == Material.BOW
+                || type == Material.CROSSBOW
+                || type == Material.TRIDENT
+                || type == Material.MACE
+                || name.endsWith("_SPEAR")
+                || name.equals("SPEAR");
     }
 }
 

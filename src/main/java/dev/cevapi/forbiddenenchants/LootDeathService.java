@@ -40,6 +40,10 @@ final class LootDeathService {
                 && enchantStateServiceSupplier.get().getEnchantLevel(killer.getInventory().getChestplate(), EnchantType.EVOKERS_REVENGE) > 0) {
             EnchantList.INSTANCE.evokersRevenge().onEvokerKilledByOwner(killer.getUniqueId());
         }
+        if (dead.getType() == EntityType.ILLUSIONER
+                && enchantStateServiceSupplier.get().getEnchantLevel(killer.getInventory().getChestplate(), EnchantType.ILLUSIONERS_REVENGE) > 0) {
+            EnchantList.INSTANCE.illusionersRevenge().onIllusionerKilledByOwner(killer.getUniqueId());
+        }
 
         ItemStack helmet = killer.getInventory().getHelmet();
         int hatedLevel = enchantStateServiceSupplier.get().getEnchantLevel(helmet, EnchantType.THE_HATED_ONE);

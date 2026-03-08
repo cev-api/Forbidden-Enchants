@@ -45,6 +45,7 @@ final class ItemClassificationService {
             case LEAD -> isLead(stack);
             case SHIELD -> isShield(stack);
             case TOTEM -> isTotem(stack);
+            case POTION -> isPotion(stack);
         };
     }
 
@@ -96,7 +97,7 @@ final class ItemClassificationService {
 
         ItemStack probe = new ItemStack(material);
         return switch (type.slot) {
-            case HELMET, CHESTPLATE, ELYTRA, LEGGINGS, BOOTS, ARMOR, COMPASS, RANGED, TRIDENT, SPEAR, HOE, AXE, MACE, BRUSH, NAMETAG, LEAD, SHIELD, TOTEM ->
+            case HELMET, CHESTPLATE, ELYTRA, LEGGINGS, BOOTS, ARMOR, COMPASS, RANGED, TRIDENT, SPEAR, HOE, AXE, MACE, BRUSH, NAMETAG, LEAD, SHIELD, TOTEM, POTION ->
                     isArmorPieceForSlot(probe, type.slot);
             case SWORD -> isSword(probe);
         };
@@ -120,6 +121,10 @@ final class ItemClassificationService {
 
     private boolean isTotem(@Nullable ItemStack stack) {
         return stack != null && stack.getType() == Material.TOTEM_OF_UNDYING;
+    }
+
+    private boolean isPotion(@Nullable ItemStack stack) {
+        return stack != null && stack.getType() == Material.POTION;
     }
 
     private boolean isAxe(@Nullable ItemStack stack) {

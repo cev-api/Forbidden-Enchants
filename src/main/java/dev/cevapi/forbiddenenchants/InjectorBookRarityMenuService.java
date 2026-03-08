@@ -126,7 +126,10 @@ final class InjectorBookRarityMenuService {
         BookEntry entry = entries.get(absoluteIndex);
         double weight = plugin.injectorBookRarityWeight(entry.type, entry.level);
 
-        if (event.getClick() == ClickType.MIDDLE) {
+        if (event.getClick() == ClickType.SWAP_OFFHAND) {
+            plugin.setEnchantSpawnEnabled(entry.type, !plugin.isEnchantSpawnEnabled(entry.type));
+            plugin.saveEnchantToggleSettings();
+        } else if (event.getClick() == ClickType.MIDDLE) {
             plugin.setInjectorBookRarityWeight(entry.type, entry.level, 1.0D);
         } else if (event.getClick().isLeftClick()) {
             weight += event.isShiftClick() ? 1.0D : 0.1D;
@@ -138,7 +141,7 @@ final class InjectorBookRarityMenuService {
             plugin.setInjectorBookRarityWeight(entry.type, entry.level, weight * 2.0D);
         } else if (event.getClick() == ClickType.CONTROL_DROP) {
             plugin.setInjectorBookRarityWeight(entry.type, entry.level, weight * 0.5D);
-        } else if (event.getClick() == ClickType.SWAP_OFFHAND) {
+        } else if (event.getClick() == ClickType.DOUBLE_CLICK) {
             plugin.setInjectorBookRarityWeight(entry.type, entry.level, 0.0D);
         } else {
             return;
@@ -165,18 +168,23 @@ final class InjectorBookRarityMenuService {
 
     private @NotNull ItemStack createEntryItem(@NotNull ForbiddenEnchantsPlugin plugin, @NotNull BookEntry entry) {
         double weight = plugin.injectorBookRarityWeight(entry.type, entry.level);
-        if (weight <= 0.0D) {
+        boolean spawnEnabled = plugin.isEnchantSpawnEnabled(entry.type);
+        if (!spawnEnabled || weight <= 0.0D) {
             ItemStack barrier = new ItemStack(Material.BARRIER);
             ItemMeta meta = barrier.getItemMeta();
             if (meta != null) {
                 meta.displayName(Component.text(entry.type.arg + " " + RomanNumeralUtil.toRoman(entry.level), NamedTextColor.GRAY));
-                meta.lore(List.of(
-                        Component.text("Weight: 0.0 (disabled)", NamedTextColor.RED),
+                List<Component> lore = new ArrayList<>();
+                lore.add(Component.text("Spawn enabled: " + (spawnEnabled ? "YES" : "NO"), spawnEnabled ? NamedTextColor.GREEN : NamedTextColor.RED));
+                lore.add(Component.text("Weight: " + formatWeight(weight) + (weight <= 0.0D ? " (disabled)" : ""), weight <= 0.0D ? NamedTextColor.RED : NamedTextColor.YELLOW));
+                lore.addAll(List.of(
                         Component.text("Left/Right: +/-0.1 (Shift: +/-1.0)", NamedTextColor.GRAY),
                         Component.text("Q/Ctrl+Q: x2 / x0.5", NamedTextColor.GRAY),
-                        Component.text("F: set 0 (disabled)", NamedTextColor.GRAY),
+                        Component.text("F: toggle spawn enabled", NamedTextColor.GRAY),
+                        Component.text("Double-click: set 0 (disabled)", NamedTextColor.GRAY),
                         Component.text("Middle: reset to 1.0", NamedTextColor.GRAY)
                 ));
+                meta.lore(lore);
                 barrier.setItemMeta(meta);
             }
             return barrier;
@@ -189,11 +197,13 @@ final class InjectorBookRarityMenuService {
         }
         List<Component> lore = meta.lore() == null ? new ArrayList<>() : new ArrayList<>(meta.lore());
         lore.add(Component.empty());
+        lore.add(Component.text("Spawn enabled: " + (spawnEnabled ? "YES" : "NO"), spawnEnabled ? NamedTextColor.GREEN : NamedTextColor.RED));
         lore.add(Component.text("Rarity Weight: " + formatWeight(weight), NamedTextColor.YELLOW));
         lore.add(Component.text("Relative drop chance uses this weight.", NamedTextColor.GRAY));
         lore.add(Component.text("Left/Right: +/-0.1 (Shift: +/-1.0)", NamedTextColor.DARK_GRAY));
         lore.add(Component.text("Q/Ctrl+Q: x2 / x0.5", NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("F: set 0 (disabled)", NamedTextColor.DARK_GRAY));
+        lore.add(Component.text("F: toggle spawn enabled", NamedTextColor.DARK_GRAY));
+        lore.add(Component.text("Double-click: set 0 (disabled)", NamedTextColor.DARK_GRAY));
         lore.add(Component.text("Middle: reset to 1.0", NamedTextColor.DARK_GRAY));
         meta.lore(lore);
         item.setItemMeta(meta);
@@ -203,7 +213,7 @@ final class InjectorBookRarityMenuService {
     private @NotNull List<BookEntry> allBookEntries(@NotNull ForbiddenEnchantsPlugin plugin) {
         List<BookEntry> entries = new ArrayList<>();
         for (EnchantType type : plugin.activeEnchantTypes()) {
-            if (plugin.isRetiredEnchant(type) || !plugin.isEnchantSpawnEnabled(type)) {
+            if (plugin.isRetiredEnchant(type)) {
                 continue;
             }
             for (int level = 1; level <= type.maxLevel; level++) {
