@@ -67,6 +67,10 @@ final class InteractionRestrictionService {
             return;
         }
         ItemStack tool = player.getInventory().getItemInMainHand();
+        int kismetLevel = enchantStateServiceSupplier.get().getEnchantLevel(tool, EnchantType.KISMET);
+        if (EnchantList.INSTANCE.kismet().isSupportedTool(tool) && kismetLevel > 0) {
+            EnchantList.INSTANCE.kismet().onToolBlockBreak(event, tool);
+        }
         int lumberjackLevel = enchantStateServiceSupplier.get().getEnchantLevel(tool, EnchantType.LUMBERJACK);
         if (EnchantList.INSTANCE.lumberjack().shouldBreakWholeTree(
                 lumberjackLevel,

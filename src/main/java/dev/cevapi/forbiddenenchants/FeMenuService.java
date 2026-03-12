@@ -70,7 +70,7 @@ final class FeMenuService {
         }
 
         inventory.setItem(FE_MENU_PREV_SLOT, plugin.createMenuNavPane(totalPages > 1, true));
-        inventory.setItem(FE_MENU_NEXT_SLOT, plugin.createMenuNavPane(safePage + 1 < totalPages, false));
+        inventory.setItem(FE_MENU_NEXT_SLOT, plugin.createMenuNavPane(totalPages > 1, false));
         inventory.setItem(FE_MENU_ARMORS_SLOT, categoryButton(FeMenuCategory.ARMORS, category));
         inventory.setItem(FE_MENU_WEAPONS_SLOT, categoryButton(FeMenuCategory.WEAPONS, category));
         inventory.setItem(FE_MENU_TOTEMS_SLOT, categoryButton(FeMenuCategory.TOTEMS, category));
@@ -131,8 +131,9 @@ final class FeMenuService {
             return;
         }
         if (rawSlot == FE_MENU_NEXT_SLOT) {
-            if (holder.page() + 1 < totalPages) {
-                openMenu(player, category, holder.page() + pageStep);
+            if (totalPages > 1) {
+                int target = (holder.page() + pageStep) % totalPages;
+                openMenu(player, category, target);
             }
             return;
         }

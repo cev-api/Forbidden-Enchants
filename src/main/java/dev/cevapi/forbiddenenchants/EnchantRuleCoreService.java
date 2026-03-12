@@ -148,6 +148,28 @@ final class EnchantRuleCoreService {
         return hasMendingOrFeatherFalling(meta);
     }
 
+    boolean hasMendingOrUnbreakingEnchant(@NotNull ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && hasMendingOrUnbreaking(meta);
+    }
+
+    boolean hasAnyMendingUnbreakingForbiddenEnchant(@NotNull ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && hasAnyMendingUnbreakingForbiddenEnchant(meta);
+    }
+
+    boolean hasAnyMendingUnbreakingForbiddenEnchant(@NotNull ItemMeta meta) {
+        for (EnchantType type : EnchantType.values()) {
+            if (enchantStateService.getStoredEnchantLevel(meta, type) <= 0) {
+                continue;
+            }
+            if (type.stripsMendingAndUnbreaking() || type.hasDurabilityPenalty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     boolean itemHasAnyEnchant(@Nullable ItemStack item) {
         if (item == null || item.getType() == Material.AIR) {
             return false;
@@ -195,6 +217,10 @@ final class EnchantRuleCoreService {
             storageMeta.removeStoredEnchant(Enchantment.MENDING);
             storageMeta.removeStoredEnchant(Enchantment.FEATHER_FALLING);
         }
+    }
+
+    void stripMendingAndUnbreakingFromForbiddenPenaltyItem(@NotNull ItemMeta meta) {
+        stripMendingAndUnbreaking(meta);
     }
 
     void rebuildCustomLore(@NotNull ItemMeta meta) {

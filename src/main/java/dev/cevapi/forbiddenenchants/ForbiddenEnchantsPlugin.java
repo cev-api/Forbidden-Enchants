@@ -1085,6 +1085,10 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         visionSenseService.applyDivineVision(player, level);
     }
 
+    public void applyDivineVisionLineOfSight(@NotNull Player player, double radius) {
+        visionSenseService.applyDivineVisionLineOfSight(player, radius);
+    }
+
     public void applyMinersIntuition(@NotNull Player player, @NotNull ItemStack helmet, int level) {
         visionSenseService.applyMinersIntuition(player, helmet, level);
     }

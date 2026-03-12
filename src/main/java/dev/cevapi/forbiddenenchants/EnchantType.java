@@ -1,6 +1,7 @@
 package dev.cevapi.forbiddenenchants;
 
 import dev.cevapi.forbiddenenchants.enchants.AppliedCurseEnchant;
+import dev.cevapi.forbiddenenchants.enchants.AdministrativeAspirationsEnchant;
 import dev.cevapi.forbiddenenchants.enchants.AquaticSacrificeEnchant;
 import dev.cevapi.forbiddenenchants.enchants.AscensionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.BlindnessEnchant;
@@ -25,7 +26,9 @@ import dev.cevapi.forbiddenenchants.enchants.HealingTouchEnchant;
 import dev.cevapi.forbiddenenchants.enchants.InciteFearEnchant;
 import dev.cevapi.forbiddenenchants.enchants.IllusionersRevengeEnchant;
 import dev.cevapi.forbiddenenchants.enchants.JointSleepEnchant;
+import dev.cevapi.forbiddenenchants.enchants.KismetEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LaunchEnchant;
+import dev.cevapi.forbiddenenchants.enchants.LimitlessVisionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LockedOutEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LootSenseEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LumberjackEnchant;
@@ -36,6 +39,7 @@ import dev.cevapi.forbiddenenchants.enchants.MiasmaFormEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MinersIntuitionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MujahideenEnchant;
 import dev.cevapi.forbiddenenchants.enchants.NoFallEnchant;
+import dev.cevapi.forbiddenenchants.enchants.OnePlusEnchant;
 import dev.cevapi.forbiddenenchants.enchants.OutOfPhaseEnchant;
 import dev.cevapi.forbiddenenchants.enchants.PettyThiefEnchant;
 import dev.cevapi.forbiddenenchants.enchants.PocketDimensionEnchant;
@@ -50,6 +54,7 @@ import dev.cevapi.forbiddenenchants.enchants.SiskosSolutionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.SonicPanicEnchant;
 import dev.cevapi.forbiddenenchants.enchants.StaffOfTheEvokerEnchant;
 import dev.cevapi.forbiddenenchants.enchants.TemporalSicknessEnchant;
+import dev.cevapi.forbiddenenchants.enchants.TemporalDisplacementEnchant;
 import dev.cevapi.forbiddenenchants.enchants.TheHatedOneEnchant;
 import dev.cevapi.forbiddenenchants.enchants.TheDuplicatorEnchant;
 import dev.cevapi.forbiddenenchants.enchants.ThePhilosophersBookEnchant;
@@ -60,6 +65,7 @@ import dev.cevapi.forbiddenenchants.enchants.TrackerEnchant;
 import dev.cevapi.forbiddenenchants.enchants.VexatiousEnchant;
 import dev.cevapi.forbiddenenchants.enchants.VoidGraspEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WingClipperEnchant;
+import dev.cevapi.forbiddenenchants.enchants.InstantDeathEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WitheringStrikeEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WololoEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WarpNineFiveEnchant;
@@ -139,7 +145,13 @@ public enum EnchantType {
     THE_DUPLICATOR(60, new TheDuplicatorEnchant()),
     THE_PHILOSOPHERS_BOOK(61, new ThePhilosophersBookEnchant()),
     JOINT_SLEEP(62, new JointSleepEnchant()),
-    ILLUSIONERS_REVENGE(63, new IllusionersRevengeEnchant());
+    ILLUSIONERS_REVENGE(63, new IllusionersRevengeEnchant()),
+    INSTANT_DEATH(64, new InstantDeathEnchant()),
+    LIMITLESS_VISION(65, new LimitlessVisionEnchant()),
+    ONE_PLUS(66, new OnePlusEnchant()),
+    TEMPORAL_DISPLACEMENT(67, new TemporalDisplacementEnchant()),
+    KISMET(68, new KismetEnchant()),
+    ADMINISTRATIVE_ASPIRATIONS(69, new AdministrativeAspirationsEnchant());
 
     private static final Map<String, EnchantType> BY_ARG = new HashMap<>();
     private static final Map<Integer, EnchantType> BY_MODEL_TYPE_INDEX = new HashMap<>();
@@ -148,6 +160,7 @@ public enum EnchantType {
     private static final Set<EnchantType> APPLIES_BINDING_CURSE = EnumSet.noneOf(EnchantType.class);
     private static final Set<EnchantType> STRIPS_VANILLA_ENCHANTS = EnumSet.noneOf(EnchantType.class);
     private static final Set<EnchantType> STRIPS_MENDING_UNBREAKING = EnumSet.noneOf(EnchantType.class);
+    private static final Set<EnchantType> DURABILITY_PENALTY_ENCHANTS = EnumSet.noneOf(EnchantType.class);
     private static final Set<EnchantType> REQUIRES_NO_OTHER_ENCHANTS = EnumSet.noneOf(EnchantType.class);
     private static final Set<EnchantType> REQUIRES_SOLO_ON_TRIDENT = EnumSet.noneOf(EnchantType.class);
 
@@ -170,7 +183,7 @@ public enum EnchantType {
         setExclusiveGroup("hoe_primary", HEALING_TOUCH, PETTY_THIEF);
         setExclusiveGroup("compass_primary", GRAVE_ROBBER, POCKET_SEEKER);
         setExclusiveGroup("nametag_primary", CHARMED_PET, APPLIED_CURSE);
-        setExclusiveGroup("potion_primary", OUT_OF_PHASE, SILENCE, QUITTER, INFECTED, JOINT_SLEEP);
+        setExclusiveGroup("potion_primary", OUT_OF_PHASE, SILENCE, QUITTER, INFECTED, JOINT_SLEEP, LIMITLESS_VISION, ONE_PLUS, TEMPORAL_DISPLACEMENT);
 
         addMutualIncompatibility(DRAGONS_BREATH, EXPLOSIVE_REACTION);
 
@@ -184,11 +197,29 @@ public enum EnchantType {
                 GREED,
                 TEMPORAL_SICKNESS,
                 PROUD_WARRIOR,
-                SISKOS_SOLUTION
+                SISKOS_SOLUTION,
+                KISMET
         ));
 
         STRIPS_VANILLA_ENCHANTS.addAll(EnumSet.of(DIVINE_VISION, MINERS_INTUITION, LOOT_SENSE));
-        STRIPS_MENDING_UNBREAKING.addAll(EnumSet.of(HEALING_TOUCH, THE_SEEKER));
+        STRIPS_MENDING_UNBREAKING.addAll(EnumSet.of(HEALING_TOUCH, THE_SEEKER, ADMINISTRATIVE_ASPIRATIONS));
+        DURABILITY_PENALTY_ENCHANTS.addAll(EnumSet.of(
+                DIVINE_VISION,
+                MINERS_INTUITION,
+                LOOT_SENSE,
+                MASQUERADE,
+                ASCENSION,
+                CHARM,
+                HEALING_TOUCH,
+                LUMBERJACK,
+                VEXATIOUS,
+                THE_SEEKER,
+                LAUNCH,
+                NO_FALL,
+                WARP_NINE_FIVE,
+                KISMET,
+                ADMINISTRATIVE_ASPIRATIONS
+        ));
 
         REQUIRES_NO_OTHER_ENCHANTS.addAll(EnumSet.of(
                 DRAGONS_BREATH,
@@ -198,7 +229,7 @@ public enum EnchantType {
                 BORG_TECHNOLOGY,
                 WARP_NINE_FIVE
         ));
-        REQUIRES_SOLO_ON_TRIDENT.add(WITHERING_STRIKE);
+        REQUIRES_SOLO_ON_TRIDENT.addAll(EnumSet.of(WITHERING_STRIKE, INSTANT_DEATH));
     }
 
     private final int modelTypeIndex;
@@ -247,6 +278,10 @@ public enum EnchantType {
 
     public boolean stripsMendingAndUnbreaking() {
         return STRIPS_MENDING_UNBREAKING.contains(this);
+    }
+
+    public boolean hasDurabilityPenalty() {
+        return DURABILITY_PENALTY_ENCHANTS.contains(this);
     }
 
     public boolean requiresNoOtherEnchantsOnItem() {

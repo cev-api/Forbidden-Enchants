@@ -26,7 +26,8 @@ final class VisionSenseService {
         double radius = switch (level) {
             case 1 -> 10.0D;
             case 2 -> 20.0D;
-            default -> 30.0D;
+            case 3 -> 30.0D;
+            default -> 50.0D;
         };
 
         double radiusSquared = radius * radius;
@@ -41,11 +42,28 @@ final class VisionSenseService {
         }
     }
 
+    void applyDivineVisionLineOfSight(@NotNull Player player, double radius) {
+        double radiusSquared = radius * radius;
+        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+            if (!(entity instanceof LivingEntity living) || entity.equals(player)) {
+                continue;
+            }
+            if (entity.getLocation().distanceSquared(player.getLocation()) > radiusSquared) {
+                continue;
+            }
+            if (!player.hasLineOfSight(entity)) {
+                continue;
+            }
+            living.addPotionEffect(divineGlowEffect, true);
+        }
+    }
+
     void applyMinersIntuition(@NotNull Player player, @NotNull ItemStack helmet, int level) {
         int radius = switch (level) {
             case 1 -> 10;
             case 2 -> 20;
-            default -> 30;
+            case 3 -> 30;
+            default -> 50;
         };
 
         MinersTheme theme = getMinersThemeForHelmet(helmet);

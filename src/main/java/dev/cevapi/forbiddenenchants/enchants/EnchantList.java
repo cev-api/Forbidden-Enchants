@@ -284,6 +284,30 @@ public final class EnchantList {
         return (JointSleepEnchant) EnchantType.JOINT_SLEEP.definition();
     }
 
+    public @NotNull InstantDeathEnchant instantDeath() {
+        return (InstantDeathEnchant) EnchantType.INSTANT_DEATH.definition();
+    }
+
+    public @NotNull LimitlessVisionEnchant limitlessVision() {
+        return (LimitlessVisionEnchant) EnchantType.LIMITLESS_VISION.definition();
+    }
+
+    public @NotNull OnePlusEnchant onePlus() {
+        return (OnePlusEnchant) EnchantType.ONE_PLUS.definition();
+    }
+
+    public @NotNull TemporalDisplacementEnchant temporalDisplacement() {
+        return (TemporalDisplacementEnchant) EnchantType.TEMPORAL_DISPLACEMENT.definition();
+    }
+
+    public @NotNull KismetEnchant kismet() {
+        return (KismetEnchant) EnchantType.KISMET.definition();
+    }
+
+    public @NotNull AdministrativeAspirationsEnchant administrativeAspirations() {
+        return (AdministrativeAspirationsEnchant) EnchantType.ADMINISTRATIVE_ASPIRATIONS.definition();
+    }
+
     public @NotNull IllusionersRevengeEnchant illusionersRevenge() {
         return (IllusionersRevengeEnchant) EnchantType.ILLUSIONERS_REVENGE.definition();
     }

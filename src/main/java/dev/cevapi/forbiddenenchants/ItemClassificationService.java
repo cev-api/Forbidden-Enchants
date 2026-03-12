@@ -94,6 +94,10 @@ final class ItemClassificationService {
         if (type == EnchantType.WITHERING_STRIKE) {
             return material == Material.TRIDENT;
         }
+        if (type == EnchantType.KISMET) {
+            String name = material.name();
+            return name.endsWith("_PICKAXE") || name.endsWith("_SHOVEL") || name.endsWith("_AXE");
+        }
 
         ItemStack probe = new ItemStack(material);
         return switch (type.slot) {

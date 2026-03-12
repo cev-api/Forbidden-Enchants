@@ -3,11 +3,13 @@ package dev.cevapi.forbiddenenchants;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -20,8 +22,15 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.block.data.type.Bed;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -37,12 +46,23 @@ final class SpellEffectService {
     private static final long SILENCE_DURATION = 20L * 15L;
     private static final long QUITTER_DURATION = 20L * 30L;
     private static final long INFECTED_DURATION = 20L * 30L;
+    private static final long TEMPORAL_DISPLACEMENT_LEVEL_1_DURATION = 20L * 10L;
+    private static final long TEMPORAL_DISPLACEMENT_LEVEL_2_DURATION = 20L * 30L;
+    private static final long TEMPORAL_DISPLACEMENT_LEVEL_3_DURATION = 20L * 60L;
+    private static final long ONE_PLUS_LEVEL_1_DURATION = 20L * 60L;
+    private static final long ONE_PLUS_LEVEL_2_DURATION = 20L * 300L;
+    private static final long ONE_PLUS_LEVEL_3_DURATION = 20L * 600L;
+    private static final long ONE_PLUS_LEVEL_4_DURATION = 20L * 1800L;
+    private static final double LIMITLESS_VISION_RANGE = 50.0D;
 
     private final ForbiddenEnchantsPlugin plugin;
     private final Map<UUID, Long> outOfPhaseUntil = new HashMap<>();
     private final Map<UUID, Long> silenceUntil = new HashMap<>();
     private final Map<UUID, Long> quitterUntil = new HashMap<>();
     private final Map<UUID, Long> infectedCasterUntil = new HashMap<>();
+    private final Map<UUID, Long> temporalDisplacementUntil = new HashMap<>();
+    private final Map<UUID, Long> onePlusUntil = new HashMap<>();
+    private final Map<UUID, Byte> limitlessVisionActive = new HashMap<>();
     private final Map<UUID, Long> wallPhaseCooldownMs = new HashMap<>();
     private final Map<UUID, InfectedState> infectedZombies = new HashMap<>();
 
@@ -63,6 +83,12 @@ final class SpellEffectService {
         if (tickCounter <= outUntil) {
             player.setCollidable(false);
         }
+        if (limitlessVisionActive.containsKey(playerId)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 220, 0, true, false, false), true);
+            plugin.applyDivineVisionLineOfSight(player, LIMITLESS_VISION_RANGE);
+        }
+        applyTemporalDisplacementAura(player, tickCounter);
+        applyOnePlusForEquipped(player, tickCounter);
         LinkedHashMap<String, Long> timers = new LinkedHashMap<>();
         if (tickCounter <= outUntil) {
             timers.put("Out Of Phase", secondsRemaining(outUntil, tickCounter));
@@ -78,6 +104,14 @@ final class SpellEffectService {
         long infectedUntil = infectedCasterUntil.getOrDefault(playerId, 0L);
         if (tickCounter <= infectedUntil) {
             timers.put("Infected", secondsRemaining(infectedUntil, tickCounter));
+        }
+        long temporalDisplacement = temporalDisplacementUntil.getOrDefault(playerId, 0L);
+        if (tickCounter <= temporalDisplacement) {
+            timers.put("Temporal Displacement", secondsRemaining(temporalDisplacement, tickCounter));
+        }
+        long onePlus = onePlusUntil.getOrDefault(playerId, 0L);
+        if (tickCounter <= onePlus) {
+            timers.put("One Plus", secondsRemaining(onePlus, tickCounter));
         }
         if (!timers.isEmpty()) {
             StringBuilder text = new StringBuilder();
@@ -121,6 +155,20 @@ final class SpellEffectService {
         }
         if (plugin.getEnchantLevel(consumed, EnchantType.JOINT_SLEEP) > 0) {
             applyJointSleep(player);
+            return;
+        }
+        if (plugin.getEnchantLevel(consumed, EnchantType.LIMITLESS_VISION) > 0) {
+            limitlessVisionActive.put(player.getUniqueId(), (byte) 1);
+            return;
+        }
+        int temporalDisplacementLevel = plugin.getEnchantLevel(consumed, EnchantType.TEMPORAL_DISPLACEMENT);
+        if (temporalDisplacementLevel > 0) {
+            temporalDisplacementUntil.put(player.getUniqueId(), tickCounter + temporalDisplacementDurationForLevel(temporalDisplacementLevel));
+            return;
+        }
+        int onePlusLevel = plugin.getEnchantLevel(consumed, EnchantType.ONE_PLUS);
+        if (onePlusLevel > 0) {
+            onePlusUntil.put(player.getUniqueId(), tickCounter + onePlusDurationForLevel(onePlusLevel));
         }
     }
 
@@ -233,13 +281,27 @@ final class SpellEffectService {
         silenceUntil.remove(playerId);
         quitterUntil.remove(playerId);
         infectedCasterUntil.remove(playerId);
+        temporalDisplacementUntil.remove(playerId);
+        onePlusUntil.remove(playerId);
+        limitlessVisionActive.remove(playerId);
         wallPhaseCooldownMs.remove(playerId);
+        Player player = Bukkit.getPlayer(playerId);
+        if (player != null) {
+            clearOnePlusForEquipped(player);
+        }
         revealQuitter(playerId);
     }
 
     void onPlayerDeath(@NotNull UUID playerId) {
         outOfPhaseUntil.remove(playerId);
         infectedCasterUntil.remove(playerId);
+        temporalDisplacementUntil.remove(playerId);
+        onePlusUntil.remove(playerId);
+        limitlessVisionActive.remove(playerId);
+        Player player = Bukkit.getPlayer(playerId);
+        if (player != null) {
+            clearOnePlusForEquipped(player);
+        }
         revealQuitter(playerId);
     }
 
@@ -363,13 +425,32 @@ final class SpellEffectService {
 
     private boolean placeBedsInFront(@NotNull Player player) {
         BlockFace facing = yawToHorizontalFace(player.getLocation().getYaw());
-        Block foot = player.getLocation().getBlock().getRelative(facing);
-        Block head = foot.getRelative(facing);
-        if (!isBedPlaceable(foot) || !isBedPlaceable(head)) {
+        Block anchor = player.getLocation().getBlock().getRelative(facing);
+        BlockFace right = rightOf(facing);
+        if (right == BlockFace.SELF) {
             return false;
         }
-        placeBed(foot, facing, false);
-        placeBed(head, facing, true);
+
+        if (tryPlaceAdjacentBeds(anchor, facing, right)) {
+            return true;
+        }
+        return tryPlaceAdjacentBeds(anchor, facing, right.getOppositeFace());
+    }
+
+    private boolean tryPlaceAdjacentBeds(@NotNull Block anchor, @NotNull BlockFace facing, @NotNull BlockFace sideOffset) {
+        Block firstFoot = anchor;
+        Block firstHead = firstFoot.getRelative(facing);
+        Block secondFoot = firstFoot.getRelative(sideOffset);
+        Block secondHead = secondFoot.getRelative(facing);
+
+        if (!isBedPlaceable(firstFoot) || !isBedPlaceable(firstHead) || !isBedPlaceable(secondFoot) || !isBedPlaceable(secondHead)) {
+            return false;
+        }
+
+        placeBed(firstFoot, facing, false);
+        placeBed(firstHead, facing, true);
+        placeBed(secondFoot, facing, false);
+        placeBed(secondHead, facing, true);
         return true;
     }
 
@@ -403,6 +484,16 @@ final class SpellEffectService {
             return BlockFace.EAST;
         }
         return BlockFace.SOUTH;
+    }
+
+    private @NotNull BlockFace rightOf(@NotNull BlockFace facing) {
+        return switch (facing) {
+            case NORTH -> BlockFace.EAST;
+            case EAST -> BlockFace.SOUTH;
+            case SOUTH -> BlockFace.WEST;
+            case WEST -> BlockFace.NORTH;
+            default -> BlockFace.SELF;
+        };
     }
 
     private boolean isAlreadyZombieFamily(@NotNull EntityType type) {
@@ -522,6 +613,224 @@ final class SpellEffectService {
 
     private boolean isPassable(@NotNull Location location) {
         return location.getBlock().isPassable() && !location.getBlock().getType().isSolid();
+    }
+
+    private long temporalDisplacementDurationForLevel(int level) {
+        return switch (Math.max(1, Math.min(3, level))) {
+            case 1 -> TEMPORAL_DISPLACEMENT_LEVEL_1_DURATION;
+            case 2 -> TEMPORAL_DISPLACEMENT_LEVEL_2_DURATION;
+            default -> TEMPORAL_DISPLACEMENT_LEVEL_3_DURATION;
+        };
+    }
+
+    private void applyTemporalDisplacementAura(@NotNull Player caster, long tickCounter) {
+        long until = temporalDisplacementUntil.getOrDefault(caster.getUniqueId(), 0L);
+        if (tickCounter > until) {
+            temporalDisplacementUntil.remove(caster.getUniqueId());
+            return;
+        }
+
+        for (Entity entity : caster.getNearbyEntities(20.0D, 20.0D, 20.0D)) {
+            if (!(entity instanceof LivingEntity living)) {
+                continue;
+            }
+            living.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 30, 4, true, false, true), true);
+        }
+    }
+
+    private long onePlusDurationForLevel(int level) {
+        return switch (Math.max(1, Math.min(4, level))) {
+            case 1 -> ONE_PLUS_LEVEL_1_DURATION;
+            case 2 -> ONE_PLUS_LEVEL_2_DURATION;
+            case 3 -> ONE_PLUS_LEVEL_3_DURATION;
+            default -> ONE_PLUS_LEVEL_4_DURATION;
+        };
+    }
+
+    private void applyOnePlusForEquipped(@NotNull Player player, long tickCounter) {
+        UUID playerId = player.getUniqueId();
+        long until = onePlusUntil.getOrDefault(playerId, 0L);
+        boolean active = tickCounter <= until;
+        if (!active) {
+            onePlusUntil.remove(playerId);
+            clearOnePlusForEquipped(player);
+            return;
+        }
+        PlayerInventory inventory = player.getInventory();
+        applyOnePlusOnSlot(player, EquipmentSlot.HAND, inventory.getItemInMainHand());
+        applyOnePlusOnSlot(player, EquipmentSlot.OFF_HAND, inventory.getItemInOffHand());
+        applyOnePlusOnSlot(player, EquipmentSlot.HEAD, inventory.getHelmet());
+        applyOnePlusOnSlot(player, EquipmentSlot.CHEST, inventory.getChestplate());
+        applyOnePlusOnSlot(player, EquipmentSlot.LEGS, inventory.getLeggings());
+        applyOnePlusOnSlot(player, EquipmentSlot.FEET, inventory.getBoots());
+    }
+
+    private void clearOnePlusForEquipped(@NotNull Player player) {
+        PlayerInventory inventory = player.getInventory();
+        clearOnePlusOnSlot(player, EquipmentSlot.HAND, inventory.getItemInMainHand());
+        clearOnePlusOnSlot(player, EquipmentSlot.OFF_HAND, inventory.getItemInOffHand());
+        clearOnePlusOnSlot(player, EquipmentSlot.HEAD, inventory.getHelmet());
+        clearOnePlusOnSlot(player, EquipmentSlot.CHEST, inventory.getChestplate());
+        clearOnePlusOnSlot(player, EquipmentSlot.LEGS, inventory.getLeggings());
+        clearOnePlusOnSlot(player, EquipmentSlot.FEET, inventory.getBoots());
+    }
+
+    private void applyOnePlusOnSlot(@NotNull Player player, @NotNull EquipmentSlot slot, ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) {
+            return;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return;
+        }
+
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        NamespacedKey ownerKey = onePlusOwnerKey();
+        String ownerValue = pdc.get(ownerKey, PersistentDataType.STRING);
+        if (ownerValue != null && ownerValue.equals(player.getUniqueId().toString())) {
+            return;
+        }
+        if (ownerValue != null) {
+            clearOnePlusBoost(item);
+            meta = item.getItemMeta();
+            if (meta == null) {
+                return;
+            }
+            pdc = meta.getPersistentDataContainer();
+        }
+
+        Map<Enchantment, Integer> currentEnchants = item.getEnchantments();
+        if (currentEnchants.isEmpty()) {
+            return;
+        }
+        pdc.set(ownerKey, PersistentDataType.STRING, player.getUniqueId().toString());
+        pdc.set(onePlusOriginalEnchantsKey(), PersistentDataType.STRING, serializeEnchants(currentEnchants));
+        item.setItemMeta(meta);
+        for (Enchantment enchantment : List.copyOf(currentEnchants.keySet())) {
+            item.removeEnchantment(enchantment);
+        }
+        item.addUnsafeEnchantments(increaseEnchantsByOne(currentEnchants));
+        setSlotItem(player, slot, item);
+    }
+
+    private void clearOnePlusOnSlot(@NotNull Player player, @NotNull EquipmentSlot slot, ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) {
+            return;
+        }
+        if (!isOnePlusBoosted(item)) {
+            return;
+        }
+        clearOnePlusBoost(item);
+        setSlotItem(player, slot, item);
+    }
+
+    private void clearOnePlusBoost(@NotNull ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return;
+        }
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        String serialized = pdc.get(onePlusOriginalEnchantsKey(), PersistentDataType.STRING);
+        pdc.remove(onePlusOwnerKey());
+        pdc.remove(onePlusOriginalEnchantsKey());
+        item.setItemMeta(meta);
+
+        if (serialized != null) {
+            Map<Enchantment, Integer> original = parseEnchants(serialized);
+            for (Enchantment enchantment : List.copyOf(item.getEnchantments().keySet())) {
+                item.removeEnchantment(enchantment);
+            }
+            for (Map.Entry<Enchantment, Integer> entry : original.entrySet()) {
+                item.addUnsafeEnchantment(entry.getKey(), Math.max(1, entry.getValue()));
+            }
+        }
+    }
+
+    private boolean isOnePlusBoosted(@NotNull ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return false;
+        }
+        return meta.getPersistentDataContainer().has(onePlusOwnerKey(), PersistentDataType.STRING);
+    }
+
+    private @NotNull Map<Enchantment, Integer> increaseEnchantsByOne(@NotNull Map<Enchantment, Integer> source) {
+        Map<Enchantment, Integer> boosted = new HashMap<>();
+        for (Map.Entry<Enchantment, Integer> entry : source.entrySet()) {
+            boosted.put(entry.getKey(), entry.getValue() + 1);
+        }
+        return boosted;
+    }
+
+    private @NotNull String serializeEnchants(@NotNull Map<Enchantment, Integer> enchants) {
+        StringBuilder serialized = new StringBuilder();
+        for (Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
+            NamespacedKey key = entry.getKey().getKey();
+            if (key == null) {
+                continue;
+            }
+            if (!serialized.isEmpty()) {
+                serialized.append(';');
+            }
+            serialized.append(key).append('=').append(entry.getValue());
+        }
+        return serialized.toString();
+    }
+
+    private @NotNull Map<Enchantment, Integer> parseEnchants(@NotNull String serialized) {
+        Map<Enchantment, Integer> parsed = new HashMap<>();
+        if (serialized.isEmpty()) {
+            return parsed;
+        }
+        String[] entries = serialized.split(";");
+        for (String entry : entries) {
+            int delimiter = entry.indexOf('=');
+            if (delimiter <= 0 || delimiter >= entry.length() - 1) {
+                continue;
+            }
+            String keyText = entry.substring(0, delimiter);
+            String levelText = entry.substring(delimiter + 1);
+            NamespacedKey key = NamespacedKey.fromString(keyText);
+            if (key == null) {
+                continue;
+            }
+            Enchantment enchantment = Enchantment.getByKey(key);
+            if (enchantment == null) {
+                continue;
+            }
+            int level;
+            try {
+                level = Integer.parseInt(levelText);
+            } catch (NumberFormatException ignored) {
+                continue;
+            }
+            if (level > 0) {
+                parsed.put(enchantment, level);
+            }
+        }
+        return parsed;
+    }
+
+    private void setSlotItem(@NotNull Player player, @NotNull EquipmentSlot slot, @NotNull ItemStack item) {
+        PlayerInventory inventory = player.getInventory();
+        switch (slot) {
+            case HAND -> inventory.setItemInMainHand(item);
+            case OFF_HAND -> inventory.setItemInOffHand(item);
+            case HEAD -> inventory.setHelmet(item);
+            case CHEST -> inventory.setChestplate(item);
+            case LEGS -> inventory.setLeggings(item);
+            case FEET -> inventory.setBoots(item);
+            default -> {
+            }
+        }
+    }
+
+    private @NotNull NamespacedKey onePlusOwnerKey() {
+        return new NamespacedKey(plugin, "one_plus_owner");
+    }
+
+    private @NotNull NamespacedKey onePlusOriginalEnchantsKey() {
+        return new NamespacedKey(plugin, "one_plus_original_enchants");
     }
 
     private long secondsRemaining(long untilTick, long tickCounter) {

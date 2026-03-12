@@ -87,6 +87,17 @@ final class FeCatalogService {
             materials.clear();
             materials.add(Material.TRIDENT);
         }
+        if (type == EnchantType.KISMET) {
+            materials.clear();
+            materials.addAll(List.of(
+                    Material.WOODEN_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE,
+                    Material.GOLDEN_PICKAXE, Material.DIAMOND_PICKAXE, Material.NETHERITE_PICKAXE,
+                    Material.WOODEN_SHOVEL, Material.STONE_SHOVEL, Material.IRON_SHOVEL,
+                    Material.GOLDEN_SHOVEL, Material.DIAMOND_SHOVEL, Material.NETHERITE_SHOVEL,
+                    Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE,
+                    Material.GOLDEN_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE
+            ));
+        }
         if (type == EnchantType.STAFF_OF_THE_EVOKER) {
             materials.remove(Material.TRIDENT);
         }

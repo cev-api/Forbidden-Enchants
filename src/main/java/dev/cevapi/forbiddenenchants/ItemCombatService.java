@@ -147,6 +147,7 @@ final class ItemCombatService {
         if (!(meta instanceof Damageable damageable)) {
             return;
         }
+        meta.setUnbreakable(false);
         int max = item.getType().getMaxDurability();
         if (max <= 0) {
             return;
@@ -194,6 +195,7 @@ final class ItemCombatService {
         if (!(meta instanceof Damageable damageable)) {
             return;
         }
+        meta.setUnbreakable(false);
 
         int appliedDamage = respectUnbreaking ? applyUnbreakingReduction(piece, damageAmount) : damageAmount;
         if (appliedDamage <= 0) {
@@ -201,6 +203,9 @@ final class ItemCombatService {
         }
 
         int maxDurability = piece.getType().getMaxDurability();
+        if (maxDurability <= 0) {
+            return;
+        }
         int nextDamage = damageable.getDamage() + appliedDamage;
         if (nextDamage >= maxDurability) {
             switch (slot) {
@@ -238,9 +243,14 @@ final class ItemCombatService {
         if (!(meta instanceof Damageable damageable)) {
             return;
         }
+        meta.setUnbreakable(false);
+        int maxDurability = held.getType().getMaxDurability();
+        if (maxDurability <= 0) {
+            return;
+        }
 
         int nextDamage = damageable.getDamage() + Math.max(1, damageAmount);
-        if (nextDamage >= held.getType().getMaxDurability()) {
+        if (nextDamage >= maxDurability) {
             if (slot == EquipmentSlot.OFF_HAND) {
                 inventory.setItemInOffHand(new ItemStack(Material.AIR));
             } else {

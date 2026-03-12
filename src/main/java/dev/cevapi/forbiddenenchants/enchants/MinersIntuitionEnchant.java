@@ -6,6 +6,8 @@ import dev.cevapi.forbiddenenchants.ForbiddenEnchantsPlugin;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -16,7 +18,7 @@ public final class MinersIntuitionEnchant extends BaseForbiddenEnchant {
                 "miners_intuition_level",
                 "Miners Intuition",
                 ArmorSlot.HELMET,
-                3,
+                4,
                 NamedTextColor.GOLD,
                 List.of("miners", "miner", "intuition", "xray"),
                 null);
@@ -27,8 +29,12 @@ public final class MinersIntuitionEnchant extends BaseForbiddenEnchant {
         int range = switch (level) {
             case 1 -> 10;
             case 2 -> 20;
-            default -> 30;
+            case 3 -> 30;
+            default -> 50;
         };
+        if (level >= 4) {
+            return "Nearest ore by helmet material within " + range + " blocks + permanent night vision while worn.";
+        }
         return "Nearest ore by helmet material within " + range + " blocks.";
     }
 
@@ -40,7 +46,8 @@ public final class MinersIntuitionEnchant extends BaseForbiddenEnchant {
         return switch (level) {
             case 1 -> 10;
             case 2 -> 20;
-            default -> 30;
+            case 3 -> 30;
+            default -> 50;
         };
     }
 
@@ -61,11 +68,14 @@ public final class MinersIntuitionEnchant extends BaseForbiddenEnchant {
 
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
+        ItemStack helmet = player.getInventory().getHelmet();
+        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.MINERS_INTUITION);
+        if (level >= 4) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 220, 0, true, false, false), true);
+        }
         if (tickCounter % 10L != 0L) {
             return;
         }
-        ItemStack helmet = player.getInventory().getHelmet();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.MINERS_INTUITION);
         if (ForbiddenEnchantsPlugin.instance().hasAnyVisionHelmetEnchant(helmet)) {
             ForbiddenEnchantsPlugin.instance().enforceHelmetRestrictions(player, helmet);
         }

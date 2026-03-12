@@ -24,6 +24,7 @@ final class PlayerItemUtilityService {
         if (!(meta instanceof Damageable damageable)) {
             return;
         }
+        meta.setUnbreakable(false);
         int max = item.getType().getMaxDurability();
         if (max <= 0) {
             return;

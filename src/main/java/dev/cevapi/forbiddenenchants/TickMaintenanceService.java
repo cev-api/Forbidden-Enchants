@@ -223,7 +223,8 @@ final class TickMaintenanceService {
             if (EnchantList.INSTANCE.divineVision().isActive(divineVisionLevel)
                     || EnchantList.INSTANCE.minersIntuition().isActive(minersIntuitionLevel)
                     || EnchantList.INSTANCE.lootSense().isActive(lootSenseLevel)) {
-                itemCombatService.damageArmorByPercent(player, EquipmentSlot.HEAD, helmet, 0.10D * steps);
+                double damageFractionPerStep = minersIntuitionLevel >= 4 ? 0.02D : 0.10D;
+                itemCombatService.damageArmorByPercent(player, EquipmentSlot.HEAD, helmet, damageFractionPerStep * steps);
             }
             if (enchantStateService.getEnchantLevel(boots, EnchantType.MASQUERADE) > 0) {
                 itemCombatService.damageArmorByPercent(player, EquipmentSlot.FEET, boots, 0.10D * steps);

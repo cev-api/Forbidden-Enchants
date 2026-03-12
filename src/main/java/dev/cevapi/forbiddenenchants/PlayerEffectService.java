@@ -222,7 +222,7 @@ final class PlayerEffectService {
         }
         player.setVelocity(velocity);
         player.spawnParticle(Particle.CLOUD, player.getLocation().add(0.0, 0.1, 0.0), 3, 0.2, 0.1, 0.2, 0.0);
-        itemCombatService.damageEquippedArmor(player, EquipmentSlot.FEET, 5, true);
+        itemCombatService.damageEquippedArmor(player, EquipmentSlot.FEET, 5, false);
     }
 
     private boolean isJumpHeld(@NotNull Player player) {

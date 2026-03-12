@@ -48,6 +48,10 @@ final class EnchantEventRuleService {
             if (enchantRuleCoreService.hasAnyVisionHelmetEnchant(base)) {
                 event.setResult(null);
             }
+            if (enchantRuleCoreService.hasAnyMendingUnbreakingForbiddenEnchant(base)
+                    && enchantRuleCoreService.hasMendingOrUnbreakingEnchant(addition)) {
+                event.setResult(null);
+            }
             if (enchantStateServiceSupplier.get().getEnchantLevel(base, EnchantType.MIASMA) > 0
                     && enchantRuleCoreService.hasMiasmaIncompatibleEnchant(addition)) {
                 event.setResult(null);
@@ -130,6 +134,14 @@ final class EnchantEventRuleService {
             event.setCancelled(true);
             return;
         }
+        if (enchantRuleCoreService.hasAnyMendingUnbreakingForbiddenEnchant(event.getItem())) {
+            for (Enchantment enchantment : event.getEnchantsToAdd().keySet()) {
+                if (enchantment == Enchantment.UNBREAKING || enchantment == Enchantment.MENDING) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
         if (EnchantList.INSTANCE.healingTouch().isActive(
                 enchantStateServiceSupplier.get().getEnchantLevel(event.getItem(), EnchantType.HEALING_TOUCH))) {
             for (Enchantment enchantment : event.getEnchantsToAdd().keySet()) {
@@ -161,6 +173,13 @@ final class EnchantEventRuleService {
         if (enchantRuleCoreService.hasAnyVisionHelmetEnchant(event.getItem())) {
             event.setDamage(Math.max(1, event.getDamage() * 2));
             return;
+        }
+        if (enchantRuleCoreService.hasAnyMendingUnbreakingForbiddenEnchant(event.getItem())) {
+            ItemMeta meta = event.getItem().getItemMeta();
+            if (meta != null && enchantRuleCoreService.hasMendingOrUnbreakingEnchant(event.getItem())) {
+                enchantRuleCoreService.stripMendingAndUnbreakingFromForbiddenPenaltyItem(meta);
+                event.getItem().setItemMeta(meta);
+            }
         }
         if (EnchantList.INSTANCE.healingTouch().isActive(
                 enchantStateServiceSupplier.get().getEnchantLevel(event.getItem(), EnchantType.HEALING_TOUCH))) {
