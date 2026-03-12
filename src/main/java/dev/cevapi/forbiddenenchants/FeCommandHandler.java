@@ -19,11 +19,13 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
     private final ForbiddenEnchantsPlugin plugin;
     private final InjectorCommandHandler injectorCommandHandler;
     private final LibrarianTradeCommandHandler librarianTradeCommandHandler;
+    private final BundleDropCommandHandler bundleDropCommandHandler;
 
     FeCommandHandler(@NotNull ForbiddenEnchantsPlugin plugin) {
         this.plugin = plugin;
         this.injectorCommandHandler = new InjectorCommandHandler(plugin);
         this.librarianTradeCommandHandler = new LibrarianTradeCommandHandler(plugin);
+        this.bundleDropCommandHandler = new BundleDropCommandHandler(plugin);
     }
 
     @Override
@@ -54,6 +56,7 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
             case "mysteryitem" -> handleGiveMysteryItem(sender, args);
             case "injector", "structureinjector" -> injectorCommandHandler.handleCommand(sender, args);
             case "librarian", "librariantrades", "libtrades" -> librarianTradeCommandHandler.handleCommand(sender, args);
+            case "bundle", "bundledrop", "mobbundle" -> bundleDropCommandHandler.handleCommand(sender, args);
             default -> {
                 plugin.sendFeError(sender, "Unknown subcommand. Use /" + label + " help");
                 yield true;
@@ -67,7 +70,7 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
                                                 @NotNull String alias,
                                                 @NotNull String[] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("help", "list", "gui", "menu", "toggles", "settings", "enchanttoggles", "give", "givebook", "giveitem", "mysterybook", "mysteryitem", "injector", "librarian"), new ArrayList<>());
+            return StringUtil.copyPartialMatches(args[0], List.of("help", "list", "gui", "menu", "toggles", "settings", "enchanttoggles", "give", "givebook", "giveitem", "mysterybook", "mysteryitem", "injector", "librarian", "bundle", "bundledrop", "mobbundle"), new ArrayList<>());
         }
 
         boolean isGiveBook = args[0].equalsIgnoreCase("give") || args[0].equalsIgnoreCase("givebook");
@@ -82,6 +85,9 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         boolean isLibrarian = args[0].equalsIgnoreCase("librarian")
                 || args[0].equalsIgnoreCase("librariantrades")
                 || args[0].equalsIgnoreCase("libtrades");
+        boolean isBundle = args[0].equalsIgnoreCase("bundle")
+                || args[0].equalsIgnoreCase("bundledrop")
+                || args[0].equalsIgnoreCase("mobbundle");
 
         if (isInjector && args.length == 2) {
             return injectorCommandHandler.tabComplete(args);
@@ -91,6 +97,9 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         }
         if (isLibrarian) {
             return librarianTradeCommandHandler.tabComplete(args);
+        }
+        if (isBundle) {
+            return bundleDropCommandHandler.tabComplete(args);
         }
 
         if (args.length == 2 && (isGiveBook || isGiveItem)) {

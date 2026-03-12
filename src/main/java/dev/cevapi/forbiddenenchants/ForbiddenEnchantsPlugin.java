@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +81,9 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     private final Map<NamespacedKey, InjectorLootMode> structureInjectLootModes = new HashMap<>();
     private final Map<NamespacedKey, InjectorMysteryState> structureInjectMysteryStates = new HashMap<>();
     private final Map<String, Double> injectorBookRarityWeights = new HashMap<>();
+    private final Map<EntityType, Double> bundleDropMobChances = new EnumMap<>(EntityType.class);
+    private final List<BundleDropReward> bundleDropRewards = new ArrayList<>();
+    private final List<ItemStack> bundleDropExtraDrops = new ArrayList<>();
     private final List<LibrarianTradeEntry> librarianTrades = new ArrayList<>();
     private final List<Structure> allStructures = new ArrayList<>();
     private final CompassTrackingService compassTrackingService = new CompassTrackingService();
@@ -109,6 +114,8 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     );
     private final ConfigPersistenceService configPersistenceService = new ConfigPersistenceService(this);
     private final StructureInjectorRuntimeService structureInjectorRuntimeService = new StructureInjectorRuntimeService(this);
+    private final BundleDropRuntimeService bundleDropRuntimeService = new BundleDropRuntimeService(this);
+    private final BundleDropMenuService bundleDropMenuService = new BundleDropMenuService(this, bundleDropRuntimeService);
     private final LibrarianTradeService librarianTradeService = new LibrarianTradeService(this);
     private final PocketDimensionService pocketDimensionService = new PocketDimensionService();
     private final TemporalSicknessService temporalSicknessService = new TemporalSicknessService(
@@ -261,6 +268,8 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     private InjectorMysteryState trialVaultNormalMysteryState = InjectorMysteryState.ALL;
     private InjectorMysteryState trialVaultOminousMysteryState = InjectorMysteryState.ALL;
     private boolean injectorRarityApplyToItems = true;
+    private boolean bundleDropEnabled;
+    private double bundleDropChancePercent = 5.0D;
     private boolean librarianTradesEnabled;
     private long tickCounter;
 
@@ -286,6 +295,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         try {
             loadStructureInjectorSettings();
             loadEnchantToggleSettings();
+            loadBundleDropSettings();
             loadLibrarianTradeSettings();
         } catch (Throwable t) {
             structureInjectorEnabled = false;
@@ -293,6 +303,11 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
             structureInjectLootModes.clear();
             structureInjectMysteryStates.clear();
             injectorBookRarityWeights.clear();
+            bundleDropEnabled = false;
+            bundleDropChancePercent = 5.0D;
+            bundleDropMobChances.clear();
+            bundleDropRewards.clear();
+            bundleDropExtraDrops.clear();
             librarianTradesEnabled = false;
             librarianTrades.clear();
             getLogger().warning("Config-backed admin systems disabled due to startup error: " + t.getClass().getSimpleName() + ": " + t.getMessage());
@@ -313,11 +328,13 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
                 injectorMenuService,
                 injectorBookRarityMenuService,
                 librarianTradeMenuService,
+                bundleDropMenuService,
                 enchantToggleMenuService,
                 librarianTradeService,
                 enchantEventRuleService,
                 graspCombatService,
-                spellEffectService
+                spellEffectService,
+                bundleDropRuntimeService
         ), this);
 
         if (getCommand("fe") != null) {
@@ -363,6 +380,9 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         structureInjectLootModes.clear();
         structureInjectMysteryStates.clear();
         injectorBookRarityWeights.clear();
+        bundleDropMobChances.clear();
+        bundleDropRewards.clear();
+        bundleDropExtraDrops.clear();
         librarianTrades.clear();
         allStructures.clear();
         enchantStateService.clearToggles();
@@ -382,8 +402,16 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         configPersistenceService.loadEnchantToggleSettings();
     }
 
+    private void loadBundleDropSettings() {
+        configPersistenceService.loadBundleDropSettings();
+    }
+
     void saveEnchantToggleSettings() {
         configPersistenceService.saveEnchantToggleSettings();
+    }
+
+    void saveBundleDropSettings() {
+        configPersistenceService.saveBundleDropSettings();
     }
 
     private void loadLibrarianTradeSettings() {
@@ -870,6 +898,34 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         return type.arg + ":" + level;
     }
 
+    boolean isBundleDropEnabled() {
+        return bundleDropEnabled;
+    }
+
+    void setBundleDropEnabled(boolean enabled) {
+        bundleDropEnabled = enabled;
+    }
+
+    double getBundleDropChancePercent() {
+        return bundleDropChancePercent;
+    }
+
+    void setBundleDropChancePercent(double chancePercent) {
+        bundleDropChancePercent = Math.max(0.0D, Math.min(100.0D, chancePercent));
+    }
+
+    @NotNull Map<EntityType, Double> bundleDropMobChances() {
+        return bundleDropMobChances;
+    }
+
+    @NotNull List<BundleDropReward> bundleDropRewards() {
+        return bundleDropRewards;
+    }
+
+    @NotNull List<ItemStack> bundleDropExtraDrops() {
+        return bundleDropExtraDrops;
+    }
+
     @NotNull InjectorLootMode structureInjectLootMode(@NotNull NamespacedKey key) {
         return structureInjectLootModes.getOrDefault(key, InjectorLootMode.ALL);
     }
@@ -915,6 +971,10 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
 
     void openLibrarianTradeMenu(@NotNull Player target, int page) {
         librarianTradeMenuService.openMenu(target, page);
+    }
+
+    void openBundleDropMenu(@NotNull Player target) {
+        bundleDropMenuService.openRoot(target);
     }
 
     void disableStructureInjectorDueToRuntimeError(@NotNull Throwable t) {

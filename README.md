@@ -12,6 +12,8 @@ The core selling point is the admin GUI workflow: a creative-style browser for b
 - `/fe gui` paged creative style inventory menu sorted by enchant type, with quick category filters.
 - `/fe injector` command suite for structure/vault injection setup (`help`, `status|list`, `enable`, `disable`, `add`, `set|chance`, `remove`, `clear`, `defaultchance|default`, `vault`, `gui|menu`).
 - `/fe injector gui` visual editor for injector structure lists and per-structure chance tuning.
+- `/fe bundle` command suite for mob bundle-drop setup (`help`, `status`, `enable`, `disable`, `chance`, `gui|menu`, `clear`).
+- `/fe bundle gui` visual editor for reward content (enchants, spell potions, general loot), per-mob drop chances, bundle capacity tracking, and extra non-stackable drops.
 - `/fe librarian` command suite for librarian trade blend setup (`help`, `status|list`, `enable`, `disable`, `add`, `remove`, `clear`, `gui|menu`).
 - `/fe librarian gui` visual editor with all-book + configured views, per-book chance, and cost tuning.
 - Librarian blend mode keeps vanilla/datapack trade generation and appends configured forbidden-book offers by per-trade chance.
@@ -75,6 +77,8 @@ Output jar:
 /fe mysteryitem <material> [player]
 /fe injector <...>
 /fe structureinjector <...>
+/fe bundle <...>
+/fe bundledrop <...>
 /fe librarian <...>
 /fe librariantrades <...>
 /fe libtrades <...>
@@ -124,6 +128,19 @@ Permission: `forbiddenenchants.admin` (default: op).
 /fe librarian clear
 ```
 
+#### Bundle subcommands:
+
+```text
+/fe bundle help
+/fe bundle status
+/fe bundle enable
+/fe bundle disable
+/fe bundle chance <0-100>
+/fe bundle gui [player]
+/fe bundle menu [player]
+/fe bundle clear
+```
+
 #### Examples:
 
 ```text
@@ -161,6 +178,10 @@ Permission: `forbiddenenchants.admin` (default: op).
 /fe injector vault ominous 20
 /fe injector vault both 15
 /fe injector gui
+/fe bundle status
+/fe bundle enable
+/fe bundle chance 12.5
+/fe bundle gui
 /fe librarian status
 /fe librarian enable
 /fe librarian add divine_vision 1 25 24 1
@@ -170,9 +191,9 @@ Permission: `forbiddenenchants.admin` (default: op).
 /fe toggles
 ```
 
-## 4 Main GUI Menus
+## 5 Main GUI Menus
 
-This plugin has four main admin GUIs, each for a different workflow:
+This plugin has five main admin GUIs, each for a different workflow:
 
 1. `/fe gui` (Creative-style admin picker)
    - Purpose: manually give forbidden books/items to players for admin distribution, balancing checks, and testing.
@@ -224,6 +245,23 @@ This plugin has four main admin GUIs, each for a different workflow:
 
     ![Toggles](https://i.imgur.com/wge3afS.png)
 
+5. `/fe bundle gui` (Mob bundle-drop editor)
+   - Purpose: configure a bundle that mobs can drop, including exact contents and per-mob drop chances.
+   - Reward sources:
+     - Forbidden enchant books
+     - Spell potion items
+     - General loot items (diamonds/netherite/gold/etc.)
+   - Also supports a separate extra-drop category for non-stackable items dropped alongside the bundle.
+   - Bundle behavior respects bundle capacity limits and shows a live `used/64` counter in the root editor.
+   - Root controls:
+     - Enable/disable bundle drops
+     - Adjust default chance used when quickly enabling mobs
+     - Select mobs and tune chance per mob
+     - Edit enchant/potion/loot reward lists
+     - Import general loot directly by shift-click/drag from your player inventory while in the loot editor
+     - View/adjust configured bundle rewards (including count increments)
+     - Configure extra non-stackable drops
+
 #### Config + injector notes:
 
 - Supports comma-separated structure lists for `add` and `remove`.
@@ -235,6 +273,7 @@ This plugin has four main admin GUIs, each for a different workflow:
   - `enchant_controls.*` stores per-enchant `use_enabled` + `spawn_enabled` toggles.
   - `spawn_enabled` can be toggled from `/fe toggles` and from the injector rarity editor (`F` on an entry).
   - `librarian_trades.*` stores librarian trade enable state + configured offers (chance + costs).
+  - `bundle_drop.*` stores mob bundle-drop enabled state, default chance, per-mob chances, rewards, and extra drops.
 - Defaults:
   - Structure injector default chance: `5.0%`.
   - Trial vault default chance fallback: `7.5%` for normal and ominous when config values are missing.
@@ -620,7 +659,7 @@ The plugin is split into focused layers:
 - **Injector subsystem**: `StructureInjectorRuntimeService`, `InjectorCommandHandler`, `InjectorMenuService`, `InjectorLootMode`, `InjectorMysteryState`.
 - **Librarian trade subsystem**: `LibrarianTradeService`, `LibrarianTradeCommandHandler`, `LibrarianTradeMenuService`.
 - **Presentation/admin UX**: `FeCommandHandler`, `FePresentationService`, `FeMenuService`, `FeCatalogService`, `EnchantToggleMenuService`, `InjectorMessagingUtil`.
-- **Persistence**: `ConfigPersistenceService` for `structure_injector.*`, `enchant_controls.*`, and `librarian_trades.*`.
+- **Persistence**: `ConfigPersistenceService` for `structure_injector.*`, `enchant_controls.*`, `librarian_trades.*`, and `bundle_drop.*`.
 
 ## Project Structure
 

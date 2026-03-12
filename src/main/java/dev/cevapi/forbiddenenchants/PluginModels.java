@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -219,5 +220,63 @@ record MarkedState(UUID ownerId, long expireTick) {
 }
 
 record CharmedPetState(UUID ownerId, boolean sitting) {
+}
+
+final class BundleDropMenuHolder implements InventoryHolder {
+    private final BundleDropMenuPage pageType;
+    private final int page;
+    private Inventory inventory;
+
+    BundleDropMenuHolder(@NotNull BundleDropMenuPage pageType, int page) {
+        this.pageType = pageType;
+        this.page = page;
+    }
+
+    @NotNull BundleDropMenuPage pageType() {
+        return pageType;
+    }
+
+    int page() {
+        return page;
+    }
+
+    void attach(@NotNull Inventory inventory) {
+        this.inventory = inventory;
+    }
+
+    @Override
+    public @NotNull Inventory getInventory() {
+        return Objects.requireNonNull(inventory, "bundle drop menu inventory");
+    }
+}
+
+enum BundleDropMenuPage {
+    ROOT,
+    MOBS,
+    ENCHANTS,
+    POTIONS,
+    LOOT,
+    REWARDS,
+    EXTRA
+}
+
+enum BundleDropRewardType {
+    ENCHANT,
+    POTION,
+    MATERIAL;
+
+    static @Nullable BundleDropRewardType fromString(@Nullable String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        try {
+            return BundleDropRewardType.valueOf(raw.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
+    }
+}
+
+record BundleDropReward(@NotNull BundleDropRewardType type, @NotNull String key, int level, int amount) {
 }
 

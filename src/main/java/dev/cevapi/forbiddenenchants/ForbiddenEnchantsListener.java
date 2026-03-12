@@ -54,11 +54,13 @@ final class ForbiddenEnchantsListener implements Listener {
     private final InjectorMenuService injectorMenuService;
     private final InjectorBookRarityMenuService injectorBookRarityMenuService;
     private final LibrarianTradeMenuService librarianTradeMenuService;
+    private final BundleDropMenuService bundleDropMenuService;
     private final EnchantToggleMenuService enchantToggleMenuService;
     private final LibrarianTradeService librarianTradeService;
     private final EnchantEventRuleService enchantEventRuleService;
     private final GraspCombatService graspCombatService;
     private final SpellEffectService spellEffectService;
+    private final BundleDropRuntimeService bundleDropRuntimeService;
 
     ForbiddenEnchantsListener(@NotNull LongSupplier tickCounterSupplier,
                               @NotNull InteractionRestrictionService interactionRestrictionService,
@@ -73,11 +75,13 @@ final class ForbiddenEnchantsListener implements Listener {
                               @NotNull InjectorMenuService injectorMenuService,
                               @NotNull InjectorBookRarityMenuService injectorBookRarityMenuService,
                               @NotNull LibrarianTradeMenuService librarianTradeMenuService,
+                              @NotNull BundleDropMenuService bundleDropMenuService,
                               @NotNull EnchantToggleMenuService enchantToggleMenuService,
                               @NotNull LibrarianTradeService librarianTradeService,
                               @NotNull EnchantEventRuleService enchantEventRuleService,
                               @NotNull GraspCombatService graspCombatService,
-                              @NotNull SpellEffectService spellEffectService) {
+                              @NotNull SpellEffectService spellEffectService,
+                              @NotNull BundleDropRuntimeService bundleDropRuntimeService) {
         this.tickCounterSupplier = tickCounterSupplier;
         this.interactionRestrictionService = interactionRestrictionService;
         this.fullForceDefenseService = fullForceDefenseService;
@@ -91,11 +95,13 @@ final class ForbiddenEnchantsListener implements Listener {
         this.injectorMenuService = injectorMenuService;
         this.injectorBookRarityMenuService = injectorBookRarityMenuService;
         this.librarianTradeMenuService = librarianTradeMenuService;
+        this.bundleDropMenuService = bundleDropMenuService;
         this.enchantToggleMenuService = enchantToggleMenuService;
         this.librarianTradeService = librarianTradeService;
         this.enchantEventRuleService = enchantEventRuleService;
         this.graspCombatService = graspCombatService;
         this.spellEffectService = spellEffectService;
+        this.bundleDropRuntimeService = bundleDropRuntimeService;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -202,6 +208,9 @@ final class ForbiddenEnchantsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onHatedOneLoot(@NotNull EntityDeathEvent event) { lootDeathService.onHatedOneLoot(event); }
 
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onBundleDropLoot(@NotNull EntityDeathEvent event) { bundleDropRuntimeService.onEntityDeath(event); }
+
     @EventHandler
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
         playerLifecycleService.onPlayerQuit(event);
@@ -306,6 +315,12 @@ final class ForbiddenEnchantsListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onLibrarianTradeMenuDrag(@NotNull InventoryDragEvent event) { librarianTradeMenuService.onMenuDrag(event); }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBundleDropMenuClick(@NotNull InventoryClickEvent event) { bundleDropMenuService.onMenuClick(event); }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBundleDropMenuDrag(@NotNull InventoryDragEvent event) { bundleDropMenuService.onMenuDrag(event); }
 
     @EventHandler(ignoreCancelled = true)
     public void onEnchantToggleMenuClick(@NotNull InventoryClickEvent event) { enchantToggleMenuService.onMenuClick(event); }

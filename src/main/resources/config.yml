@@ -28,3 +28,10 @@ librarian_trades:
       chance: 25.0
       emeralds: 16
       books: 1
+
+bundle_drop:
+  enabled: false
+  chance: 5.0 # default chance used when quickly enabling mobs in the bundle GUI
+  mob_chance: {}
+  rewards: []
+  extra_drops: []

@@ -71,6 +71,7 @@ final class FePresentationService {
         sendHelpLine(sender, "/" + label + " mysteryitem <material> [player]", "Give obfuscated random pre-enchanted item.");
         sendHelpLine(sender, "/" + label + " injector <...>", "Structure-based loot injection controls.");
         sendHelpLine(sender, "/" + label + " librarian <...>", "Librarian forbidden-book trade editor and controls.");
+        sendHelpLine(sender, "/" + label + " bundle <...>", "Mob bundle-drop editor and controls.");
         sendHelpLine(sender, "/" + label + " toggles [player]", "Toggle enchant use and chest/vault spawning.");
     }
 

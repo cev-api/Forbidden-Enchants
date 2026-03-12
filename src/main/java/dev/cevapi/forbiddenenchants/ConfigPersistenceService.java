@@ -4,7 +4,9 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.generator.structure.Structure;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -260,6 +262,113 @@ final class ConfigPersistenceService {
             ));
         }
         plugin.getConfig().set("librarian_trades.trades", serialized);
+        plugin.saveConfig();
+    }
+
+    void loadBundleDropSettings() {
+        plugin.saveDefaultConfig();
+        plugin.reloadConfig();
+
+        FileConfiguration config = plugin.getConfig();
+        plugin.bundleDropMobChances().clear();
+        plugin.bundleDropRewards().clear();
+        plugin.bundleDropExtraDrops().clear();
+
+        ConfigurationSection root = config.getConfigurationSection("bundle_drop");
+        if (root == null) {
+            plugin.setBundleDropEnabled(false);
+            plugin.setBundleDropChancePercent(5.0D);
+            saveBundleDropSettings();
+            return;
+        }
+
+        plugin.setBundleDropEnabled(root.getBoolean("enabled", false));
+        plugin.setBundleDropChancePercent(clampChance(root.getDouble("chance", 5.0D)));
+
+        ConfigurationSection mobChance = root.getConfigurationSection("mob_chance");
+        if (mobChance != null) {
+            for (String raw : mobChance.getKeys(false)) {
+                try {
+                    EntityType type = EntityType.valueOf(raw.trim().toUpperCase(java.util.Locale.ROOT));
+                    if (!type.isAlive() || !type.isSpawnable() || type == EntityType.PLAYER) {
+                        continue;
+                    }
+                    double chance = clampChance(mobChance.getDouble(raw, 0.0D));
+                    if (chance > 0.0D) {
+                        plugin.bundleDropMobChances().put(type, chance);
+                    }
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+        }
+        // Backward compatibility: legacy mobs list uses default chance.
+        List<String> legacyMobs = root.getStringList("mobs");
+        for (String raw : legacyMobs) {
+            if (raw == null || raw.isBlank()) {
+                continue;
+            }
+            try {
+                EntityType type = EntityType.valueOf(raw.trim().toUpperCase(java.util.Locale.ROOT));
+                if (!type.isAlive() || !type.isSpawnable() || type == EntityType.PLAYER) {
+                    continue;
+                }
+                plugin.bundleDropMobChances().putIfAbsent(type, plugin.getBundleDropChancePercent());
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        List<?> rawRewards = root.getList("rewards", new ArrayList<>());
+        for (Object raw : rawRewards) {
+            if (!(raw instanceof Map<?, ?> map)) {
+                continue;
+            }
+            BundleDropRewardType type = BundleDropRewardType.fromString(String.valueOf(map.get("type")));
+            if (type == null) {
+                continue;
+            }
+            String key = String.valueOf(map.get("key"));
+            int level = parseInt(map.get("level"), 1);
+            int amount = parseInt(map.get("amount"), 1);
+            if (key == null || key.isBlank()) {
+                continue;
+            }
+            plugin.bundleDropRewards().add(new BundleDropReward(type, key, Math.max(1, level), Math.max(1, amount)));
+        }
+
+        List<?> extraDrops = root.getList("extra_drops", new ArrayList<>());
+        for (Object raw : extraDrops) {
+            if (raw instanceof ItemStack stack && stack.getType() != org.bukkit.Material.AIR) {
+                ItemStack copy = stack.clone();
+                copy.setAmount(1);
+                plugin.bundleDropExtraDrops().add(copy);
+            }
+        }
+
+        saveBundleDropSettings();
+    }
+
+    void saveBundleDropSettings() {
+        plugin.getConfig().set("bundle_drop.enabled", plugin.isBundleDropEnabled());
+        plugin.getConfig().set("bundle_drop.chance", plugin.getBundleDropChancePercent());
+
+        plugin.getConfig().set("bundle_drop.mob_chance", null);
+        for (Map.Entry<EntityType, Double> entry : plugin.bundleDropMobChances().entrySet()) {
+            if (entry.getValue() != null && entry.getValue() > 0.0D) {
+                plugin.getConfig().set("bundle_drop.mob_chance." + entry.getKey().name(), clampChance(entry.getValue()));
+            }
+        }
+
+        List<Map<String, Object>> serialized = new ArrayList<>();
+        for (BundleDropReward reward : plugin.bundleDropRewards()) {
+            serialized.add(Map.of(
+                    "type", reward.type().name(),
+                    "key", reward.key(),
+                    "level", reward.level(),
+                    "amount", reward.amount()
+            ));
+        }
+        plugin.getConfig().set("bundle_drop.rewards", serialized);
+        plugin.getConfig().set("bundle_drop.extra_drops", new ArrayList<>(plugin.bundleDropExtraDrops()));
         plugin.saveConfig();
     }
 
