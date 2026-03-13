@@ -53,9 +53,9 @@ public final class InstantDeathEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack thrown = trident.getItem();
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(thrown, null, null);
+        plugin().revealMysteryItemIfNeeded(thrown, null, null);
         trident.setItem(thrown);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(thrown, EnchantType.INSTANT_DEATH);
+        int level = plugin().getEnchantLevel(thrown, EnchantType.INSTANT_DEATH);
         if (level <= 0) {
             return;
         }
@@ -80,7 +80,7 @@ public final class InstantDeathEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack thrown = trident.getItem();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(thrown, EnchantType.INSTANT_DEATH);
+        int level = plugin().getEnchantLevel(thrown, EnchantType.INSTANT_DEATH);
         if (level <= 0 || isResolved(trident)) {
             return;
         }
@@ -138,6 +138,6 @@ public final class InstantDeathEnchant extends BaseForbiddenEnchant {
     }
 
     private @NotNull NamespacedKey resolvedKey() {
-        return new NamespacedKey(ForbiddenEnchantsPlugin.instance(), "instant_death_resolved");
+        return new NamespacedKey(plugin(), "instant_death_resolved");
     }
 }

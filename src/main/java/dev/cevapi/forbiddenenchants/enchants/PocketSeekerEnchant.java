@@ -47,11 +47,11 @@ public final class PocketSeekerEnchant extends BaseForbiddenEnchant {
         ItemStack held = hand == EquipmentSlot.OFF_HAND
                 ? event.getPlayer().getInventory().getItemInOffHand()
                 : event.getPlayer().getInventory().getItemInMainHand();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(held, EnchantType.POCKET_SEEKER);
+        int level = plugin().getEnchantLevel(held, EnchantType.POCKET_SEEKER);
         if (!isActive(level)) {
             return;
         }
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(held, event.getPlayer(), hand);
+        plugin().revealMysteryItemIfNeeded(held, event.getPlayer(), hand);
     }
 }
 

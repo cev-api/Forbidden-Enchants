@@ -62,17 +62,17 @@ public final class CharmEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack weapon = event.getBow();
-        if (weapon == null || !ForbiddenEnchantsPlugin.instance().isRangedWeapon(weapon)) {
+        if (weapon == null || !plugin().isRangedWeapon(weapon)) {
             return;
         }
         EquipmentSlot hand = event.getHand() == EquipmentSlot.OFF_HAND ? EquipmentSlot.OFF_HAND : EquipmentSlot.HAND;
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(weapon, player, hand);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.CHARM);
+        plugin().revealMysteryItemIfNeeded(weapon, player, hand);
+        int level = plugin().getEnchantLevel(weapon, EnchantType.CHARM);
         if (!shouldTagProjectile(level)) {
             return;
         }
         projectile.getPersistentDataContainer().set(
-                ForbiddenEnchantsPlugin.instance().enchantmentProjectileKey(),
+                plugin().enchantmentProjectileKey(),
                 PersistentDataType.INTEGER,
                 level
         );
@@ -82,13 +82,13 @@ public final class CharmEnchant extends BaseForbiddenEnchant {
     public void onProjectileHit(@NotNull ProjectileHitEvent event, long tickCounter) {
         Projectile projectile = event.getEntity();
         Integer level = projectile.getPersistentDataContainer().get(
-                ForbiddenEnchantsPlugin.instance().enchantmentProjectileKey(),
+                plugin().enchantmentProjectileKey(),
                 PersistentDataType.INTEGER
         );
         if (level == null) {
             return;
         }
-        onProjectileHit(level, () -> ForbiddenEnchantsPlugin.instance().applyCharmProjectile(projectile, level, event.getHitEntity(), tickCounter));
+        onProjectileHit(level, () -> plugin().applyCharmProjectile(projectile, level, event.getHitEntity(), tickCounter));
     }
 
     @Override
@@ -96,20 +96,20 @@ public final class CharmEnchant extends BaseForbiddenEnchant {
         if (!(event.getEntity() instanceof Mob mob)) {
             return;
         }
-        if (ForbiddenEnchantsPlugin.instance().isCharmedPet(mob.getUniqueId())) {
-            ForbiddenEnchantsPlugin.instance().cancelMobTarget(event, mob);
+        if (plugin().isCharmedPet(mob.getUniqueId())) {
+            plugin().cancelMobTarget(event, mob);
             return;
         }
-        UUID ownerId = ForbiddenEnchantsPlugin.instance().allyOwnerId(mob.getUniqueId());
+        UUID ownerId = plugin().allyOwnerId(mob.getUniqueId());
         if (ownerId == null) {
             return;
         }
         if (event.getTarget() instanceof Player targetPlayer && ownerId.equals(targetPlayer.getUniqueId())) {
-            ForbiddenEnchantsPlugin.instance().cancelMobTarget(event, mob);
+            plugin().cancelMobTarget(event, mob);
             return;
         }
-        if (event.getTarget() instanceof Mob targetMob && ForbiddenEnchantsPlugin.instance().isAllyMob(targetMob.getUniqueId())) {
-            ForbiddenEnchantsPlugin.instance().cancelMobTarget(event, mob);
+        if (event.getTarget() instanceof Mob targetMob && plugin().isAllyMob(targetMob.getUniqueId())) {
+            plugin().cancelMobTarget(event, mob);
         }
     }
 
@@ -122,12 +122,12 @@ public final class CharmEnchant extends BaseForbiddenEnchant {
         if (!(rawDamager instanceof Mob damagerMob)) {
             return;
         }
-        if (ForbiddenEnchantsPlugin.instance().isCharmedPet(damagerMob.getUniqueId())) {
+        if (plugin().isCharmedPet(damagerMob.getUniqueId())) {
             event.setCancelled(true);
             damagerMob.setTarget(null);
             return;
         }
-        UUID ownerId = ForbiddenEnchantsPlugin.instance().allyOwnerId(damagerMob.getUniqueId());
+        UUID ownerId = plugin().allyOwnerId(damagerMob.getUniqueId());
         if (ownerId == null) {
             return;
         }
@@ -136,7 +136,7 @@ public final class CharmEnchant extends BaseForbiddenEnchant {
             damagerMob.setTarget(null);
             return;
         }
-        if (event.getEntity() instanceof Mob targetMob && ForbiddenEnchantsPlugin.instance().isAllyMob(targetMob.getUniqueId())) {
+        if (event.getEntity() instanceof Mob targetMob && plugin().isAllyMob(targetMob.getUniqueId())) {
             event.setCancelled(true);
             damagerMob.setTarget(null);
         }

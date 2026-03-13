@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 final class FeCommandHandler implements CommandExecutor, TabCompleter {
     private final ForbiddenEnchantsPlugin plugin;
@@ -34,7 +35,7 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
                              @NotNull String label,
                              @NotNull String[] args) {
         if (!sender.hasPermission("forbiddenenchants.admin")) {
-            plugin.sendFeError(sender, "You do not have permission (forbiddenenchants.admin).");
+            plugin.sendFeError(sender, msg("no_permission", "You do not have permission (forbiddenenchants.admin)."));
             return true;
         }
 
@@ -54,11 +55,15 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
             case "giveitem" -> handleGiveItem(sender, args);
             case "mysterybook" -> handleGiveMysteryBook(sender, args);
             case "mysteryitem" -> handleGiveMysteryItem(sender, args);
+            case "reload" -> handleReload(sender);
             case "injector", "structureinjector" -> injectorCommandHandler.handleCommand(sender, args);
             case "librarian", "librariantrades", "libtrades" -> librarianTradeCommandHandler.handleCommand(sender, args);
             case "bundle", "bundledrop", "mobbundle" -> bundleDropCommandHandler.handleCommand(sender, args);
             default -> {
-                plugin.sendFeError(sender, "Unknown subcommand. Use /" + label + " help");
+                plugin.sendFeError(
+                        sender,
+                        msg("unknown_subcommand", "Unknown subcommand. Use /{label} help", Map.of("label", label))
+                );
                 yield true;
             }
         };
@@ -70,7 +75,7 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
                                                 @NotNull String alias,
                                                 @NotNull String[] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("help", "list", "gui", "menu", "toggles", "settings", "enchanttoggles", "give", "givebook", "giveitem", "mysterybook", "mysteryitem", "injector", "librarian", "bundle", "bundledrop", "mobbundle"), new ArrayList<>());
+            return StringUtil.copyPartialMatches(args[0], List.of("help", "list", "gui", "menu", "toggles", "settings", "enchanttoggles", "give", "givebook", "giveitem", "mysterybook", "mysteryitem", "reload", "injector", "librarian", "bundle", "bundledrop", "mobbundle"), new ArrayList<>());
         }
 
         boolean isGiveBook = args[0].equalsIgnoreCase("give") || args[0].equalsIgnoreCase("givebook");
@@ -177,7 +182,7 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         if (arg != null && !arg.isBlank()) {
             Player target = Bukkit.getPlayer(arg);
             if (target == null) {
-                plugin.sendFeError(sender, "Player not found: " + arg);
+                plugin.sendFeError(sender, msg("player_not_found", "Player not found: {player}", Map.of("player", arg)));
                 return null;
             }
             return target;
@@ -185,14 +190,14 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         if (sender instanceof Player player) {
             return player;
         }
-        plugin.sendFeError(sender, "Console must provide a target player.");
+        plugin.sendFeError(sender, msg("console_needs_target", "Console must provide a target player."));
         return null;
     }
 
     private @Nullable EnchantType parseEnchantType(@NotNull CommandSender sender, @NotNull String arg) {
         EnchantType type = EnchantType.fromArg(arg);
         if (type == null || plugin.isRetiredEnchant(type) || type.isAnvilOnlyUtilityBook()) {
-            plugin.sendFeError(sender, "Unknown enchant: " + arg);
+            plugin.sendFeError(sender, msg("unknown_enchant", "Unknown enchant: {enchant}", Map.of("enchant", arg)));
             return null;
         }
         return type;
@@ -203,11 +208,15 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         try {
             level = Integer.parseInt(arg);
         } catch (NumberFormatException ex) {
-            plugin.sendFeError(sender, "Level must be a number.");
+            plugin.sendFeError(sender, msg("level_not_number", "Level must be a number."));
             return -1;
         }
         if (level < 1 || level > type.maxLevel) {
-            plugin.sendFeError(sender, "Level for " + type.arg + " must be 1-" + type.maxLevel + ".");
+            plugin.sendFeError(
+                    sender,
+                    msg("level_out_of_range", "Level for {enchant} must be 1-{max}.",
+                            Map.of("enchant", type.arg, "max", String.valueOf(type.maxLevel)))
+            );
             return -1;
         }
         return level;
@@ -215,7 +224,7 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
 
     private boolean handleGiveBook(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length < 3 || args.length > 4) {
-            plugin.sendFeError(sender, "Usage: /fe give <enchant> <level> [player]");
+            plugin.sendFeError(sender, msg("usage_give", "Usage: /fe give <enchant> <level> [player]"));
             return true;
         }
         EnchantType type = parseEnchantType(sender, args[1]);
@@ -231,17 +240,35 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
             return true;
         }
         plugin.giveOrDrop(target, plugin.createBook(type, level));
-        plugin.sendFeSuccess(sender, "Gave " + type.displayName + " " + RomanNumeralUtil.toRoman(level) + " book to " + target.getName() + ".");
+        plugin.sendFeSuccess(
+                sender,
+                msg(
+                        "gave_book",
+                        "Gave {enchant} {level} book to {player}.",
+                        Map.of(
+                                "enchant", type.displayName,
+                                "level", RomanNumeralUtil.toRoman(level),
+                                "player", target.getName()
+                        )
+                )
+        );
         if (!sender.equals(target)) {
-            target.sendMessage(net.kyori.adventure.text.Component.text("[Forbidden Enchants] ", net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE)
-                    .append(net.kyori.adventure.text.Component.text("You received " + type.displayName + " " + RomanNumeralUtil.toRoman(level) + " book.", type.color)));
+            target.sendMessage(net.kyori.adventure.text.Component.text(plugin.message("fe.prefix", "[Forbidden Enchants] "), net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE)
+                    .append(net.kyori.adventure.text.Component.text(
+                            msg(
+                                    "you_received_book",
+                                    "You received {enchant} {level} book.",
+                                    Map.of("enchant", type.displayName, "level", RomanNumeralUtil.toRoman(level))
+                            ),
+                            type.color
+                    )));
         }
         return true;
     }
 
     private boolean handleGiveItem(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length < 4 || args.length > 5) {
-            plugin.sendFeError(sender, "Usage: /fe giveitem <enchant> <level> <material> [player]");
+            plugin.sendFeError(sender, msg("usage_giveitem", "Usage: /fe giveitem <enchant> <level> <material> [player]"));
             return true;
         }
         EnchantType type = parseEnchantType(sender, args[1]);
@@ -254,11 +281,18 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         }
         var material = SlotParsingUtil.parseMaterial(args[3]);
         if (material == null || material == org.bukkit.Material.AIR) {
-            plugin.sendFeError(sender, "Unknown material: " + args[3]);
+            plugin.sendFeError(sender, msg("unknown_material", "Unknown material: {material}", Map.of("material", args[3])));
             return true;
         }
         if (!plugin.isMaterialValidForEnchant(material, type)) {
-            plugin.sendFeError(sender, type.displayName + " requires " + EnchantMaterialCatalog.requiredMaterialCategory(type) + ".");
+            plugin.sendFeError(
+                    sender,
+                    msg(
+                            "invalid_material_for_enchant",
+                            "{enchant} requires {category}.",
+                            Map.of("enchant", type.displayName, "category", EnchantMaterialCatalog.requiredMaterialCategory(type))
+                    )
+            );
             return true;
         }
         Player target = resolveTarget(sender, args.length >= 5 ? args[4] : null);
@@ -267,22 +301,34 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         }
         var enchanted = plugin.createEnchantedItem(type, level, material);
         if (enchanted == null) {
-            plugin.sendFeError(sender, "Could not build enchanted item.");
+            plugin.sendFeError(sender, msg("could_not_build_item", "Could not build enchanted item."));
             return true;
         }
         plugin.giveOrDrop(target, enchanted);
-        plugin.sendFeSuccess(sender, "Gave " + DisplayNameUtil.toDisplayName(material) + " with " + type.displayName + " " + RomanNumeralUtil.toRoman(level) + " to " + target.getName() + ".");
+        plugin.sendFeSuccess(
+                sender,
+                msg(
+                        "gave_item",
+                        "Gave {item} with {enchant} {level} to {player}.",
+                        Map.of(
+                                "item", DisplayNameUtil.toDisplayName(material),
+                                "enchant", type.displayName,
+                                "level", RomanNumeralUtil.toRoman(level),
+                                "player", target.getName()
+                        )
+                )
+        );
         return true;
     }
 
     private boolean handleGiveMysteryBook(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length < 2 || args.length > 3) {
-            plugin.sendFeError(sender, "Usage: /fe mysterybook <slot> [player]");
+            plugin.sendFeError(sender, msg("usage_mysterybook", "Usage: /fe mysterybook <slot> [player]"));
             return true;
         }
         ArmorSlot slot = SlotParsingUtil.parseSlotArg(args[1]);
         if (slot == null) {
-            plugin.sendFeError(sender, "Unknown slot: " + args[1]);
+            plugin.sendFeError(sender, msg("unknown_slot", "Unknown slot: {slot}", Map.of("slot", args[1])));
             return true;
         }
         Player target = resolveTarget(sender, args.length >= 3 ? args[2] : null);
@@ -290,18 +336,25 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
             return true;
         }
         plugin.giveOrDrop(target, plugin.createMysteryBook(slot));
-        plugin.sendFeSuccess(sender, "Gave mystery " + SlotParsingUtil.slotName(slot) + " enchant book to " + target.getName() + ".");
+        plugin.sendFeSuccess(
+                sender,
+                msg(
+                        "gave_mystery_book",
+                        "Gave mystery {slot} enchant book to {player}.",
+                        Map.of("slot", SlotParsingUtil.slotName(slot), "player", target.getName())
+                )
+        );
         return true;
     }
 
     private boolean handleGiveMysteryItem(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length < 2 || args.length > 3) {
-            plugin.sendFeError(sender, "Usage: /fe mysteryitem <material> [player]");
+            plugin.sendFeError(sender, msg("usage_mysteryitem", "Usage: /fe mysteryitem <material> [player]"));
             return true;
         }
         var material = SlotParsingUtil.parseMaterial(args[1]);
         if (material == null || material == org.bukkit.Material.AIR) {
-            plugin.sendFeError(sender, "Unknown material: " + args[1]);
+            plugin.sendFeError(sender, msg("unknown_material", "Unknown material: {material}", Map.of("material", args[1])));
             return true;
         }
         Player target = resolveTarget(sender, args.length >= 3 ? args[2] : null);
@@ -310,17 +363,31 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         }
         var mystery = plugin.createMysteryItem(material);
         if (mystery == null) {
-            plugin.sendFeError(sender, "No forbidden enchant exists for " + DisplayNameUtil.toDisplayName(material) + ".");
+            plugin.sendFeError(
+                    sender,
+                    msg(
+                            "no_enchant_for_material",
+                            "No forbidden enchant exists for {material}.",
+                            Map.of("material", DisplayNameUtil.toDisplayName(material))
+                    )
+            );
             return true;
         }
         plugin.giveOrDrop(target, mystery);
-        plugin.sendFeSuccess(sender, "Gave mystery " + DisplayNameUtil.toDisplayName(material) + " to " + target.getName() + ".");
+        plugin.sendFeSuccess(
+                sender,
+                msg(
+                        "gave_mystery_item",
+                        "Gave mystery {material} to {player}.",
+                        Map.of("material", DisplayNameUtil.toDisplayName(material), "player", target.getName())
+                )
+        );
         return true;
     }
 
     private boolean handleOpenGui(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length > 2) {
-            plugin.sendFeError(sender, "Usage: /fe gui [player]");
+            plugin.sendFeError(sender, msg("usage_gui", "Usage: /fe gui [player]"));
             return true;
         }
         Player target = resolveTarget(sender, args.length == 2 ? args[1] : null);
@@ -330,14 +397,17 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         int startPage = plugin.getLastMenuPage(target.getUniqueId());
         plugin.openFeMenu(target, startPage);
         if (!sender.equals(target)) {
-            plugin.sendFeSuccess(sender, "Opened Forbidden Enchants menu for " + target.getName() + ".");
+            plugin.sendFeSuccess(
+                    sender,
+                    msg("opened_gui_for_player", "Opened Forbidden Enchants menu for {player}.", Map.of("player", target.getName()))
+            );
         }
         return true;
     }
 
     private boolean handleToggleGui(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length > 2) {
-            plugin.sendFeError(sender, "Usage: /fe toggles [player]");
+            plugin.sendFeError(sender, msg("usage_toggles", "Usage: /fe toggles [player]"));
             return true;
         }
         Player target = resolveTarget(sender, args.length == 2 ? args[1] : null);
@@ -346,9 +416,26 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         }
         plugin.openEnchantToggleMenu(target, 0);
         if (!sender.equals(target)) {
-            plugin.sendFeSuccess(sender, "Opened enchant toggle GUI for " + target.getName() + ".");
+            plugin.sendFeSuccess(
+                    sender,
+                    msg("opened_toggles_for_player", "Opened enchant toggle GUI for {player}.", Map.of("player", target.getName()))
+            );
         }
         return true;
+    }
+
+    private boolean handleReload(@NotNull CommandSender sender) {
+        plugin.reloadRuntimeConfiguration();
+        plugin.sendFeSuccess(sender, msg("reloaded", "Forbidden Enchants config/messages reloaded."));
+        return true;
+    }
+
+    private @NotNull String msg(@NotNull String key, @NotNull String fallback) {
+        return plugin.message("fe.command." + key, fallback);
+    }
+
+    private @NotNull String msg(@NotNull String key, @NotNull String fallback, @NotNull Map<String, String> placeholders) {
+        return plugin.message("fe.command." + key, fallback, placeholders);
     }
 }
 

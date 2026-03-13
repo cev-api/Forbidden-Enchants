@@ -47,11 +47,11 @@ public final class GraveRobberEnchant extends BaseForbiddenEnchant {
         ItemStack held = hand == EquipmentSlot.OFF_HAND
                 ? event.getPlayer().getInventory().getItemInOffHand()
                 : event.getPlayer().getInventory().getItemInMainHand();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(held, EnchantType.GRAVE_ROBBER);
+        int level = plugin().getEnchantLevel(held, EnchantType.GRAVE_ROBBER);
         if (!isActive(level)) {
             return;
         }
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(held, event.getPlayer(), hand);
+        plugin().revealMysteryItemIfNeeded(held, event.getPlayer(), hand);
     }
 }
 

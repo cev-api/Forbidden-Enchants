@@ -97,7 +97,10 @@ public final class MasqueradeEnchant extends BaseForbiddenEnchant {
 
         EntityType nearestType = findNearestMobType(player, 18.0);
         if (nearestType == null) {
-            player.sendActionBar(Component.text("Masquerade: no nearby mob to copy.", NamedTextColor.RED));
+            player.sendActionBar(Component.text(
+                    plugin().message("enchants.masquerade.no_nearby_mob", "Masquerade: no nearby mob to copy."),
+                    NamedTextColor.RED
+            ));
             return;
         }
 
@@ -128,7 +131,14 @@ public final class MasqueradeEnchant extends BaseForbiddenEnchant {
 
         masqueradeStates.put(player.getUniqueId(), new MasqueradeState(nearestType, living, equipment, wasCollidable));
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 10, 0, true, false, false), true);
-        player.sendActionBar(Component.text("Masquerade: " + DisplayNameUtil.toDisplayName(nearestType), NamedTextColor.GREEN));
+        player.sendActionBar(Component.text(
+                plugin().message(
+                        "enchants.masquerade.started",
+                        "Masquerade: {mob}",
+                        Map.of("mob", DisplayNameUtil.toDisplayName(nearestType))
+                ),
+                NamedTextColor.GREEN
+        ));
     }
 
     public boolean isMasquerading(@NotNull Map<UUID, MasqueradeState> masqueradeStates,
@@ -145,7 +155,10 @@ public final class MasqueradeEnchant extends BaseForbiddenEnchant {
             state.disguise().remove();
             restoreEquipment(player, state.equipment());
             player.setCollidable(state.wasCollidable());
-            player.sendActionBar(Component.text("Masquerade ended.", NamedTextColor.YELLOW));
+            player.sendActionBar(Component.text(
+                    plugin().message("enchants.masquerade.ended", "Masquerade ended."),
+                    NamedTextColor.YELLOW
+            ));
         }
         player.removePotionEffect(PotionEffectType.INVISIBILITY);
     }
@@ -174,19 +187,19 @@ public final class MasqueradeEnchant extends BaseForbiddenEnchant {
     @Override
     public void onToggleSneak(@NotNull PlayerToggleSneakEvent event, long tickCounter) {
         Player player = event.getPlayer();
-        if (ForbiddenEnchantsPlugin.instance().isMasquerading(player)) {
+        if (plugin().isMasquerading(player)) {
             if (!event.isSneaking()) {
-                ForbiddenEnchantsPlugin.instance().clearMasquerade(player);
+                plugin().clearMasquerade(player);
             }
             return;
         }
 
         ItemStack boots = player.getInventory().getBoots();
-        if (ForbiddenEnchantsPlugin.instance().getEnchantLevel(boots, dev.cevapi.forbiddenenchants.EnchantType.MASQUERADE) <= 0) {
+        if (plugin().getEnchantLevel(boots, dev.cevapi.forbiddenenchants.EnchantType.MASQUERADE) <= 0) {
             return;
         }
         if (event.isSneaking()) {
-            ForbiddenEnchantsPlugin.instance().startMasquerade(player);
+            plugin().startMasquerade(player);
         }
     }
 
@@ -195,8 +208,8 @@ public final class MasqueradeEnchant extends BaseForbiddenEnchant {
         if (!(event.getDamager() instanceof Player player)) {
             return;
         }
-        if (!ForbiddenEnchantsPlugin.instance().isMasquerading(player)
-                && !ForbiddenEnchantsPlugin.instance().hasMiasmaForm(player)) {
+        if (!plugin().isMasquerading(player)
+                && !plugin().hasMiasmaForm(player)) {
             return;
         }
         event.setCancelled(true);
@@ -207,8 +220,8 @@ public final class MasqueradeEnchant extends BaseForbiddenEnchant {
         if (!(event.getEntity().getShooter() instanceof Player player)) {
             return;
         }
-        if (!ForbiddenEnchantsPlugin.instance().isMasquerading(player)
-                && !ForbiddenEnchantsPlugin.instance().hasMiasmaForm(player)) {
+        if (!plugin().isMasquerading(player)
+                && !plugin().hasMiasmaForm(player)) {
             return;
         }
         event.setCancelled(true);
@@ -219,49 +232,49 @@ public final class MasqueradeEnchant extends BaseForbiddenEnchant {
         if (!(event.getEntity() instanceof Mob mob) || !(event.getTarget() instanceof Player player)) {
             return;
         }
-        if (ForbiddenEnchantsPlugin.instance().hasMiasmaForm(player) && mob.getType() != EntityType.BLAZE) {
-            ForbiddenEnchantsPlugin.instance().cancelMobTarget(event, mob);
+        if (plugin().hasMiasmaForm(player) && mob.getType() != EntityType.BLAZE) {
+            plugin().cancelMobTarget(event, mob);
             return;
         }
-        if (ForbiddenEnchantsPlugin.instance().hasHatedOne(player)) {
+        if (plugin().hasHatedOne(player)) {
             return;
         }
-        if (!ForbiddenEnchantsPlugin.instance().isMasquerading(player)) {
+        if (!plugin().isMasquerading(player)) {
             return;
         }
         if (!shouldIgnoreMob(mob)) {
             return;
         }
-        ForbiddenEnchantsPlugin.instance().cancelMobTarget(event, mob);
+        plugin().cancelMobTarget(event, mob);
     }
 
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
-        if (ForbiddenEnchantsPlugin.instance().isMasquerading(player)) {
+        if (plugin().isMasquerading(player)) {
             EnchantList.INSTANCE.forbiddenAgility().clearFor(player);
-            ForbiddenEnchantsPlugin.instance().maintainMasquerade(player);
+            plugin().maintainMasquerade(player);
             return;
         }
 
         ItemStack boots = player.getInventory().getBoots();
-        if (!ForbiddenEnchantsPlugin.instance().isArmorPieceForSlot(boots, dev.cevapi.forbiddenenchants.ArmorSlot.BOOTS)) {
+        if (!plugin().isArmorPieceForSlot(boots, dev.cevapi.forbiddenenchants.ArmorSlot.BOOTS)) {
             EnchantList.INSTANCE.forbiddenAgility().clearFor(player);
             return;
         }
 
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(boots, player, org.bukkit.inventory.EquipmentSlot.FEET);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(boots, dev.cevapi.forbiddenenchants.EnchantType.MASQUERADE);
+        plugin().revealMysteryItemIfNeeded(boots, player, org.bukkit.inventory.EquipmentSlot.FEET);
+        int level = plugin().getEnchantLevel(boots, dev.cevapi.forbiddenenchants.EnchantType.MASQUERADE);
         if (level <= 0) {
-            ForbiddenEnchantsPlugin.instance().clearMasquerade(player);
+            plugin().clearMasquerade(player);
             return;
         }
-        ForbiddenEnchantsPlugin.instance().enforceDurabilityCap(
+        plugin().enforceDurabilityCap(
                 boots,
                 org.bukkit.Material.LEATHER_BOOTS.getMaxDurability(),
                 player,
                 org.bukkit.inventory.EquipmentSlot.FEET
         );
-        ForbiddenEnchantsPlugin.instance().maintainMasquerade(player);
+        plugin().maintainMasquerade(player);
     }
 
     private @Nullable EntityType findNearestMobType(@NotNull Player player, double radius) {

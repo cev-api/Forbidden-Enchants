@@ -44,13 +44,13 @@ public final class TheHatedOneEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack helmet = player.getInventory().getHelmet();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.THE_HATED_ONE);
+        int level = plugin().getEnchantLevel(helmet, EnchantType.THE_HATED_ONE);
         if (!isActive(level)) {
             return;
         }
-        ForbiddenEnchantsPlugin.instance().applyHatedOneAggro(player, level);
+        plugin().applyHatedOneAggro(player, level);
         if (shouldSpawnWave(level, tickCounter)) {
-            ForbiddenEnchantsPlugin.instance().trySpawnHatedOneWave(player, level);
+            plugin().trySpawnHatedOneWave(player, level);
         }
     }
 }

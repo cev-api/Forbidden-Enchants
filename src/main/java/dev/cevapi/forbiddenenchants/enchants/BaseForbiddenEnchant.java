@@ -1,8 +1,10 @@
 package dev.cevapi.forbiddenenchants.enchants;
 
 import dev.cevapi.forbiddenenchants.ArmorSlot;
+import dev.cevapi.forbiddenenchants.ForbiddenEnchantsPlugin;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -15,6 +17,7 @@ public abstract class BaseForbiddenEnchant implements ForbiddenEnchantDefinition
     private final NamedTextColor color;
     private final List<String> aliases;
     private final String slotDescriptionOverride;
+    private @Nullable ForbiddenEnchantsPlugin plugin;
 
     protected BaseForbiddenEnchant(@NotNull String arg,
                                    @NotNull String pdcKey,
@@ -32,6 +35,17 @@ public abstract class BaseForbiddenEnchant implements ForbiddenEnchantDefinition
         this.color = color;
         this.aliases = List.copyOf(aliases);
         this.slotDescriptionOverride = slotDescriptionOverride;
+    }
+
+    final void bindPlugin(@NotNull ForbiddenEnchantsPlugin plugin) {
+        this.plugin = plugin;
+    }
+
+    protected final @NotNull ForbiddenEnchantsPlugin plugin() {
+        if (plugin == null) {
+            throw new IllegalStateException("Enchant runtime context is not bound yet.");
+        }
+        return plugin;
     }
 
     @Override

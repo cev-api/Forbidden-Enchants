@@ -46,8 +46,8 @@ public final class CreepersInfluenceEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack helmet = player.getInventory().getHelmet();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.CREEPERS_INFLUENCE);
-        onHelmetPulse(player, level, tickCounter, ForbiddenEnchantsPlugin.instance()::applyCreepersInfluence);
+        int level = plugin().getEnchantLevel(helmet, EnchantType.CREEPERS_INFLUENCE);
+        onHelmetPulse(player, level, tickCounter, plugin()::applyCreepersInfluence);
     }
 }
 

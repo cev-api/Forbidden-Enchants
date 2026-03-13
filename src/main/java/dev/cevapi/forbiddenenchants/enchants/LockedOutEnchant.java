@@ -43,7 +43,7 @@ public final class LockedOutEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull org.bukkit.entity.Player player, long tickCounter) {
         ItemStack boots = player.getInventory().getBoots();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(boots, EnchantType.LOCKED_OUT);
+        int level = plugin().getEnchantLevel(boots, EnchantType.LOCKED_OUT);
         if (!isActive(level)) {
             return;
         }

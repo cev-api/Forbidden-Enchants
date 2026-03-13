@@ -20,8 +20,6 @@ import java.util.Date;
 import java.util.List;
 
 public final class AdministrativeAspirationsEnchant extends BaseForbiddenEnchant {
-    private static final String LEVEL_TWO_BAN_MESSAGE = "Banned by Administrative Aspirations Sword for 5 Minutes";
-
     public AdministrativeAspirationsEnchant() {
         super("administrative_aspirations",
                 "administrative_aspirations_level",
@@ -48,8 +46,8 @@ public final class AdministrativeAspirationsEnchant extends BaseForbiddenEnchant
         }
 
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.ADMINISTRATIVE_ASPIRATIONS);
-        if (level <= 0 || !ForbiddenEnchantsPlugin.instance().isSword(weapon)) {
+        int level = plugin().getEnchantLevel(weapon, EnchantType.ADMINISTRATIVE_ASPIRATIONS);
+        if (level <= 0 || !plugin().isSword(weapon)) {
             return;
         }
 
@@ -60,8 +58,14 @@ public final class AdministrativeAspirationsEnchant extends BaseForbiddenEnchant
 
         if (event.getEntity() instanceof LivingEntity mobTarget) {
             mobTarget.teleport(mobTarget.getWorld().getSpawnLocation());
-            attacker.sendActionBar(Component.text("Administrative Aspirations teleported the mob to spawn.", NamedTextColor.GOLD));
-            ForbiddenEnchantsPlugin.instance().damageItemByPercent(attacker, EquipmentSlot.HAND, weapon, 0.02D);
+            attacker.sendActionBar(Component.text(
+                    plugin().message(
+                            "enchants.administrative_aspirations.mob_teleport",
+                            "Administrative Aspirations teleported the mob to spawn."
+                    ),
+                    NamedTextColor.GOLD
+            ));
+            plugin().damageItemByPercent(attacker, EquipmentSlot.HAND, weapon, 0.02D);
         }
     }
 
@@ -70,14 +74,24 @@ public final class AdministrativeAspirationsEnchant extends BaseForbiddenEnchant
                                   @NotNull Player targetPlayer,
                                   int level) {
         if (level >= 2) {
+            String levelTwoBanMessage = plugin().message(
+                    "enchants.administrative_aspirations.level_two_ban",
+                    "Banned by Administrative Aspirations Sword for 5 Minutes"
+            );
             Date expires = Date.from(Instant.now().plus(Duration.ofMinutes(5)));
-            Bukkit.getBanList(BanList.Type.NAME).addBan(targetPlayer.getName(), LEVEL_TWO_BAN_MESSAGE, expires, "Administrative Aspirations");
-            targetPlayer.kick(Component.text(LEVEL_TWO_BAN_MESSAGE, NamedTextColor.RED));
-            ForbiddenEnchantsPlugin.instance().damageItemByPercent(attacker, EquipmentSlot.HAND, weapon, 0.50D);
+            Bukkit.getBanList(BanList.Type.NAME).addBan(targetPlayer.getName(), levelTwoBanMessage, expires, "Administrative Aspirations");
+            targetPlayer.kick(Component.text(levelTwoBanMessage, NamedTextColor.RED));
+            plugin().damageItemByPercent(attacker, EquipmentSlot.HAND, weapon, 0.50D);
             return;
         }
 
-        targetPlayer.kick(Component.text("Kicked by Administrative Aspirations Sword", NamedTextColor.RED));
-        ForbiddenEnchantsPlugin.instance().damageItemByPercent(attacker, EquipmentSlot.HAND, weapon, 0.25D);
+        targetPlayer.kick(Component.text(
+                plugin().message(
+                        "enchants.administrative_aspirations.level_one_kick",
+                        "Kicked by Administrative Aspirations Sword"
+                ),
+                NamedTextColor.RED
+        ));
+        plugin().damageItemByPercent(attacker, EquipmentSlot.HAND, weapon, 0.25D);
     }
 }

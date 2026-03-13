@@ -115,7 +115,16 @@ final class StructureInjectorRuntimeService {
 
                 if (plugin.isStructureInjectNotifyOnAdd()) {
                     player.sendActionBar(Component.text(
-                            "Structure injector: added " + plugin.describeItem(injected) + " (" + finalMatchedStructure.getKey().getKey() + ", " + lootMode.id() + ", " + mysteryState.id() + ").",
+                            plugin.message(
+                                    "injector.added_actionbar",
+                                    "Structure injector: added {item} ({structure}, {loot_mode}, {mystery_state}).",
+                                    Map.of(
+                                            "item", plugin.describeItem(injected),
+                                            "structure", finalMatchedStructure.getKey().getKey(),
+                                            "loot_mode", lootMode.id(),
+                                            "mystery_state", mysteryState.id()
+                                    )
+                            ),
                             NamedTextColor.LIGHT_PURPLE
                     ));
                 }
@@ -170,7 +179,11 @@ final class StructureInjectorRuntimeService {
         }
         plugin.giveOrDrop(player, injected);
         player.sendActionBar(Component.text(
-                "You discovered a new forbidden enchant: " + plugin.describeItem(injected) + ".",
+                plugin.message(
+                        "injector.vault_discovered",
+                        "You discovered a new forbidden enchant: {item}.",
+                        Map.of("item", plugin.describeItem(injected))
+                ),
                 NamedTextColor.LIGHT_PURPLE
         ));
     }

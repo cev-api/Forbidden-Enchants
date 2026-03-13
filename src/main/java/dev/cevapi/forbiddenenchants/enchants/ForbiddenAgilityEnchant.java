@@ -71,12 +71,12 @@ public final class ForbiddenAgilityEnchant extends BaseForbiddenEnchant {
 
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
-        if (ForbiddenEnchantsPlugin.instance().isMasquerading(player)) {
+        if (plugin().isMasquerading(player)) {
             clearFor(player);
             return;
         }
         ItemStack boots = player.getInventory().getBoots();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(boots, EnchantType.FORBIDDEN_AGILITY);
+        int level = plugin().getEnchantLevel(boots, EnchantType.FORBIDDEN_AGILITY);
         if (level > 0) {
             applyTo(player, level, 0.006D);
             return;

@@ -1,0 +1,219 @@
+menu:
+  navigation:
+    previous_label: "Previous Page"
+    next_label: "Next Page"
+    previous_arrow: "<<"
+    next_arrow: ">>"
+    left_click: "Left-click: 1 page"
+    right_click: "Right-click: 5 pages"
+    no_page: "No page available."
+  click_to_claim: "Click to claim"
+  fe:
+    title_category: "Forbidden {category}"
+    title_enchant: "Forbidden {enchant}"
+    claimed_item: "Claimed {item}."
+    return_label: "Return"
+    return_lore: "Back to full enchant list."
+    categories:
+      all: "All"
+      armors: "Armors"
+      weapons: "Weapons"
+      totems: "Totems"
+      books: "Books"
+      potions: "Potions"
+      other: "Other"
+  bundle:
+    root_title: "Bundle Drop Editor"
+    root_enchant_rewards: "Enchant Rewards"
+    root_potion_rewards: "Potion Rewards"
+    root_loot_rewards: "Loot Rewards"
+    root_bundle_contents: "Bundle Contents"
+    root_extra_drops: "Extra Drops"
+    mobs_title: "Bundle Drop Mobs (Per-Mob Chance)"
+    enchants_title: "Bundle Reward Enchants"
+    potions_title: "Bundle Reward Potions"
+    loot_title: "Bundle Reward Loot"
+    rewards_title: "Current Bundle Rewards"
+    extra_title: "Extra Non-Stackable Drops"
+  injector:
+    title_prefix: "Structure Injector "
+    mode_configured: "(Configured)"
+    mode_all: "(All)"
+    rarity_title: "Enchantment Rarity Editor"
+  librarian:
+    title_prefix: "Librarian Trades "
+    mode_all: "(All Books)"
+    mode_configured: "(Configured)"
+  toggles:
+    title: "Enchant Toggles"
+
+fe:
+  prefix: "[Forbidden Enchants] "
+  help:
+    header: "Forbidden Enchants Admin"
+    help_desc: "Show command help."
+    list_desc: "List enchants + levels."
+    gui_desc: "Open item picker menu."
+    give_desc: "Give enchant book."
+    givebook_desc: "Give enchant book (explicit)."
+    giveitem_desc: "Give pre-enchanted gear."
+    mysterybook_desc: "Give obfuscated random enchant book for a slot."
+    mysteryitem_desc: "Give obfuscated random pre-enchanted item."
+    reload_desc: "Reload config.yml and messages.yml."
+    injector_desc: "Structure-based loot injection controls."
+    librarian_desc: "Librarian forbidden-book trade editor and controls."
+    bundle_desc: "Mob bundle-drop editor and controls."
+    toggles_desc: "Toggle enchant use and chest/vault spawning."
+  list:
+    header: "Forbidden Enchants"
+  command:
+    no_permission: "You do not have permission (forbiddenenchants.admin)."
+    unknown_subcommand: "Unknown subcommand. Use /{label} help"
+    player_not_found: "Player not found: {player}"
+    console_needs_target: "Console must provide a target player."
+    unknown_enchant: "Unknown enchant: {enchant}"
+    level_not_number: "Level must be a number."
+    level_out_of_range: "Level for {enchant} must be 1-{max}."
+    usage_give: "Usage: /fe give <enchant> <level> [player]"
+    gave_book: "Gave {enchant} {level} book to {player}."
+    you_received_book: "You received {enchant} {level} book."
+    usage_giveitem: "Usage: /fe giveitem <enchant> <level> <material> [player]"
+    unknown_material: "Unknown material: {material}"
+    invalid_material_for_enchant: "{enchant} requires {category}."
+    could_not_build_item: "Could not build enchanted item."
+    gave_item: "Gave {item} with {enchant} {level} to {player}."
+    usage_mysterybook: "Usage: /fe mysterybook <slot> [player]"
+    unknown_slot: "Unknown slot: {slot}"
+    gave_mystery_book: "Gave mystery {slot} enchant book to {player}."
+    usage_mysteryitem: "Usage: /fe mysteryitem <material> [player]"
+    no_enchant_for_material: "No forbidden enchant exists for {material}."
+    gave_mystery_item: "Gave mystery {material} to {player}."
+    usage_gui: "Usage: /fe gui [player]"
+    opened_gui_for_player: "Opened Forbidden Enchants menu for {player}."
+    usage_toggles: "Usage: /fe toggles [player]"
+    opened_toggles_for_player: "Opened enchant toggle GUI for {player}."
+    reloaded: "Forbidden Enchants config/messages reloaded."
+
+bundle:
+  command:
+    usage_chance: "Usage: /fe bundle chance <0-100>"
+    chance_range: "Chance must be 0-100."
+    usage_gui: "Usage: /fe bundle gui [player]"
+    unknown_subcommand: "Unknown bundle subcommand. Use /fe bundle help"
+    help_header: "Bundle Drop Commands:"
+    help_line_1: " - /fe bundle status"
+    help_line_2: " - /fe bundle enable | disable"
+    help_line_3: " - /fe bundle chance <0-100>"
+    help_line_4: " - /fe bundle gui [player]"
+    help_line_5: " - /fe bundle clear"
+    player_not_found: "Player not found: {player}"
+    console_needs_target: "Console must provide a target player."
+
+librarian:
+  command:
+    usage_gui: "Usage: /fe librarian gui [player]"
+    usage_add: "Usage: /fe librarian add <enchant> <level> <chance> <emeralds> [books]"
+    usage_remove: "Usage: /fe librarian remove <index>"
+    index_out_of_range: "Index out of range. Use /fe librarian list."
+    unknown_subcommand: "Unknown librarian subcommand. Use /fe librarian help"
+    help_header: "Librarian Trade Commands:"
+    help_line_1: " - /fe librarian status | list"
+    help_line_2: " - /fe librarian enable | disable"
+    help_line_3: " - /fe librarian gui [player]"
+    help_line_4: " - /fe librarian add <enchant> <level> <chance> <emeralds> [books]"
+    help_line_5: " - /fe librarian remove <index>"
+    help_line_6: " - /fe librarian clear"
+    unknown_enchant: "Unknown enchant: {enchant}"
+    level_out_of_range: "Level for {enchant} must be 1-{max}."
+    chance_range: "Chance must be 0-100."
+    cost_range: "{field} must be 1-64."
+    book_cost_range: "Book cost must be 0-64."
+    index_not_number: "Index must be a number."
+    player_not_found: "Player not found: {player}"
+    console_needs_target: "Console must provide a target player."
+
+injector:
+  help:
+    header: "Structure Injector"
+    commands: "Commands:"
+    status_desc: "Show enabled state, default chance and structure list."
+    vault_desc: "Configure trial vault/ominous vault injection."
+    enable_desc: "Toggle structure-based loot injection."
+    gui_desc: "Open visual structure/chance editor."
+    add_desc: "Add one or many structures using comma list."
+    set_desc: "Set exact % chance for a structure."
+    mode_desc: "Set/query loot mode for a structure."
+    mode_direct_desc: "Set loot type + curse + mystery states directly."
+    mystery_desc: "Legacy alias for mystery-state toggling."
+    notify_desc: "Set/query chest add action-bar messages."
+    remove_desc: "Remove one or many structures."
+    default_desc: "Default % used by add/gui operations."
+    clear_desc: "Remove all configured structures."
+  status:
+    header: "Structure Injector: "
+    default_chance: "Default chance: "
+    chest_message: "Chest add message: "
+    vault: "Vault injector: "
+    no_structures: "No structures configured."
+  added_actionbar: "Structure injector: added {item} ({structure}, {loot_mode}, {mystery_state})."
+  vault_discovered: "You discovered a new forbidden enchant: {item}."
+
+locked_out:
+  nether_portal_blocked: "Locked Out shattered the Nether portal."
+  end_portal_blocked: "You're locked out."
+
+charmed_pet:
+  sit: "{pet} is sitting."
+  follow: "{pet} is following."
+  sneak_to_leash: "Sneak-right-click to leash villagers."
+  removed_leash: "Removed leash from {pet}."
+  bound: "Charmed Pet bound."
+
+applied_curse:
+  set_name: "Applied Curse set to {name}"
+  target_notified: "Your name has been cursed."
+  broadcast_mid_1: " cursed "
+  broadcast_mid_2: " with "
+  broadcast_suffix: "."
+
+petty_thief:
+  stole_attacker: "Petty Thief stole {item}."
+  stole_victim: "An item was stolen from your inventory!"
+  pulled_from_mob: "Petty Thief pulled {item} from {mob}."
+
+enchants:
+  administrative_aspirations:
+    mob_teleport: "Administrative Aspirations teleported the mob to spawn."
+    level_two_ban: "Banned by Administrative Aspirations Sword for 5 Minutes"
+    level_one_kick: "Kicked by Administrative Aspirations Sword"
+  disarm:
+    triggered: "Disarm triggered."
+  greed:
+    prevent_drop: "Greed prevents dropping items."
+  kismet:
+    double_drops: "Kismet: fate chosen - double drops."
+    no_drops: "Kismet: fate chosen - no drops."
+  masquerade:
+    no_nearby_mob: "Masquerade: no nearby mob to copy."
+    started: "Masquerade: {mob}"
+    ended: "Masquerade ended."
+  pocket_dimension:
+    triggered: "Pocket Dimension triggered!"
+  sonic_panic:
+    blade_shattered: "Sonic Panic shattered your blade!"
+  temporal_sickness:
+    broken: "Temporal Sickness has been broken."
+    warped: "Temporal Sickness warped you."
+  the_seeker:
+    tracking: "{player} {distance}m"
+  wing_clipper:
+    prevent_equip: "Wing Clipper prevents Elytra equip."
+    ripped_elytra: "Wing Clipper ripped off your Elytra."
+
+spells:
+  infected:
+    no_targets: "Infected: no valid nearby targets."
+  joint_sleep:
+    warped: "Joint Sleep: warped to nearest shared bed."
+    placed_beds: "Joint Sleep: placed 2 beds in front."
+    gave_beds: "Joint Sleep: no room to place beds, gave 2 beds."

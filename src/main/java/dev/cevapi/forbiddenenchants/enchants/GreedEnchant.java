@@ -46,11 +46,11 @@ public final class GreedEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack leggings = player.getInventory().getLeggings();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(leggings, EnchantType.GREED);
+        int level = plugin().getEnchantLevel(leggings, EnchantType.GREED);
         onLeggingsTick(
                 level,
-                () -> ForbiddenEnchantsPlugin.instance().pullNearbyExperienceOrbs(player, 30.0D),
-                () -> ForbiddenEnchantsPlugin.instance().pullNearbyItems(player, 30.0D)
+                () -> plugin().pullNearbyExperienceOrbs(player, 30.0D),
+                () -> plugin().pullNearbyItems(player, 30.0D)
         );
     }
 }

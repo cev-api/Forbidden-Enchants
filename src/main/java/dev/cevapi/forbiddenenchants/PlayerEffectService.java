@@ -133,7 +133,10 @@ final class PlayerEffectService {
             player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
         }
         world.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, SoundCategory.PLAYERS, 1.4F, 0.5F);
-        player.sendActionBar(Component.text("Sonic Panic shattered your blade!", NamedTextColor.DARK_AQUA));
+        player.sendActionBar(Component.text(
+                ForbiddenEnchantsPlugin.instance().message("enchants.sonic_panic.blade_shattered", "Sonic Panic shattered your blade!"),
+                NamedTextColor.DARK_AQUA
+        ));
     }
 
     void applyCreepersInfluence(@NotNull Player player) {

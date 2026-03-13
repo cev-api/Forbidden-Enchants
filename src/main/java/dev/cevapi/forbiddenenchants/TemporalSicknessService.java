@@ -86,7 +86,10 @@ final class TemporalSicknessService {
 
         breakTemporalSicknessArmor(killer, piece.slot());
         killCount.remove(id);
-        killer.sendActionBar(Component.text("Temporal Sickness has been broken.", NamedTextColor.GREEN));
+        killer.sendActionBar(Component.text(
+                ForbiddenEnchantsPlugin.instance().message("enchants.temporal_sickness.broken", "Temporal Sickness has been broken."),
+                NamedTextColor.GREEN
+        ));
     }
 
     private long nextIntervalTicks(int level) {
@@ -118,7 +121,10 @@ final class TemporalSicknessService {
         }
 
         player.teleport(destination);
-        player.sendActionBar(Component.text("Temporal Sickness warped you.", NamedTextColor.DARK_PURPLE));
+        player.sendActionBar(Component.text(
+                ForbiddenEnchantsPlugin.instance().message("enchants.temporal_sickness.warped", "Temporal Sickness warped you."),
+                NamedTextColor.DARK_PURPLE
+        ));
     }
 
     private @Nullable World nextTemporalDestinationWorld(@NotNull World source) {

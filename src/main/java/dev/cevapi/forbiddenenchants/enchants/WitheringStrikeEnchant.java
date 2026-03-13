@@ -52,12 +52,12 @@ public final class WitheringStrikeEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack thrown = trident.getItem();
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(thrown, null, null);
+        plugin().revealMysteryItemIfNeeded(thrown, null, null);
         trident.setItem(thrown);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(thrown, EnchantType.WITHERING_STRIKE);
+        int level = plugin().getEnchantLevel(thrown, EnchantType.WITHERING_STRIKE);
         onTridentHit(level, () -> {
             target.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 120, 0, true, true, true), true);
-            ForbiddenEnchantsPlugin.instance().addWitheringTarget(target.getUniqueId(), attacker.getUniqueId(), tickCounter);
+            plugin().addWitheringTarget(target.getUniqueId(), attacker.getUniqueId(), tickCounter);
         });
     }
 }

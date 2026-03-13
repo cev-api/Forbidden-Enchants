@@ -33,6 +33,7 @@ final class FullForceDefenseService {
     private final PlayerEffectService playerEffectService;
     private final MiasmaFormService miasmaFormService;
     private final Plugin schedulerPlugin;
+    private final Supplier<MessagesService> messagesServiceSupplier;
     private final Map<UUID, Long> fullForceExplosionImmuneUntil;
     private final Map<UUID, Vector> fullForceKnockbackVectors;
     private final Map<UUID, Long> fullForceKnockbackUntil;
@@ -41,6 +42,7 @@ final class FullForceDefenseService {
                             @NotNull PlayerEffectService playerEffectService,
                             @NotNull MiasmaFormService miasmaFormService,
                             @NotNull Plugin schedulerPlugin,
+                            @NotNull Supplier<MessagesService> messagesServiceSupplier,
                             @NotNull Map<UUID, Long> fullForceExplosionImmuneUntil,
                             @NotNull Map<UUID, Vector> fullForceKnockbackVectors,
                             @NotNull Map<UUID, Long> fullForceKnockbackUntil) {
@@ -48,6 +50,7 @@ final class FullForceDefenseService {
         this.playerEffectService = playerEffectService;
         this.miasmaFormService = miasmaFormService;
         this.schedulerPlugin = schedulerPlugin;
+        this.messagesServiceSupplier = messagesServiceSupplier;
         this.fullForceExplosionImmuneUntil = fullForceExplosionImmuneUntil;
         this.fullForceKnockbackVectors = fullForceKnockbackVectors;
         this.fullForceKnockbackUntil = fullForceKnockbackUntil;
@@ -140,12 +143,21 @@ final class FullForceDefenseService {
                 from.setType(Material.AIR);
             }
             event.setCancelled(true);
-            player.sendActionBar(Component.text("Locked Out shattered the Nether portal.", NamedTextColor.RED));
+            player.sendActionBar(Component.text(
+                    messagesServiceSupplier.get().get(
+                            "locked_out.nether_portal_blocked",
+                            "Locked Out shattered the Nether portal."
+                    ),
+                    NamedTextColor.RED
+            ));
             return;
         }
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.END_PORTAL) {
             event.setCancelled(true);
-            player.sendActionBar(Component.text("You're locked out.", NamedTextColor.RED));
+            player.sendActionBar(Component.text(
+                    messagesServiceSupplier.get().get("locked_out.end_portal_blocked", "You're locked out."),
+                    NamedTextColor.RED
+            ));
         }
     }
 

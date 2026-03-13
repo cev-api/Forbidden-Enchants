@@ -15,21 +15,21 @@ public final class InjectorMessagingUtil {
     }
 
     public static void sendHelp(@NotNull CommandSender sender) {
-        sender.sendMessage(Component.text("Structure Injector", NamedTextColor.GOLD));
-        sender.sendMessage(Component.text("Commands:", NamedTextColor.YELLOW));
-        sendHelpLine(sender, "/fe injector status", "Show enabled state, default chance and structure list.");
-        sendHelpLine(sender, "/fe injector vault <status|enable|disable|normal|ominous|both> [chance]", "Configure trial vault/ominous vault injection.");
-        sendHelpLine(sender, "/fe injector enable|disable", "Toggle structure-based loot injection.");
-        sendHelpLine(sender, "/fe injector gui [player]", "Open visual structure/chance editor.");
-        sendHelpLine(sender, "/fe injector add <s1,s2,...> [chance]", "Add one or many structures using comma list.");
-        sendHelpLine(sender, "/fe injector set <structure> <chance>", "Set exact % chance for a structure.");
-        sendHelpLine(sender, "/fe injector mode <structure> <mode|cycletype|cyclecurse|cyclemystery|status>", "Set/query loot mode for a structure.");
-        sendHelpLine(sender, "/fe injector mode <structure> <books|items|all> <all|cursed|uncursed> [all|mystery|non_mystery]", "Set loot type + curse + mystery states directly.");
-        sendHelpLine(sender, "/fe injector mystery <structure> <on|off|toggle|status>", "Legacy alias for mystery-state toggling.");
-        sendHelpLine(sender, "/fe injector notify <on|off|toggle|status>", "Set/query chest add action-bar messages.");
-        sendHelpLine(sender, "/fe injector remove <s1,s2,...>", "Remove one or many structures.");
-        sendHelpLine(sender, "/fe injector defaultchance <chance>", "Default % used by add/gui operations.");
-        sendHelpLine(sender, "/fe injector clear", "Remove all configured structures.");
+        sender.sendMessage(Component.text(msg("injector.help.header", "Structure Injector"), NamedTextColor.GOLD));
+        sender.sendMessage(Component.text(msg("injector.help.commands", "Commands:"), NamedTextColor.YELLOW));
+        sendHelpLine(sender, "/fe injector status", msg("injector.help.status_desc", "Show enabled state, default chance and structure list."));
+        sendHelpLine(sender, "/fe injector vault <status|enable|disable|normal|ominous|both> [chance]", msg("injector.help.vault_desc", "Configure trial vault/ominous vault injection."));
+        sendHelpLine(sender, "/fe injector enable|disable", msg("injector.help.enable_desc", "Toggle structure-based loot injection."));
+        sendHelpLine(sender, "/fe injector gui [player]", msg("injector.help.gui_desc", "Open visual structure/chance editor."));
+        sendHelpLine(sender, "/fe injector add <s1,s2,...> [chance]", msg("injector.help.add_desc", "Add one or many structures using comma list."));
+        sendHelpLine(sender, "/fe injector set <structure> <chance>", msg("injector.help.set_desc", "Set exact % chance for a structure."));
+        sendHelpLine(sender, "/fe injector mode <structure> <mode|cycletype|cyclecurse|cyclemystery|status>", msg("injector.help.mode_desc", "Set/query loot mode for a structure."));
+        sendHelpLine(sender, "/fe injector mode <structure> <books|items|all> <all|cursed|uncursed> [all|mystery|non_mystery]", msg("injector.help.mode_direct_desc", "Set loot type + curse + mystery states directly."));
+        sendHelpLine(sender, "/fe injector mystery <structure> <on|off|toggle|status>", msg("injector.help.mystery_desc", "Legacy alias for mystery-state toggling."));
+        sendHelpLine(sender, "/fe injector notify <on|off|toggle|status>", msg("injector.help.notify_desc", "Set/query chest add action-bar messages."));
+        sendHelpLine(sender, "/fe injector remove <s1,s2,...>", msg("injector.help.remove_desc", "Remove one or many structures."));
+        sendHelpLine(sender, "/fe injector defaultchance <chance>", msg("injector.help.default_desc", "Default % used by add/gui operations."));
+        sendHelpLine(sender, "/fe injector clear", msg("injector.help.clear_desc", "Remove all configured structures."));
     }
 
     private static void sendHelpLine(@NotNull CommandSender sender, @NotNull String command, @NotNull String description) {
@@ -53,15 +53,15 @@ public final class InjectorMessagingUtil {
                                   @NotNull Map<NamespacedKey, Double> structureInjectChances,
                                   @NotNull Map<NamespacedKey, InjectorLootMode> structureInjectLootModes,
                                   @NotNull Map<NamespacedKey, InjectorMysteryState> structureInjectMysteryStates) {
-        sender.sendMessage(Component.text("Structure Injector: ", NamedTextColor.GOLD)
+        sender.sendMessage(Component.text(msg("injector.status.header", "Structure Injector: "), NamedTextColor.GOLD)
                 .append(Component.text(structureInjectorEnabled ? "ENABLED" : "DISABLED",
                         structureInjectorEnabled ? NamedTextColor.GREEN : NamedTextColor.RED)));
-        sender.sendMessage(Component.text("Default chance: ", NamedTextColor.YELLOW)
+        sender.sendMessage(Component.text(msg("injector.status.default_chance", "Default chance: "), NamedTextColor.YELLOW)
                 .append(Component.text(StructureInjectorUtil.formatPercent(structureInjectDefaultChance), NamedTextColor.WHITE)));
-        sender.sendMessage(Component.text("Chest add message: ", NamedTextColor.YELLOW)
+        sender.sendMessage(Component.text(msg("injector.status.chest_message", "Chest add message: "), NamedTextColor.YELLOW)
                 .append(Component.text(structureInjectNotifyOnAdd ? "ENABLED" : "DISABLED",
                         structureInjectNotifyOnAdd ? NamedTextColor.GREEN : NamedTextColor.RED)));
-        sender.sendMessage(Component.text("Vault injector: ", NamedTextColor.YELLOW)
+        sender.sendMessage(Component.text(msg("injector.status.vault", "Vault injector: "), NamedTextColor.YELLOW)
                 .append(Component.text(trialVaultInjectorEnabled ? "ENABLED" : "DISABLED",
                         trialVaultInjectorEnabled ? NamedTextColor.GREEN : NamedTextColor.RED))
                 .append(Component.text(" | ", NamedTextColor.YELLOW))
@@ -76,7 +76,7 @@ public final class InjectorMessagingUtil {
                 .append(Component.text(trialVaultOminousLootMode.id() + "+" + trialVaultOminousMysteryState.id(), NamedTextColor.WHITE)));
 
         if (structureInjectChances.isEmpty()) {
-            sender.sendMessage(Component.text("No structures configured.", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text(msg("injector.status.no_structures", "No structures configured."), NamedTextColor.YELLOW));
             return;
         }
         List<Map.Entry<NamespacedKey, Double>> entries = new ArrayList<>(structureInjectChances.entrySet());
@@ -92,6 +92,10 @@ public final class InjectorMessagingUtil {
                             ? Component.text(" | " + mode.id() + "+" + mysteryState.id(), NamedTextColor.LIGHT_PURPLE)
                             : Component.empty()));
         }
+    }
+
+    private static @NotNull String msg(@NotNull String path, @NotNull String fallback) {
+        return ForbiddenEnchantsPlugin.instance().message(path, fallback);
     }
 }
 

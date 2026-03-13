@@ -102,7 +102,14 @@ public final class TheSeekerEnchant extends BaseForbiddenEnchant {
             return;
         }
         int distance = (int) Math.round(player.getLocation().distance(best.getLocation()));
-        player.sendActionBar(Component.text(best.getName() + " " + distance + "m", NamedTextColor.AQUA));
+        player.sendActionBar(Component.text(
+                plugin().message(
+                        "enchants.the_seeker.tracking",
+                        "{player} {distance}m",
+                        Map.of("player", best.getName(), "distance", String.valueOf(distance))
+                ),
+                NamedTextColor.AQUA
+        ));
     }
 
     public void clearFor(@NotNull UUID playerId) {
@@ -118,7 +125,7 @@ public final class TheSeekerEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack helmet = player.getInventory().getHelmet();
-        if (ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.THE_SEEKER) <= 0) {
+        if (plugin().getEnchantLevel(helmet, EnchantType.THE_SEEKER) <= 0) {
             clearFor(player.getUniqueId());
             return;
         }
@@ -127,9 +134,9 @@ public final class TheSeekerEnchant extends BaseForbiddenEnchant {
                 player,
                 helmet,
                 tickCounter,
-                ForbiddenEnchantsPlugin.instance()::hasSeekerForbiddenEnchant,
-                ForbiddenEnchantsPlugin.instance()::stripSeekerForbiddenEnchants,
-                (owner, currentHelmet, percent) -> ForbiddenEnchantsPlugin.instance().damageArmorByPercent(owner, org.bukkit.inventory.EquipmentSlot.HEAD, currentHelmet, percent)
+                plugin()::hasSeekerForbiddenEnchant,
+                plugin()::stripSeekerForbiddenEnchants,
+                (owner, currentHelmet, percent) -> plugin().damageArmorByPercent(owner, org.bukkit.inventory.EquipmentSlot.HEAD, currentHelmet, percent)
         );
     }
 }

@@ -229,15 +229,15 @@ public final class VexatiousEnchant extends BaseForbiddenEnchant {
     public void onDamageByEntity(@NotNull EntityDamageByEntityEvent event, long tickCounter) {
         if (event.getDamager() instanceof Player attacker) {
             ItemStack helmet = attacker.getInventory().getHelmet();
-            if (ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.VEXATIOUS) > 0
+            if (plugin().getEnchantLevel(helmet, EnchantType.VEXATIOUS) > 0
                     && event.getEntity() instanceof LivingEntity living) {
-                ForbiddenEnchantsPlugin.instance().pushVexatiousAssistTarget(attacker.getUniqueId(), living, tickCounter);
+                plugin().pushVexatiousAssistTarget(attacker.getUniqueId(), living, tickCounter);
             }
         }
 
         if (event.getEntity() instanceof Player defender) {
             ItemStack helmet = defender.getInventory().getHelmet();
-            if (ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.VEXATIOUS) <= 0) {
+            if (plugin().getEnchantLevel(helmet, EnchantType.VEXATIOUS) <= 0) {
                 return;
             }
             Entity source = event.getDamager();
@@ -245,7 +245,7 @@ public final class VexatiousEnchant extends BaseForbiddenEnchant {
                 source = shooter;
             }
             if (source instanceof LivingEntity living) {
-                ForbiddenEnchantsPlugin.instance().pushVexatiousAssistTarget(defender.getUniqueId(), living, tickCounter);
+                plugin().pushVexatiousAssistTarget(defender.getUniqueId(), living, tickCounter);
             }
         }
     }
@@ -253,13 +253,13 @@ public final class VexatiousEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack helmet = player.getInventory().getHelmet();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.VEXATIOUS);
+        int level = plugin().getEnchantLevel(helmet, EnchantType.VEXATIOUS);
         if (level > 0 && tickCounter % 20L == 0L) {
-            ForbiddenEnchantsPlugin.instance().maintainVexatious(player, helmet, level, tickCounter);
+            plugin().maintainVexatious(player, helmet, level, tickCounter);
             return;
         }
         if (level <= 0) {
-            ForbiddenEnchantsPlugin.instance().clearVexatious(player.getUniqueId());
+            plugin().clearVexatious(player.getUniqueId());
         }
     }
 }

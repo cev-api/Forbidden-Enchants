@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 final class BundleDropCommandHandler {
     private static final List<String> SUBCOMMANDS = List.of("help", "status", "enable", "disable", "chance", "gui", "clear");
@@ -51,12 +52,12 @@ final class BundleDropCommandHandler {
             }
             case "chance" -> {
                 if (args.length != 3) {
-                    plugin.sendFeError(sender, "Usage: /fe bundle chance <0-100>");
+                    plugin.sendFeError(sender, msg("usage_chance", "Usage: /fe bundle chance <0-100>"));
                     yield true;
                 }
                 Double chance = StructureInjectorUtil.parseChancePercent(args[2]);
                 if (chance == null) {
-                    plugin.sendFeError(sender, "Chance must be 0-100.");
+                    plugin.sendFeError(sender, msg("chance_range", "Chance must be 0-100."));
                     yield true;
                 }
                 plugin.setBundleDropChancePercent(chance);
@@ -66,7 +67,7 @@ final class BundleDropCommandHandler {
             }
             case "gui", "menu" -> {
                 if (args.length > 3) {
-                    plugin.sendFeError(sender, "Usage: /fe bundle gui [player]");
+                    plugin.sendFeError(sender, msg("usage_gui", "Usage: /fe bundle gui [player]"));
                     yield true;
                 }
                 Player target = resolveTarget(sender, args.length == 3 ? args[2] : null);
@@ -88,7 +89,7 @@ final class BundleDropCommandHandler {
                 yield true;
             }
             default -> {
-                plugin.sendFeError(sender, "Unknown bundle subcommand. Use /fe bundle help");
+                plugin.sendFeError(sender, msg("unknown_subcommand", "Unknown bundle subcommand. Use /fe bundle help"));
                 yield true;
             }
         };
@@ -109,19 +110,19 @@ final class BundleDropCommandHandler {
     }
 
     private void sendHelp(@NotNull CommandSender sender) {
-        plugin.sendFeSuccess(sender, "Bundle Drop Commands:");
-        sender.sendMessage(net.kyori.adventure.text.Component.text(" - /fe bundle status", net.kyori.adventure.text.format.NamedTextColor.GRAY));
-        sender.sendMessage(net.kyori.adventure.text.Component.text(" - /fe bundle enable | disable", net.kyori.adventure.text.format.NamedTextColor.GRAY));
-        sender.sendMessage(net.kyori.adventure.text.Component.text(" - /fe bundle chance <0-100>", net.kyori.adventure.text.format.NamedTextColor.GRAY));
-        sender.sendMessage(net.kyori.adventure.text.Component.text(" - /fe bundle gui [player]", net.kyori.adventure.text.format.NamedTextColor.GRAY));
-        sender.sendMessage(net.kyori.adventure.text.Component.text(" - /fe bundle clear", net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        plugin.sendFeSuccess(sender, msg("help_header", "Bundle Drop Commands:"));
+        sender.sendMessage(net.kyori.adventure.text.Component.text(msg("help_line_1", " - /fe bundle status"), net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        sender.sendMessage(net.kyori.adventure.text.Component.text(msg("help_line_2", " - /fe bundle enable | disable"), net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        sender.sendMessage(net.kyori.adventure.text.Component.text(msg("help_line_3", " - /fe bundle chance <0-100>"), net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        sender.sendMessage(net.kyori.adventure.text.Component.text(msg("help_line_4", " - /fe bundle gui [player]"), net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        sender.sendMessage(net.kyori.adventure.text.Component.text(msg("help_line_5", " - /fe bundle clear"), net.kyori.adventure.text.format.NamedTextColor.GRAY));
     }
 
     private @Nullable Player resolveTarget(@NotNull CommandSender sender, @Nullable String arg) {
         if (arg != null && !arg.isBlank()) {
             Player target = Bukkit.getPlayer(arg);
             if (target == null) {
-                plugin.sendFeError(sender, "Player not found: " + arg);
+                plugin.sendFeError(sender, msg("player_not_found", "Player not found: {player}", Map.of("player", arg)));
                 return null;
             }
             return target;
@@ -129,7 +130,15 @@ final class BundleDropCommandHandler {
         if (sender instanceof Player player) {
             return player;
         }
-        plugin.sendFeError(sender, "Console must provide a target player.");
+        plugin.sendFeError(sender, msg("console_needs_target", "Console must provide a target player."));
         return null;
+    }
+
+    private @NotNull String msg(@NotNull String key, @NotNull String fallback) {
+        return plugin.message("bundle.command." + key, fallback);
+    }
+
+    private @NotNull String msg(@NotNull String key, @NotNull String fallback, @NotNull Map<String, String> placeholders) {
+        return plugin.message("bundle.command." + key, fallback, placeholders);
     }
 }

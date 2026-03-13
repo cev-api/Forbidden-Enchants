@@ -86,8 +86,8 @@ public final class ShockwaveEnchant extends BaseForbiddenEnchant {
         if (poppedTotem.getType() != Material.TOTEM_OF_UNDYING) {
             return;
         }
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(poppedTotem, EnchantType.SHOCKWAVE);
-        level = effectiveTotemLevel(level, tickCounter, ForbiddenEnchantsPlugin.instance().shockwaveArmedUntil(player.getUniqueId()));
+        int level = plugin().getEnchantLevel(poppedTotem, EnchantType.SHOCKWAVE);
+        level = effectiveTotemLevel(level, tickCounter, plugin().shockwaveArmedUntil(player.getUniqueId()));
         if (!isActive(level)) {
             return;
         }

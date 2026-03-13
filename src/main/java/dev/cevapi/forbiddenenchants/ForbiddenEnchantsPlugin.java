@@ -87,6 +87,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     private final List<LibrarianTradeEntry> librarianTrades = new ArrayList<>();
     private final List<Structure> allStructures = new ArrayList<>();
     private final CompassTrackingService compassTrackingService = new CompassTrackingService();
+    private final MessagesService messagesService = new MessagesService(this);
     private final MysteryItemService mysteryItemService = new MysteryItemService(
             this::enchantBookFactoryServiceInternal,
             this::enchantRuleCoreServiceInternal,
@@ -170,6 +171,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
             playerEffectService,
             miasmaFormService,
             this,
+            this::messagesServiceInternal,
             fullForceExplosionImmuneUntil,
             fullForceKnockbackVectors,
             fullForceKnockbackUntil
@@ -276,6 +278,26 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        dev.cevapi.forbiddenenchants.enchants.EnchantList.INSTANCE.bindPlugin(this);
+        initializeNamespacedKeys();
+        enchantLifecycleHooksService.onEnable(this);
+        enchantStateService.initializeKeys(this);
+        reloadRuntimeConfiguration();
+        ensureMenuPagesBuilt();
+        registerMainListener();
+        registerCommands();
+        scheduleTickEffectsTask();
+    }
+
+    @Override
+    public void onDisable() {
+        instance = null;
+        clearRuntimeState();
+        vexatiousService.cleanupAll();
+        enchantLifecycleHooksService.onDisable();
+    }
+
+    private void initializeNamespacedKeys() {
         bookEnchantKey = new NamespacedKey(this, "book_enchant");
         bookLevelKey = new NamespacedKey(this, "book_level");
         miasmaProjectileKey = new NamespacedKey(this, "miasma_projectile");
@@ -289,31 +311,45 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         vexatiousOwnerKey = new NamespacedKey(this, "vexatious_owner");
         mysteryKey = new NamespacedKey(this, "mystery_item");
         ricochetKey = new NamespacedKey(this, "ricochet_reflected");
-        enchantLifecycleHooksService.onEnable(this);
-        enchantStateService.initializeKeys(this);
+    }
 
+    private void loadPersistedAdminSystemsSafely() {
         try {
             loadStructureInjectorSettings();
             loadEnchantToggleSettings();
             loadBundleDropSettings();
             loadLibrarianTradeSettings();
         } catch (Throwable t) {
-            structureInjectorEnabled = false;
-            structureInjectChances.clear();
-            structureInjectLootModes.clear();
-            structureInjectMysteryStates.clear();
-            injectorBookRarityWeights.clear();
-            bundleDropEnabled = false;
-            bundleDropChancePercent = 5.0D;
-            bundleDropMobChances.clear();
-            bundleDropRewards.clear();
-            bundleDropExtraDrops.clear();
-            librarianTradesEnabled = false;
-            librarianTrades.clear();
-            getLogger().warning("Config-backed admin systems disabled due to startup error: " + t.getClass().getSimpleName() + ": " + t.getMessage());
+            resetConfigBackedAdminSystems();
+            getLogger().warning("Config-backed admin systems disabled due to startup error: "
+                    + t.getClass().getSimpleName() + ": " + t.getMessage());
         }
-        ensureMenuPagesBuilt();
+    }
 
+    boolean reloadRuntimeConfiguration() {
+        messagesService.reload();
+        loadPersistedAdminSystemsSafely();
+        feCatalogService.clear();
+        ensureMenuPagesBuilt();
+        return true;
+    }
+
+    private void resetConfigBackedAdminSystems() {
+        structureInjectorEnabled = false;
+        structureInjectChances.clear();
+        structureInjectLootModes.clear();
+        structureInjectMysteryStates.clear();
+        injectorBookRarityWeights.clear();
+        bundleDropEnabled = false;
+        bundleDropChancePercent = 5.0D;
+        bundleDropMobChances.clear();
+        bundleDropRewards.clear();
+        bundleDropExtraDrops.clear();
+        librarianTradesEnabled = false;
+        librarianTrades.clear();
+    }
+
+    private void registerMainListener() {
         Bukkit.getPluginManager().registerEvents(new ForbiddenEnchantsListener(
                 () -> tickCounter,
                 interactionRestrictionService,
@@ -336,19 +372,22 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
                 spellEffectService,
                 bundleDropRuntimeService
         ), this);
+    }
 
-        if (getCommand("fe") != null) {
-            FeCommandHandler commandHandler = new FeCommandHandler(this);
-            getCommand("fe").setExecutor(commandHandler);
-            getCommand("fe").setTabCompleter(commandHandler);
+    private void registerCommands() {
+        if (getCommand("fe") == null) {
+            return;
         }
+        FeCommandHandler commandHandler = new FeCommandHandler(this);
+        getCommand("fe").setExecutor(commandHandler);
+        getCommand("fe").setTabCompleter(commandHandler);
+    }
 
+    private void scheduleTickEffectsTask() {
         Bukkit.getScheduler().runTaskTimer(this, this::runTickEffects, 1L, 1L);
     }
 
-    @Override
-    public void onDisable() {
-        instance = null;
+    private void clearRuntimeState() {
         masqueradeService.clearAll();
         miasmaVisualService.clearAllOnline();
         fearedMobs.clear();
@@ -386,8 +425,6 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         librarianTrades.clear();
         allStructures.clear();
         enchantStateService.clearToggles();
-        vexatiousService.cleanupAll();
-        enchantLifecycleHooksService.onDisable();
     }
 
     private void loadStructureInjectorSettings() {
@@ -663,6 +700,16 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         fePresentationService.sendFeSuccess(sender, message);
     }
 
+    public @NotNull String message(@NotNull String path, @NotNull String fallback) {
+        return messagesService.get(path, fallback);
+    }
+
+    public @NotNull String message(@NotNull String path,
+                                   @NotNull String fallback,
+                                   @NotNull Map<String, String> placeholders) {
+        return messagesService.get(path, fallback, placeholders);
+    }
+
     int getLastMenuPage(@NotNull UUID playerId) {
         return feCatalogService.getLastMenuPage(playerId);
     }
@@ -689,6 +736,10 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
 
     private @NotNull MysteryItemService mysteryItemServiceInternal() {
         return mysteryItemService;
+    }
+
+    private @NotNull MessagesService messagesServiceInternal() {
+        return messagesService;
     }
 
     private @NotNull PlayerEffectService playerEffectServiceInternal() {

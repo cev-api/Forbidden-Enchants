@@ -1,6 +1,7 @@
 package dev.cevapi.forbiddenenchants.enchants;
 
 import dev.cevapi.forbiddenenchants.EnchantType;
+import dev.cevapi.forbiddenenchants.ForbiddenEnchantsPlugin;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityResurrectEvent;
@@ -326,6 +327,14 @@ public final class EnchantList {
 
     public @Nullable ForbiddenEnchantDefinition byArg(@NotNull String normalizedArg) {
         return byArg.get(normalizedArg);
+    }
+
+    public void bindPlugin(@NotNull ForbiddenEnchantsPlugin plugin) {
+        for (ForbiddenEnchantDefinition definition : all) {
+            if (definition instanceof BaseForbiddenEnchant enchant) {
+                enchant.bindPlugin(plugin);
+            }
+        }
     }
 
     public void dispatchToggleSneak(@NotNull PlayerToggleSneakEvent event, long tickCounter) {

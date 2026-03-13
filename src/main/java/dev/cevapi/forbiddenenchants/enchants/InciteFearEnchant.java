@@ -68,14 +68,14 @@ public final class InciteFearEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack weapon = player.getInventory().getItemInMainHand();
-        if (!ForbiddenEnchantsPlugin.instance().isSword(weapon)) {
+        if (!plugin().isSword(weapon)) {
             return;
         }
 
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(weapon, player, EquipmentSlot.HAND);
+        plugin().revealMysteryItemIfNeeded(weapon, player, EquipmentSlot.HAND);
 
-        int fearLevel = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.INCITE_FEAR);
-        int blindnessLevel = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.BLINDNESS);
+        int fearLevel = plugin().getEnchantLevel(weapon, EnchantType.INCITE_FEAR);
+        int blindnessLevel = plugin().getEnchantLevel(weapon, EnchantType.BLINDNESS);
         if (fearLevel <= 0 && blindnessLevel <= 0) {
             return;
         }
@@ -83,7 +83,7 @@ public final class InciteFearEnchant extends BaseForbiddenEnchant {
         onSwordHit(
                 fearLevel,
                 player.getNearbyEntities(10.0D, 10.0D, 10.0D),
-                mob -> ForbiddenEnchantsPlugin.instance().applyFear(mob, player, tickCounter)
+                mob -> plugin().applyFear(mob, player, tickCounter)
         );
 
         if (event.getEntity() instanceof Player target) {

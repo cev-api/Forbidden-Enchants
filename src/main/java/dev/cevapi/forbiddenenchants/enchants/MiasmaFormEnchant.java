@@ -37,10 +37,10 @@ public final class MiasmaFormEnchant extends BaseForbiddenEnchant {
         if (!(event.getEntity() instanceof Player player)) {
             return;
         }
-        if (!ForbiddenEnchantsPlugin.instance().hasMiasmaForm(player)) {
+        if (!plugin().hasMiasmaForm(player)) {
             return;
         }
-        if (ForbiddenEnchantsPlugin.instance().isAllowedMiasmaFormDamage(event)) {
+        if (plugin().isAllowedMiasmaFormDamage(event)) {
             return;
         }
         event.setCancelled(true);
@@ -49,21 +49,21 @@ public final class MiasmaFormEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack chestplate = player.getInventory().getChestplate();
-        if (player.isSneaking() && ForbiddenEnchantsPlugin.instance().hasMiasmaEnchantEquipped(player)) {
-            ForbiddenEnchantsPlugin.instance().applyMiasmaForm(player, tickCounter);
-            ForbiddenEnchantsPlugin.instance().setPlayerReach(player, 4.5D, 3.0D);
+        if (player.isSneaking() && plugin().hasMiasmaEnchantEquipped(player)) {
+            plugin().applyMiasmaForm(player, tickCounter);
+            plugin().setPlayerReach(player, 4.5D, 3.0D);
             return;
         }
 
-        ForbiddenEnchantsPlugin.instance().clearMiasmaVisual(player);
+        plugin().clearMiasmaVisual(player);
 
-        int voidGraspLevel = ForbiddenEnchantsPlugin.instance().getEnchantLevel(chestplate, EnchantType.VOID_GRASP);
-        int extendedGraspLevel = ForbiddenEnchantsPlugin.instance().getEnchantLevel(chestplate, EnchantType.EXTENDED_GRASP);
+        int voidGraspLevel = plugin().getEnchantLevel(chestplate, EnchantType.VOID_GRASP);
+        int extendedGraspLevel = plugin().getEnchantLevel(chestplate, EnchantType.EXTENDED_GRASP);
         if (EnchantList.INSTANCE.voidGrasp().isActive(voidGraspLevel) || EnchantList.INSTANCE.extendedGrasp().isActive(extendedGraspLevel)) {
-            ForbiddenEnchantsPlugin.instance().setPlayerReach(player, 6.0D, 6.0D);
+            plugin().setPlayerReach(player, 6.0D, 6.0D);
             return;
         }
-        ForbiddenEnchantsPlugin.instance().setPlayerReach(player, 4.5D, 3.0D);
+        plugin().setPlayerReach(player, 4.5D, 3.0D);
     }
 }
 

@@ -39,13 +39,13 @@ public final class NoFallEnchant extends BaseForbiddenEnchant {
         }
 
         ItemStack boots = player.getInventory().getBoots();
-        if (ForbiddenEnchantsPlugin.instance().getEnchantLevel(boots, EnchantType.NO_FALL) <= 0) {
+        if (plugin().getEnchantLevel(boots, EnchantType.NO_FALL) <= 0) {
             return;
         }
 
         double postDamageHealth = player.getHealth() - event.getFinalDamage();
         if (postDamageHealth <= 0.0D && boots != null) {
-            ForbiddenEnchantsPlugin.instance().damageArmorByPercent(player, EquipmentSlot.FEET, boots, 0.25D);
+            plugin().damageArmorByPercent(player, EquipmentSlot.FEET, boots, 0.25D);
         }
         event.setCancelled(true);
     }

@@ -90,7 +90,7 @@ public final class MujahideenEnchant extends BaseForbiddenEnchant {
             return;
         }
         UUID playerId = player.getUniqueId();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(poppedTotem, EnchantType.MUJAHIDEEN);
+        int level = plugin().getEnchantLevel(poppedTotem, EnchantType.MUJAHIDEEN);
         if (level <= 0 && isArmedByCarryover(playerId, tickCounter)) {
             level = 1;
         }
@@ -119,11 +119,11 @@ public final class MujahideenEnchant extends BaseForbiddenEnchant {
             world.createExplosion(center.clone().add(0.2D, 0.0D, -0.2D), 4.0F, false, true);
         }
 
-        Bukkit.getScheduler().runTask(ForbiddenEnchantsPlugin.instance(), () -> {
+        Bukkit.getScheduler().runTask(plugin(), () -> {
             if (!player.isOnline() || player.isDead()) {
                 return;
             }
-            Location destination = ForbiddenEnchantsPlugin.instance().findPocketDimensionSafeLocation(player.getLocation(), 50.0D);
+            Location destination = plugin().findPocketDimensionSafeLocation(player.getLocation(), 50.0D);
             if (destination == null) {
                 return;
             }

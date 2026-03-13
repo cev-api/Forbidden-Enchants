@@ -50,7 +50,10 @@ final class InteractionRestrictionService {
                 event.setCancelled(true);
                 event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
                 event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
-                player.sendActionBar(Component.text("You're locked out.", NamedTextColor.RED));
+                player.sendActionBar(Component.text(
+                        ForbiddenEnchantsPlugin.instance().message("locked_out.end_portal_blocked", "You're locked out."),
+                        NamedTextColor.RED
+                ));
             }
             return;
         }
@@ -93,7 +96,10 @@ final class InteractionRestrictionService {
             return;
         }
         event.setCancelled(true);
-        event.getPlayer().sendActionBar(Component.text("Greed prevents dropping items.", NamedTextColor.RED));
+        event.getPlayer().sendActionBar(Component.text(
+                ForbiddenEnchantsPlugin.instance().message("enchants.greed.prevent_drop", "Greed prevents dropping items."),
+                NamedTextColor.RED
+        ));
     }
 
     void onWingClipperEquipBlock(@NotNull InventoryClickEvent event) {
@@ -129,7 +135,10 @@ final class InteractionRestrictionService {
         }
 
         event.setCancelled(true);
-        player.sendActionBar(Component.text("Wing Clipper prevents Elytra equip.", NamedTextColor.RED));
+        player.sendActionBar(Component.text(
+                ForbiddenEnchantsPlugin.instance().message("enchants.wing_clipper.prevent_equip", "Wing Clipper prevents Elytra equip."),
+                NamedTextColor.RED
+        ));
     }
 
     void onWingClipperDragBlock(@NotNull InventoryDragEvent event) {
@@ -145,7 +154,10 @@ final class InteractionRestrictionService {
             return;
         }
         event.setCancelled(true);
-        player.sendActionBar(Component.text("Wing Clipper prevents Elytra equip.", NamedTextColor.RED));
+        player.sendActionBar(Component.text(
+                ForbiddenEnchantsPlugin.instance().message("enchants.wing_clipper.prevent_equip", "Wing Clipper prevents Elytra equip."),
+                NamedTextColor.RED
+        ));
     }
 
     void onWingClipperInteractBlock(@NotNull PlayerInteractEvent event) {
@@ -159,7 +171,10 @@ final class InteractionRestrictionService {
             return;
         }
         event.setCancelled(true);
-        event.getPlayer().sendActionBar(Component.text("Wing Clipper prevents Elytra equip.", NamedTextColor.RED));
+        event.getPlayer().sendActionBar(Component.text(
+                ForbiddenEnchantsPlugin.instance().message("enchants.wing_clipper.prevent_equip", "Wing Clipper prevents Elytra equip."),
+                NamedTextColor.RED
+        ));
     }
 }
 

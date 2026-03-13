@@ -163,19 +163,19 @@ public final class HealingTouchEnchant extends BaseForbiddenEnchant {
         }
 
         ItemStack weapon = player.getInventory().getItemInMainHand();
-        if (!ForbiddenEnchantsPlugin.instance().isHoe(weapon)) {
+        if (!plugin().isHoe(weapon)) {
             return;
         }
 
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.HEALING_TOUCH);
+        int level = plugin().getEnchantLevel(weapon, EnchantType.HEALING_TOUCH);
         if (!isActive(level)) {
             return;
         }
 
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(weapon, player, EquipmentSlot.HAND);
+        plugin().revealMysteryItemIfNeeded(weapon, player, EquipmentSlot.HAND);
         ItemMeta meta = weapon.getItemMeta();
-        if (meta != null && ForbiddenEnchantsPlugin.instance().hasHealingTouchForbiddenEnchant(meta)) {
-            ForbiddenEnchantsPlugin.instance().stripHealingTouchForbiddenEnchants(meta);
+        if (meta != null && plugin().hasHealingTouchForbiddenEnchant(meta)) {
+            plugin().stripHealingTouchForbiddenEnchants(meta);
             weapon.setItemMeta(meta);
         }
 
@@ -184,13 +184,13 @@ public final class HealingTouchEnchant extends BaseForbiddenEnchant {
         }
 
         onHit(
-                ForbiddenEnchantsPlugin.instance(),
+                plugin(),
                 event,
                 player,
                 target,
                 SELF_DAMAGE,
-                ForbiddenEnchantsPlugin.instance()::clearWitheringTarget,
-                durabilityDamage -> ForbiddenEnchantsPlugin.instance().damageHeldItem(player, EquipmentSlot.HAND, durabilityDamage)
+                plugin()::clearWitheringTarget,
+                durabilityDamage -> plugin().damageHeldItem(player, EquipmentSlot.HAND, durabilityDamage)
         );
     }
 }

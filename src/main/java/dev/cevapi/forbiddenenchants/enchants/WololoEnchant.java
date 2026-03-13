@@ -46,8 +46,8 @@ public final class WololoEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack helmet = player.getInventory().getHelmet();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.WOLOLO);
-        onHelmetPulse(player, level, tickCounter, ForbiddenEnchantsPlugin.instance()::applyWololo);
+        int level = plugin().getEnchantLevel(helmet, EnchantType.WOLOLO);
+        onHelmetPulse(player, level, tickCounter, plugin()::applyWololo);
     }
 }
 

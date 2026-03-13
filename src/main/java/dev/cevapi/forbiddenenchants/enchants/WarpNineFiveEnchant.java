@@ -47,7 +47,7 @@ public final class WarpNineFiveEnchant extends BaseForbiddenEnchant {
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         UUID id = player.getUniqueId();
         ItemStack boots = player.getInventory().getBoots();
-        if (ForbiddenEnchantsPlugin.instance().getEnchantLevel(boots, EnchantType.WARP_NINE_FIVE) <= 0) {
+        if (plugin().getEnchantLevel(boots, EnchantType.WARP_NINE_FIVE) <= 0) {
             clearState(id);
             return;
         }
@@ -76,7 +76,7 @@ public final class WarpNineFiveEnchant extends BaseForbiddenEnchant {
         double stepDistance = durabilityStepDistance.getOrDefault(id, 0.0D) + moved;
         int steps = (int) Math.floor(stepDistance / 50.0D);
         if (steps > 0) {
-            ForbiddenEnchantsPlugin.instance().damageArmorByPercent(player, EquipmentSlot.FEET, boots, 0.015D * steps);
+            plugin().damageArmorByPercent(player, EquipmentSlot.FEET, boots, 0.015D * steps);
             stepDistance -= steps * 50.0D;
         }
         durabilityStepDistance.put(id, stepDistance);

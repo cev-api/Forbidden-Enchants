@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class PettyThiefEnchant extends BaseForbiddenEnchant {
@@ -49,25 +50,48 @@ public final class PettyThiefEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack weapon = player.getInventory().getItemInMainHand();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.PETTY_THIEF);
-        if (!ForbiddenEnchantsPlugin.instance().isHoe(weapon) || level <= 0) {
+        int level = plugin().getEnchantLevel(weapon, EnchantType.PETTY_THIEF);
+        if (!plugin().isHoe(weapon) || level <= 0) {
             return;
         }
         onHit(level, () -> {
             if (event.getEntity() instanceof Player victim) {
-                ItemStack stolen = ForbiddenEnchantsPlugin.instance().stealRandomInventoryItem(victim);
+                ItemStack stolen = plugin().stealRandomInventoryItem(victim);
                 if (stolen == null) {
                     return;
                 }
-                ForbiddenEnchantsPlugin.instance().giveOrDrop(player, stolen);
-                player.sendActionBar(Component.text("Petty Thief stole " + ForbiddenEnchantsPlugin.instance().describeItem(stolen) + ".", NamedTextColor.GOLD));
-                victim.sendActionBar(Component.text("An item was stolen from your inventory!", NamedTextColor.RED));
+                plugin().giveOrDrop(player, stolen);
+                player.sendActionBar(Component.text(
+                        plugin().message(
+                                "petty_thief.stole_attacker",
+                                "Petty Thief stole {item}.",
+                                Map.of("item", plugin().describeItem(stolen))
+                        ),
+                        NamedTextColor.GOLD
+                ));
+                victim.sendActionBar(Component.text(
+                        plugin().message(
+                                "petty_thief.stole_victim",
+                                "An item was stolen from your inventory!"
+                        ),
+                        NamedTextColor.RED
+                ));
                 return;
             }
             if (event.getEntity() instanceof LivingEntity living) {
-                ItemStack stolen = ForbiddenEnchantsPlugin.instance().randomMobLootPreview(living);
-                ForbiddenEnchantsPlugin.instance().giveOrDrop(player, stolen);
-                player.sendActionBar(Component.text("Petty Thief pulled " + ForbiddenEnchantsPlugin.instance().describeItem(stolen) + " from " + DisplayNameUtil.toDisplayName(living.getType()) + ".", NamedTextColor.GOLD));
+                ItemStack stolen = plugin().randomMobLootPreview(living);
+                plugin().giveOrDrop(player, stolen);
+                player.sendActionBar(Component.text(
+                        plugin().message(
+                                "petty_thief.pulled_from_mob",
+                                "Petty Thief pulled {item} from {mob}.",
+                                Map.of(
+                                        "item", plugin().describeItem(stolen),
+                                        "mob", DisplayNameUtil.toDisplayName(living.getType())
+                                )
+                        ),
+                        NamedTextColor.GOLD
+                ));
             }
         });
     }

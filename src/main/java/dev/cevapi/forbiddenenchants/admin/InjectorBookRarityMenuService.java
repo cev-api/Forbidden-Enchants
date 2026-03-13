@@ -38,7 +38,7 @@ final class InjectorBookRarityMenuService {
         Inventory inventory = Bukkit.createInventory(
                 holder,
                 MENU_SIZE,
-                Component.text("Enchantment Rarity Editor", NamedTextColor.LIGHT_PURPLE)
+                Component.text(plugin.message("menu.injector.rarity_title", "Enchantment Rarity Editor"), NamedTextColor.LIGHT_PURPLE)
                         .append(Component.text(" [" + (safePage + 1) + "/" + totalPages + "]", NamedTextColor.GRAY))
         );
         holder.attach(inventory);

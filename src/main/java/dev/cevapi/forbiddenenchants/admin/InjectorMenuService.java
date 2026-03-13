@@ -46,8 +46,13 @@ final class InjectorMenuService {
         Inventory inventory = Bukkit.createInventory(
                 holder,
                 INJECTOR_MENU_SIZE,
-                Component.text("Structure Injector ", NamedTextColor.LIGHT_PURPLE)
-                        .append(Component.text(mode == InjectorMenuMode.CONFIGURED ? "(Configured)" : "(All)", NamedTextColor.WHITE))
+                Component.text(plugin.message("menu.injector.title_prefix", "Structure Injector "), NamedTextColor.LIGHT_PURPLE)
+                        .append(Component.text(
+                                mode == InjectorMenuMode.CONFIGURED
+                                        ? plugin.message("menu.injector.mode_configured", "(Configured)")
+                                        : plugin.message("menu.injector.mode_all", "(All)"),
+                                NamedTextColor.WHITE
+                        ))
                         .append(Component.text(" [" + (safePage + 1) + "/" + totalPages + "]", NamedTextColor.GRAY))
         );
         holder.attach(inventory);

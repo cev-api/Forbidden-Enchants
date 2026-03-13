@@ -62,13 +62,13 @@ public final class PocketDimensionEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack leggings = player.getInventory().getLeggings();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(leggings, EnchantType.POCKET_DIMENSION);
+        int level = plugin().getEnchantLevel(leggings, EnchantType.POCKET_DIMENSION);
         long ready = cooldownByPlayer.getOrDefault(player.getUniqueId(), 0L);
         double postDamageHealth = player.getHealth() - event.getFinalDamage();
         if (!canTriggerNow(level, postDamageHealth, maxHealth, tickCounter, ready)) {
             return;
         }
-        if (!ForbiddenEnchantsPlugin.instance().triggerPocketDimension(player)) {
+        if (!plugin().triggerPocketDimension(player)) {
             return;
         }
         cooldownByPlayer.put(player.getUniqueId(), tickCounter + cooldownTicks());

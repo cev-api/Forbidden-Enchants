@@ -60,7 +60,7 @@ public final class SiskosSolutionEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack chestplate = player.getInventory().getChestplate();
-        if (ForbiddenEnchantsPlugin.instance().getEnchantLevel(chestplate, EnchantType.SISKOS_SOLUTION) > 0
+        if (plugin().getEnchantLevel(chestplate, EnchantType.SISKOS_SOLUTION) > 0
                 && !activeClouds.containsKey(player.getUniqueId())) {
             List<Villager> nearby = villagersNear(player.getWorld(), player.getLocation(), TRIGGER_RADIUS);
             if (nearby.size() >= 3) {

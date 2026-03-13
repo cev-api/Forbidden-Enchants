@@ -99,20 +99,20 @@ public final class MiasmaEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack weapon = event.getBow();
-        if (weapon == null || !ForbiddenEnchantsPlugin.instance().isRangedWeapon(weapon)) {
+        if (weapon == null || !plugin().isRangedWeapon(weapon)) {
             return;
         }
         EquipmentSlot hand = event.getHand() == EquipmentSlot.OFF_HAND ? EquipmentSlot.OFF_HAND : EquipmentSlot.HAND;
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(weapon, player, hand);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.MIASMA);
-        tagProjectile(projectile, level, ForbiddenEnchantsPlugin.instance().miasmaProjectileKey());
+        plugin().revealMysteryItemIfNeeded(weapon, player, hand);
+        int level = plugin().getEnchantLevel(weapon, EnchantType.MIASMA);
+        tagProjectile(projectile, level, plugin().miasmaProjectileKey());
     }
 
     @Override
     public void onProjectileHit(@NotNull ProjectileHitEvent event, long tickCounter) {
         Projectile projectile = event.getEntity();
         Integer level = projectile.getPersistentDataContainer().get(
-                ForbiddenEnchantsPlugin.instance().miasmaProjectileKey(),
+                plugin().miasmaProjectileKey(),
                 PersistentDataType.INTEGER
         );
         if (level == null || level <= 0) {

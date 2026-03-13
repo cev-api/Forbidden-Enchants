@@ -58,7 +58,7 @@ public final class ShieldKnockbackEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack shield = getRaisedShield(defender);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(shield, EnchantType.SHIELD_KNOCKBACK);
+        int level = plugin().getEnchantLevel(shield, EnchantType.SHIELD_KNOCKBACK);
         if (!isActive(level)) {
             return;
         }

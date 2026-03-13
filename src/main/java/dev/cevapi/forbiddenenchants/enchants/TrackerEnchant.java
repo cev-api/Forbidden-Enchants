@@ -53,10 +53,10 @@ public final class TrackerEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
-        if (!ForbiddenEnchantsPlugin.instance().isSword(weapon)) {
+        if (!plugin().isSword(weapon)) {
             return;
         }
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.TRACKER);
+        int level = plugin().getEnchantLevel(weapon, EnchantType.TRACKER);
         if (level <= 0) {
             return;
         }

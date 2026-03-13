@@ -352,7 +352,9 @@ final class SpellEffectService {
             convertedAny = true;
         }
         if (!convertedAny && showNoTargetsMessage) {
-            source.sendActionBar(net.kyori.adventure.text.Component.text("Infected: no valid nearby targets."));
+            source.sendActionBar(net.kyori.adventure.text.Component.text(
+                    plugin.message("spells.infected.no_targets", "Infected: no valid nearby targets.")
+            ));
         }
     }
 
@@ -385,12 +387,16 @@ final class SpellEffectService {
         Location nearest = findNearestOtherPlayerBed(player);
         if (nearest != null) {
             player.teleport(nearest.clone().add(0.5D, 0.1D, 0.5D));
-            player.sendActionBar(net.kyori.adventure.text.Component.text("Joint Sleep: warped to nearest shared bed."));
+            player.sendActionBar(net.kyori.adventure.text.Component.text(
+                    plugin.message("spells.joint_sleep.warped", "Joint Sleep: warped to nearest shared bed.")
+            ));
             return;
         }
 
         if (placeBedsInFront(player)) {
-            player.sendActionBar(net.kyori.adventure.text.Component.text("Joint Sleep: placed 2 beds in front."));
+            player.sendActionBar(net.kyori.adventure.text.Component.text(
+                    plugin.message("spells.joint_sleep.placed_beds", "Joint Sleep: placed 2 beds in front.")
+            ));
             return;
         }
 
@@ -399,7 +405,9 @@ final class SpellEffectService {
         for (ItemStack stack : overflow.values()) {
             player.getWorld().dropItemNaturally(player.getLocation(), stack);
         }
-        player.sendActionBar(net.kyori.adventure.text.Component.text("Joint Sleep: no room to place beds, gave 2 beds."));
+        player.sendActionBar(net.kyori.adventure.text.Component.text(
+                plugin.message("spells.joint_sleep.gave_beds", "Joint Sleep: no room to place beds, gave 2 beds.")
+        ));
     }
 
     private Location findNearestOtherPlayerBed(@NotNull Player player) {

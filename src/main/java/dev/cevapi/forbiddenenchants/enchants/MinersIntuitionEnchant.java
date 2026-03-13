@@ -69,17 +69,17 @@ public final class MinersIntuitionEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack helmet = player.getInventory().getHelmet();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.MINERS_INTUITION);
+        int level = plugin().getEnchantLevel(helmet, EnchantType.MINERS_INTUITION);
         if (level >= 4) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 220, 0, true, false, false), true);
         }
         if (tickCounter % 10L != 0L) {
             return;
         }
-        if (ForbiddenEnchantsPlugin.instance().hasAnyVisionHelmetEnchant(helmet)) {
-            ForbiddenEnchantsPlugin.instance().enforceHelmetRestrictions(player, helmet);
+        if (plugin().hasAnyVisionHelmetEnchant(helmet)) {
+            plugin().enforceHelmetRestrictions(player, helmet);
         }
-        onHelmetPulse(player, helmet, level, ForbiddenEnchantsPlugin.instance()::applyMinersIntuition);
+        onHelmetPulse(player, helmet, level, plugin()::applyMinersIntuition);
     }
 }
 

@@ -49,18 +49,18 @@ public final class AquaticSacrificeEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack helmet = player.getInventory().getHelmet();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.AQUATIC_SACRIFICE);
-        onMeleeHit(event, level, ForbiddenEnchantsPlugin.instance().isPlayerPartiallySubmerged(player));
+        int level = plugin().getEnchantLevel(helmet, EnchantType.AQUATIC_SACRIFICE);
+        onMeleeHit(event, level, plugin().isPlayerPartiallySubmerged(player));
     }
 
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack helmet = player.getInventory().getHelmet();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.AQUATIC_SACRIFICE);
+        int level = plugin().getEnchantLevel(helmet, EnchantType.AQUATIC_SACRIFICE);
         if (!isActive(level)) {
             return;
         }
-        ForbiddenEnchantsPlugin.instance().applyAquaticSacrifice(player, tickCounter);
+        plugin().applyAquaticSacrifice(player, tickCounter);
     }
 }
 

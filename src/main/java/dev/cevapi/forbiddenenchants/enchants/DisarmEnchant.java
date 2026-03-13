@@ -51,8 +51,8 @@ public final class DisarmEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack weapon = player.getInventory().getItemInMainHand();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.DISARM);
-        if (!ForbiddenEnchantsPlugin.instance().isAxe(weapon) || level <= 0) {
+        int level = plugin().getEnchantLevel(weapon, EnchantType.DISARM);
+        if (!plugin().isAxe(weapon) || level <= 0) {
             return;
         }
 
@@ -63,8 +63,11 @@ public final class DisarmEnchant extends BaseForbiddenEnchant {
                     return;
                 }
                 targetPlayer.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-                ForbiddenEnchantsPlugin.instance().giveOrDrop(player, main.clone());
-                player.sendActionBar(Component.text("Disarm triggered.", NamedTextColor.RED));
+                plugin().giveOrDrop(player, main.clone());
+                player.sendActionBar(Component.text(
+                        plugin().message("enchants.disarm.triggered", "Disarm triggered."),
+                        NamedTextColor.RED
+                ));
                 return;
             }
 
@@ -74,11 +77,14 @@ public final class DisarmEnchant extends BaseForbiddenEnchant {
                     if (mob.getEquipment() != null) {
                         mob.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
                     }
-                    ForbiddenEnchantsPlugin.instance().giveOrDrop(player, main.clone());
-                    player.sendActionBar(Component.text("Disarm triggered.", NamedTextColor.RED));
+                    plugin().giveOrDrop(player, main.clone());
+                    player.sendActionBar(Component.text(
+                            plugin().message("enchants.disarm.triggered", "Disarm triggered."),
+                            NamedTextColor.RED
+                    ));
                     return;
                 }
-                ForbiddenEnchantsPlugin.instance().applyFear(mob, player, tickCounter + 10L);
+                plugin().applyFear(mob, player, tickCounter + 10L);
                 mob.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 60, 0, true, true, true), true);
             }
         });

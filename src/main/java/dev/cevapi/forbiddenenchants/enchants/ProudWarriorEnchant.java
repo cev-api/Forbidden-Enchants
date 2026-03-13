@@ -51,7 +51,7 @@ public final class ProudWarriorEnchant extends BaseForbiddenEnchant {
         }
 
         ItemStack chestplate = player.getInventory().getChestplate();
-        if (ForbiddenEnchantsPlugin.instance().getEnchantLevel(chestplate, EnchantType.PROUD_WARRIOR) <= 0) {
+        if (plugin().getEnchantLevel(chestplate, EnchantType.PROUD_WARRIOR) <= 0) {
             return;
         }
 
@@ -66,7 +66,7 @@ public final class ProudWarriorEnchant extends BaseForbiddenEnchant {
             player.getInventory().setChestplate(null);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 0.65F);
             player.setNoDamageTicks(30);
-            Bukkit.getScheduler().runTask(ForbiddenEnchantsPlugin.instance(), () -> {
+            Bukkit.getScheduler().runTask(plugin(), () -> {
                 if (!player.isOnline() || player.isDead()) {
                     return;
                 }

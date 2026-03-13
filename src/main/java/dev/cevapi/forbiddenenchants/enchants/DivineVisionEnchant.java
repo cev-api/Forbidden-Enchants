@@ -66,17 +66,17 @@ public final class DivineVisionEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack helmet = player.getInventory().getHelmet();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.DIVINE_VISION);
+        int level = plugin().getEnchantLevel(helmet, EnchantType.DIVINE_VISION);
         if (!isActive(level)) {
             return;
         }
         if (level >= 4) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 220, 0, true, false, false), true);
         }
-        if (ForbiddenEnchantsPlugin.instance().hasAnyVisionHelmetEnchant(helmet)) {
-            ForbiddenEnchantsPlugin.instance().enforceHelmetRestrictions(player, helmet);
+        if (plugin().hasAnyVisionHelmetEnchant(helmet)) {
+            plugin().enforceHelmetRestrictions(player, helmet);
         }
-        onHelmetTick(player, level, ForbiddenEnchantsPlugin.instance()::applyDivineVision);
+        onHelmetTick(player, level, plugin()::applyDivineVision);
     }
 }
 

@@ -57,7 +57,7 @@ public final class BorgTechnologyEnchant extends BaseForbiddenEnchant {
         }
         UUID id = player.getUniqueId();
         ItemStack chestplate = player.getInventory().getChestplate();
-        if (ForbiddenEnchantsPlugin.instance().getEnchantLevel(chestplate, EnchantType.BORG_TECHNOLOGY) <= 0) {
+        if (plugin().getEnchantLevel(chestplate, EnchantType.BORG_TECHNOLOGY) <= 0) {
             clearState(id);
             return;
         }
@@ -123,7 +123,7 @@ public final class BorgTechnologyEnchant extends BaseForbiddenEnchant {
         }
 
         ItemStack chestplate = player.getInventory().getChestplate();
-        if (ForbiddenEnchantsPlugin.instance().getEnchantLevel(chestplate, EnchantType.BORG_TECHNOLOGY) <= 0) {
+        if (plugin().getEnchantLevel(chestplate, EnchantType.BORG_TECHNOLOGY) <= 0) {
             clearState(id);
             return;
         }

@@ -45,8 +45,8 @@ public final class FullPocketsEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack leggings = player.getInventory().getLeggings();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(leggings, EnchantType.FULL_POCKETS);
-        onLeggingsTick(level, () -> ForbiddenEnchantsPlugin.instance().pullNearbyExperienceOrbs(player, 30.0D));
+        int level = plugin().getEnchantLevel(leggings, EnchantType.FULL_POCKETS);
+        onLeggingsTick(level, () -> plugin().pullNearbyExperienceOrbs(player, 30.0D));
     }
 }
 

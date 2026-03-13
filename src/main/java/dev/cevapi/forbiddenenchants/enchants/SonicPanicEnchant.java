@@ -63,14 +63,14 @@ public final class SonicPanicEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack weapon = player.getInventory().getItemInMainHand();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.SONIC_PANIC);
+        int level = plugin().getEnchantLevel(weapon, EnchantType.SONIC_PANIC);
         long ready = cooldownByPlayer.getOrDefault(player.getUniqueId(), 0L);
         double postDamageHealth = player.getHealth() - event.getFinalDamage();
         boolean sword = weapon != null && weapon.getType().name().endsWith("_SWORD");
         if (!canTriggerNow(level, postDamageHealth, maxHealth, sword, tickCounter, ready)) {
             return;
         }
-        ForbiddenEnchantsPlugin.instance().triggerSonicPanic(player, weapon);
+        plugin().triggerSonicPanic(player, weapon);
         cooldownByPlayer.put(player.getUniqueId(), tickCounter + cooldownTicks());
     }
 }

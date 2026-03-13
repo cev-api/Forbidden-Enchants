@@ -66,7 +66,7 @@ public final class TheUnyieldingEnchant extends BaseForbiddenEnchant {
 
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
-        if (ForbiddenEnchantsPlugin.instance().hasUnyieldingEquipped(player)) {
+        if (plugin().hasUnyieldingEquipped(player)) {
             applyTo(player);
             return;
         }

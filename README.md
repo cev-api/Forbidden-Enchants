@@ -151,6 +151,7 @@ This plugin has five main admin GUIs, each for a different workflow:
   - `spawn_enabled` can be toggled from `/fe toggles` and from the injector rarity editor (`F` on an entry).
   - `librarian_trades.*` stores librarian trade enable state + configured offers (chance + costs).
   - `bundle_drop.*` stores mob bundle-drop enabled state, default chance, per-mob chances, rewards, and extra drops.
+  - `messages.yml` stores configurable user-facing text used by menus/action bars/help output.
 - Defaults:
   - Structure injector default chance: `5.0%`.
   - Trial vault default chance fallback: `7.5%` for normal and ominous when config values are missing.
@@ -168,6 +169,7 @@ This plugin has five main admin GUIs, each for a different workflow:
 /fe giveitem <enchant> <level> <material> [player]
 /fe mysterybook <slot> [player]
 /fe mysteryitem <material> [player]
+/fe reload
 /fe injector <...>
 /fe structureinjector <...>
 /fe bundle <...>
@@ -684,10 +686,10 @@ The plugin is split into focused layers:
   - `enchants/EnchantList` builds the runtime dispatcher from `EnchantType.values()`.
 - **Rules and item pipeline**: `EnchantStateService`, `EnchantRuleCoreService`, `EnchantEventRuleService`, `EnchantBookFactoryService`, `MysteryItemService`.
 - **Feature services**: combat/mob/effect systems (`GraspCombatService`, `WitheringStrikeService`, `VexatiousService`, `FullPocketsService`, `TemporalSicknessService`, etc.).
-- **Injector subsystem**: `StructureInjectorRuntimeService`, `InjectorCommandHandler`, `InjectorMenuService`, `InjectorLootMode`, `InjectorMysteryState`.
-- **Librarian trade subsystem**: `LibrarianTradeService`, `LibrarianTradeCommandHandler`, `LibrarianTradeMenuService`.
-- **Presentation/admin UX**: `FeCommandHandler`, `FePresentationService`, `FeMenuService`, `FeCatalogService`, `EnchantToggleMenuService`, `InjectorMessagingUtil`.
-- **Persistence**: `ConfigPersistenceService` for `structure_injector.*`, `enchant_controls.*`, `librarian_trades.*`, and `bundle_drop.*`.
+- **Injector subsystem**: `runtime/StructureInjectorRuntimeService`, `admin/InjectorCommandHandler`, `admin/InjectorMenuService`, `InjectorLootMode`, `InjectorMysteryState`.
+- **Librarian trade subsystem**: `LibrarianTradeService`, `admin/LibrarianTradeCommandHandler`, `admin/LibrarianTradeMenuService`.
+- **Presentation/admin UX**: `admin/FeCommandHandler`, `admin/FePresentationService`, `admin/FeMenuService`, `admin/FeCatalogService`, `admin/EnchantToggleMenuService`, `admin/InjectorMessagingUtil`.
+- **Persistence/config**: `config/ConfigPersistenceService` and `config/MessagesService`.
 
 ## Project Structure
 
@@ -695,10 +697,10 @@ The plugin is split into focused layers:
   - `ForbiddenEnchantsPlugin.java`: composition root and shared runtime state.
   - `ForbiddenEnchantsListener.java`: Bukkit event routing.
   - `EnchantType.java`: canonical enchant registry + compatibility metadata.
-  - `StructureInjectorRuntimeService.java`: structure/vault loot injection runtime.
-  - `InjectorCommandHandler.java`, `InjectorMenuService.java`: injector CLI + GUI.
-  - `LibrarianTradeService.java`, `LibrarianTradeCommandHandler.java`, `LibrarianTradeMenuService.java`: librarian trade runtime + CLI + GUI.
-  - `ConfigPersistenceService.java`: load/save of injector, per-enchant toggle, and librarian trade config.
+  - `admin/`: FE command + admin GUIs + injector/librarian/bundle command handlers and messaging helpers.
+  - `config/`: persisted config readers/writers (`ConfigPersistenceService`, `MessagesService`).
+  - `runtime/`: runtime-only systems (`StructureInjectorRuntimeService`, `BundleDropRuntimeService`).
+  - `LibrarianTradeService.java`: librarian trade runtime hooks.
   - `PluginModels.java`: inventory holders/records for GUI/runtime model objects.
   - `*Service.java`: focused subsystems (combat, effects, lifecycle, utility, etc.).
 - `src/main/java/dev/cevapi/forbiddenenchants/enchants/`
@@ -708,6 +710,7 @@ The plugin is split into focused layers:
 - `src/main/resources/`
   - `plugin.yml`: command + plugin metadata
   - `config.yml`: persisted defaults/state (`structure_injector`, `enchant_controls`, `librarian_trades`)
+  - `messages.yml`: customizable text for FE menus/help/action-bar messages
 - `examples/`
   - all datapack-style loot table examples (books + mystery books/items + weighted/category pools)
 
@@ -773,7 +776,7 @@ For mystery entries, include `minecraft:custom_data` with:
 7. If your enchant needs extra runtime state/services, wire it in `ForbiddenEnchantsPlugin` and route relevant events through existing services/listener flow.
 8. Build and validate:
    - `./gradlew build`
-   - test `/fe give`, `/fe givebook`, `/fe giveitem`, `/fe mysterybook`, `/fe mysteryitem`, `/fe gui`, and injector/toggle interactions.
+  - test `/fe give`, `/fe givebook`, `/fe giveitem`, `/fe mysterybook`, `/fe mysteryitem`, `/fe reload`, `/fe gui`, and injector/toggle interactions.
 
 Note: this repository currently has no scaffold script for new enchants; add them manually with the steps above.
 

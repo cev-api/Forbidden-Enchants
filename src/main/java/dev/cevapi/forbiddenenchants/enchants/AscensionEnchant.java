@@ -46,9 +46,9 @@ public final class AscensionEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack boots = player.getInventory().getBoots();
-        int ascensionLevel = ForbiddenEnchantsPlugin.instance().getEnchantLevel(boots, EnchantType.ASCENSION);
-        int masqueradeLevel = ForbiddenEnchantsPlugin.instance().getEnchantLevel(boots, EnchantType.MASQUERADE);
-        onBootTick(player, ascensionLevel, masqueradeLevel, ForbiddenEnchantsPlugin.instance()::applyAscension);
+        int ascensionLevel = plugin().getEnchantLevel(boots, EnchantType.ASCENSION);
+        int masqueradeLevel = plugin().getEnchantLevel(boots, EnchantType.MASQUERADE);
+        onBootTick(player, ascensionLevel, masqueradeLevel, plugin()::applyAscension);
     }
 }
 

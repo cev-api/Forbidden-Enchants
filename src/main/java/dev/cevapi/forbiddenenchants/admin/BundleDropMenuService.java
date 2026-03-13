@@ -64,7 +64,11 @@ final class BundleDropMenuService {
 
     void openRoot(@NotNull Player player) {
         BundleDropMenuHolder holder = new BundleDropMenuHolder(BundleDropMenuPage.ROOT, 0);
-        Inventory inventory = Bukkit.createInventory(holder, MENU_SIZE, Component.text("Bundle Drop Editor", NamedTextColor.GOLD));
+        Inventory inventory = Bukkit.createInventory(
+                holder,
+                MENU_SIZE,
+                Component.text(plugin.message("menu.bundle.root_title", "Bundle Drop Editor"), NamedTextColor.GOLD)
+        );
         holder.attach(inventory);
         decorateRoot(inventory);
 
@@ -72,11 +76,11 @@ final class BundleDropMenuService {
         inventory.setItem(ROOT_DEFAULT_CHANCE_SLOT, defaultChanceItem());
         inventory.setItem(ROOT_MOBS_SLOT, mobsItem());
         inventory.setItem(ROOT_COUNTER_SLOT, counterItem());
-        inventory.setItem(ROOT_ENCHANTS_SLOT, openEditorItem(Material.ENCHANTED_BOOK, "Enchant Rewards"));
-        inventory.setItem(ROOT_POTIONS_SLOT, openEditorItem(Material.POTION, "Potion Rewards"));
-        inventory.setItem(ROOT_LOOT_SLOT, openEditorItem(Material.DIAMOND, "Loot Rewards"));
-        inventory.setItem(ROOT_REWARDS_SLOT, openEditorItem(Material.BUNDLE, "Bundle Contents"));
-        inventory.setItem(ROOT_EXTRA_SLOT, openEditorItem(Material.NETHERITE_SWORD, "Extra Drops"));
+        inventory.setItem(ROOT_ENCHANTS_SLOT, openEditorItem(Material.ENCHANTED_BOOK, plugin.message("menu.bundle.root_enchant_rewards", "Enchant Rewards")));
+        inventory.setItem(ROOT_POTIONS_SLOT, openEditorItem(Material.POTION, plugin.message("menu.bundle.root_potion_rewards", "Potion Rewards")));
+        inventory.setItem(ROOT_LOOT_SLOT, openEditorItem(Material.DIAMOND, plugin.message("menu.bundle.root_loot_rewards", "Loot Rewards")));
+        inventory.setItem(ROOT_REWARDS_SLOT, openEditorItem(Material.BUNDLE, plugin.message("menu.bundle.root_bundle_contents", "Bundle Contents")));
+        inventory.setItem(ROOT_EXTRA_SLOT, openEditorItem(Material.NETHERITE_SWORD, plugin.message("menu.bundle.root_extra_drops", "Extra Drops")));
         inventory.setItem(ROOT_HELP_SLOT, rootHelpItem());
         inventory.setItem(ROOT_CLEAR_SLOT, clearItem());
         inventory.setItem(ROOT_CLOSE_SLOT, closeItem());
@@ -429,13 +433,13 @@ final class BundleDropMenuService {
 
     private @NotNull String titleFor(@NotNull BundleDropMenuPage pageType) {
         return switch (pageType) {
-            case ROOT -> "Bundle Drop Editor";
-            case MOBS -> "Bundle Drop Mobs (Per-Mob Chance)";
-            case ENCHANTS -> "Bundle Reward Enchants";
-            case POTIONS -> "Bundle Reward Potions";
-            case LOOT -> "Bundle Reward Loot";
-            case REWARDS -> "Current Bundle Rewards";
-            case EXTRA -> "Extra Non-Stackable Drops";
+            case ROOT -> plugin.message("menu.bundle.root_title", "Bundle Drop Editor");
+            case MOBS -> plugin.message("menu.bundle.mobs_title", "Bundle Drop Mobs (Per-Mob Chance)");
+            case ENCHANTS -> plugin.message("menu.bundle.enchants_title", "Bundle Reward Enchants");
+            case POTIONS -> plugin.message("menu.bundle.potions_title", "Bundle Reward Potions");
+            case LOOT -> plugin.message("menu.bundle.loot_title", "Bundle Reward Loot");
+            case REWARDS -> plugin.message("menu.bundle.rewards_title", "Current Bundle Rewards");
+            case EXTRA -> plugin.message("menu.bundle.extra_title", "Extra Non-Stackable Drops");
         };
     }
 

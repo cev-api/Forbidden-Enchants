@@ -79,7 +79,7 @@ public final class ThePretenderEnchant extends BaseForbiddenEnchant {
         if (poppedTotem.getType() != Material.TOTEM_OF_UNDYING) {
             return;
         }
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(poppedTotem, EnchantType.THE_PRETENDER);
+        int level = plugin().getEnchantLevel(poppedTotem, EnchantType.THE_PRETENDER);
         if (level <= 0) {
             return;
         }
@@ -135,7 +135,7 @@ public final class ThePretenderEnchant extends BaseForbiddenEnchant {
         player.setSilent(false);
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             if (!viewer.equals(player)) {
-                viewer.showPlayer(ForbiddenEnchantsPlugin.instance(), player);
+                viewer.showPlayer(plugin(), player);
             }
         }
     }
@@ -173,7 +173,7 @@ public final class ThePretenderEnchant extends BaseForbiddenEnchant {
     private void keepHiddenFromAllPlayers(@NotNull Player player) {
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             if (!viewer.equals(player)) {
-                viewer.hidePlayer(ForbiddenEnchantsPlugin.instance(), player);
+                viewer.hidePlayer(plugin(), player);
             }
         }
     }
@@ -189,12 +189,12 @@ public final class ThePretenderEnchant extends BaseForbiddenEnchant {
     private @org.jetbrains.annotations.Nullable TotemRef findPretenderTotem(@NotNull Player player) {
         ItemStack off = player.getInventory().getItemInOffHand();
         if (off.getType() == Material.TOTEM_OF_UNDYING
-                && ForbiddenEnchantsPlugin.instance().getEnchantLevel(off, EnchantType.THE_PRETENDER) > 0) {
+                && plugin().getEnchantLevel(off, EnchantType.THE_PRETENDER) > 0) {
             return new TotemRef(EquipmentSlot.OFF_HAND, off);
         }
         ItemStack main = player.getInventory().getItemInMainHand();
         if (main.getType() == Material.TOTEM_OF_UNDYING
-                && ForbiddenEnchantsPlugin.instance().getEnchantLevel(main, EnchantType.THE_PRETENDER) > 0) {
+                && plugin().getEnchantLevel(main, EnchantType.THE_PRETENDER) > 0) {
             return new TotemRef(EquipmentSlot.HAND, main);
         }
         return null;
@@ -260,7 +260,7 @@ public final class ThePretenderEnchant extends BaseForbiddenEnchant {
             );
             droppedItem.setVelocity(push);
             Bukkit.getScheduler().runTaskLater(
-                    ForbiddenEnchantsPlugin.instance(),
+                    plugin(),
                     () -> {
                         if (droppedItem.isValid()) {
                             droppedItem.remove();

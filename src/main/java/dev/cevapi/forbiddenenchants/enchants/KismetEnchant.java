@@ -85,15 +85,21 @@ public final class KismetEnchant extends BaseForbiddenEnchant {
         tool.setItemMeta(meta);
 
         if (rolled == STATE_DOUBLE_DROPS) {
-            player.sendActionBar(Component.text("Kismet: fate chosen - double drops.", NamedTextColor.GOLD));
+            player.sendActionBar(Component.text(
+                    plugin().message("enchants.kismet.double_drops", "Kismet: fate chosen - double drops."),
+                    NamedTextColor.GOLD
+            ));
         } else {
-            player.sendActionBar(Component.text("Kismet: fate chosen - no drops.", NamedTextColor.DARK_RED));
+            player.sendActionBar(Component.text(
+                    plugin().message("enchants.kismet.no_drops", "Kismet: fate chosen - no drops."),
+                    NamedTextColor.DARK_RED
+            ));
         }
         return rolled;
     }
 
     private @NotNull NamespacedKey kismetStateKey() {
-        return new NamespacedKey(ForbiddenEnchantsPlugin.instance(), "kismet_fate_state");
+        return new NamespacedKey(plugin(), "kismet_fate_state");
     }
 
     private @NotNull ItemStack sanitizeDuplicatedDrop(@NotNull ItemStack duplicatedDrop) {

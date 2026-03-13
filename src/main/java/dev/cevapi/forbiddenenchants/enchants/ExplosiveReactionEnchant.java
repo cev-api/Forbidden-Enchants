@@ -73,20 +73,20 @@ public final class ExplosiveReactionEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack weapon = event.getBow();
-        if (weapon == null || weapon.getType() != Material.CROSSBOW || !ForbiddenEnchantsPlugin.instance().isRangedWeapon(weapon)) {
+        if (weapon == null || weapon.getType() != Material.CROSSBOW || !plugin().isRangedWeapon(weapon)) {
             return;
         }
         EquipmentSlot hand = event.getHand() == EquipmentSlot.OFF_HAND ? EquipmentSlot.OFF_HAND : EquipmentSlot.HAND;
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(weapon, player, hand);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.EXPLOSIVE_REACTION);
-        tagProjectile(projectile, level, ForbiddenEnchantsPlugin.instance().explosiveReactionProjectileKey());
+        plugin().revealMysteryItemIfNeeded(weapon, player, hand);
+        int level = plugin().getEnchantLevel(weapon, EnchantType.EXPLOSIVE_REACTION);
+        tagProjectile(projectile, level, plugin().explosiveReactionProjectileKey());
     }
 
     @Override
     public void onProjectileHit(@NotNull ProjectileHitEvent event, long tickCounter) {
         Projectile projectile = event.getEntity();
         Integer level = projectile.getPersistentDataContainer().get(
-                ForbiddenEnchantsPlugin.instance().explosiveReactionProjectileKey(),
+                plugin().explosiveReactionProjectileKey(),
                 PersistentDataType.INTEGER
         );
         if (level == null || level <= 0) {

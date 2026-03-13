@@ -132,13 +132,13 @@ public final class StaffOfTheEvokerEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack weapon = player.getInventory().getItemInMainHand();
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(weapon, player, org.bukkit.inventory.EquipmentSlot.HAND);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.STAFF_OF_THE_EVOKER);
+        plugin().revealMysteryItemIfNeeded(weapon, player, org.bukkit.inventory.EquipmentSlot.HAND);
+        int level = plugin().getEnchantLevel(weapon, EnchantType.STAFF_OF_THE_EVOKER);
         Vector direction = player.getEyeLocation().getDirection().setY(0.0D);
-        if (!canUse(level, ForbiddenEnchantsPlugin.instance().isSpear(weapon), direction.lengthSquared())) {
+        if (!canUse(level, plugin().isSpear(weapon), direction.lengthSquared())) {
             return;
         }
-        if (!cast(ForbiddenEnchantsPlugin.instance(), player, direction.normalize())) {
+        if (!cast(plugin(), player, direction.normalize())) {
             return;
         }
         applyDurabilityCost(player, weapon, tickCounter);
@@ -152,24 +152,24 @@ public final class StaffOfTheEvokerEnchant extends BaseForbiddenEnchant {
 
         Player player = event.getPlayer();
         ItemStack weapon = player.getInventory().getItemInMainHand();
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(weapon, player, org.bukkit.inventory.EquipmentSlot.HAND);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.STAFF_OF_THE_EVOKER);
+        plugin().revealMysteryItemIfNeeded(weapon, player, org.bukkit.inventory.EquipmentSlot.HAND);
+        int level = plugin().getEnchantLevel(weapon, EnchantType.STAFF_OF_THE_EVOKER);
 
-        long readyTick = ForbiddenEnchantsPlugin.instance().staffOfEvokerReadyTick(player.getUniqueId());
+        long readyTick = plugin().staffOfEvokerReadyTick(player.getUniqueId());
         if (tickCounter < readyTick) {
             return;
         }
 
         Vector direction = player.getEyeLocation().getDirection().setY(0.0D);
-        if (!canUse(level, ForbiddenEnchantsPlugin.instance().isSpear(weapon), direction.lengthSquared())) {
+        if (!canUse(level, plugin().isSpear(weapon), direction.lengthSquared())) {
             return;
         }
 
-        if (!cast(ForbiddenEnchantsPlugin.instance(), player, direction.normalize())) {
+        if (!cast(plugin(), player, direction.normalize())) {
             return;
         }
         applyDurabilityCost(player, weapon, tickCounter);
-        ForbiddenEnchantsPlugin.instance().setStaffOfEvokerReadyTick(player.getUniqueId(), tickCounter + cooldownTicks());
+        plugin().setStaffOfEvokerReadyTick(player.getUniqueId(), tickCounter + cooldownTicks());
     }
 
     private void applyDurabilityCost(@NotNull Player player, @NotNull ItemStack weapon, long tickCounter) {
@@ -195,7 +195,7 @@ public final class StaffOfTheEvokerEnchant extends BaseForbiddenEnchant {
             durabilityDamage = Math.max(durabilityDamage, (int) Math.ceil(maxDurability * 0.08D));
         }
 
-        ForbiddenEnchantsPlugin.instance().damageHeldItem(player, EquipmentSlot.HAND, durabilityDamage);
+        plugin().damageHeldItem(player, EquipmentSlot.HAND, durabilityDamage);
     }
 }
 

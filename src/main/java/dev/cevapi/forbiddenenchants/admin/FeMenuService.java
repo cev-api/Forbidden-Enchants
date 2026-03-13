@@ -52,8 +52,16 @@ final class FeMenuService {
         FeMenuHolder holder = new FeMenuHolder(safePage, category);
         EnchantType pageType = visible.isEmpty() ? null : visible.get(Math.min(safePage, visible.size() - 1));
         String title = pageType == null
-                ? "Forbidden " + categoryLabel(category)
-                : "Forbidden " + pageType.displayName;
+                ? plugin.message(
+                "menu.fe.title_category",
+                "Forbidden {category}",
+                java.util.Map.of("category", categoryLabel(category))
+        )
+                : plugin.message(
+                "menu.fe.title_enchant",
+                "Forbidden {enchant}",
+                java.util.Map.of("enchant", pageType.displayName)
+        );
         Inventory inventory = Bukkit.createInventory(
                 holder,
                 FE_MENU_SIZE,
@@ -152,8 +160,11 @@ final class FeMenuService {
 
         ItemStack reward = pageItems.get(rawSlot).clone();
         plugin.giveOrDrop(player, reward);
-        player.sendMessage(Component.text("[Forbidden Enchants] ", NamedTextColor.DARK_PURPLE)
-                .append(Component.text("Claimed " + plugin.describeItem(reward) + ".", NamedTextColor.GREEN)));
+        player.sendMessage(Component.text(plugin.message("fe.prefix", "[Forbidden Enchants] "), NamedTextColor.DARK_PURPLE)
+                .append(Component.text(
+                        plugin.message("menu.fe.claimed_item", "Claimed {item}.", java.util.Map.of("item", plugin.describeItem(reward))),
+                        NamedTextColor.GREEN
+                )));
     }
 
     void onMenuDrag(@NotNull InventoryDragEvent event) {
@@ -267,8 +278,8 @@ final class FeMenuService {
         ItemStack item = new ItemStack(Material.ARROW);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Return", NamedTextColor.AQUA));
-            meta.lore(List.of(Component.text("Back to full enchant list.", NamedTextColor.GRAY)));
+            meta.displayName(Component.text(plugin.message("menu.fe.return_label", "Return"), NamedTextColor.AQUA));
+            meta.lore(List.of(Component.text(plugin.message("menu.fe.return_lore", "Back to full enchant list."), NamedTextColor.GRAY)));
             item.setItemMeta(meta);
         }
         return item;
@@ -276,13 +287,13 @@ final class FeMenuService {
 
     private @NotNull String categoryLabel(@NotNull FeMenuCategory category) {
         return switch (category) {
-            case ALL -> "All";
-            case ARMORS -> "Armors";
-            case WEAPONS -> "Weapons";
-            case TOTEMS -> "Totems";
-            case BOOKS -> "Books";
-            case POTIONS -> "Potions";
-            case OTHER -> "Other";
+            case ALL -> plugin.message("menu.fe.categories.all", "All");
+            case ARMORS -> plugin.message("menu.fe.categories.armors", "Armors");
+            case WEAPONS -> plugin.message("menu.fe.categories.weapons", "Weapons");
+            case TOTEMS -> plugin.message("menu.fe.categories.totems", "Totems");
+            case BOOKS -> plugin.message("menu.fe.categories.books", "Books");
+            case POTIONS -> plugin.message("menu.fe.categories.potions", "Potions");
+            case OTHER -> plugin.message("menu.fe.categories.other", "Other");
         };
     }
 }

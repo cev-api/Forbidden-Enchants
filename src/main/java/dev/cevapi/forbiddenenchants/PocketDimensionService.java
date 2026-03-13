@@ -26,7 +26,10 @@ final class PocketDimensionService {
         }
         player.teleport(destination);
         player.getWorld().spawnParticle(Particle.PORTAL, destination.clone().add(0.0D, 1.0D, 0.0D), 80, 0.5, 0.8, 0.5, 0.02);
-        player.sendActionBar(Component.text("Pocket Dimension triggered!", NamedTextColor.AQUA));
+        player.sendActionBar(Component.text(
+                ForbiddenEnchantsPlugin.instance().message("enchants.pocket_dimension.triggered", "Pocket Dimension triggered!"),
+                NamedTextColor.AQUA
+        ));
         player.getInventory().setLeggings(new ItemStack(Material.AIR));
         return true;
     }

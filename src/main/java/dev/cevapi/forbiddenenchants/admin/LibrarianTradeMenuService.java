@@ -46,8 +46,13 @@ final class LibrarianTradeMenuService {
         Inventory inventory = Bukkit.createInventory(
                 holder,
                 MENU_SIZE,
-                Component.text("Librarian Trades ", NamedTextColor.GOLD)
-                        .append(Component.text(mode == LibrarianTradeMenuMode.ALL ? "(All Books)" : "(Configured)", NamedTextColor.WHITE))
+                Component.text(plugin.message("menu.librarian.title_prefix", "Librarian Trades "), NamedTextColor.GOLD)
+                        .append(Component.text(
+                                mode == LibrarianTradeMenuMode.ALL
+                                        ? plugin.message("menu.librarian.mode_all", "(All Books)")
+                                        : plugin.message("menu.librarian.mode_configured", "(Configured)"),
+                                NamedTextColor.WHITE
+                        ))
                         .append(Component.text(" [" + (safePage + 1) + "/" + totalPages + "]", NamedTextColor.GRAY))
         );
         holder.attach(inventory);

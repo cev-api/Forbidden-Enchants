@@ -94,7 +94,7 @@ public final class IllusionersRevengeEnchant extends BaseForbiddenEnchant {
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
         ItemStack chestplate = player.getInventory().getChestplate();
-        boolean active = ForbiddenEnchantsPlugin.instance().getEnchantLevel(chestplate, EnchantType.ILLUSIONERS_REVENGE) > 0;
-        tickPlayer(player, tickCounter, active, p -> ForbiddenEnchantsPlugin.instance().findNearbySpawnLocation(p, 8.0D, 18.0D));
+        boolean active = plugin().getEnchantLevel(chestplate, EnchantType.ILLUSIONERS_REVENGE) > 0;
+        tickPlayer(player, tickCounter, active, p -> plugin().findNearbySpawnLocation(p, 8.0D, 18.0D));
     }
 }

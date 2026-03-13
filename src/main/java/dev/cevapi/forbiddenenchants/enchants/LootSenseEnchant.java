@@ -61,11 +61,11 @@ public final class LootSenseEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack helmet = player.getInventory().getHelmet();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(helmet, EnchantType.LOOT_SENSE);
-        if (ForbiddenEnchantsPlugin.instance().hasAnyVisionHelmetEnchant(helmet)) {
-            ForbiddenEnchantsPlugin.instance().enforceHelmetRestrictions(player, helmet);
+        int level = plugin().getEnchantLevel(helmet, EnchantType.LOOT_SENSE);
+        if (plugin().hasAnyVisionHelmetEnchant(helmet)) {
+            plugin().enforceHelmetRestrictions(player, helmet);
         }
-        onHelmetPulse(player, level, ForbiddenEnchantsPlugin.instance()::applyLootSense);
+        onHelmetPulse(player, level, plugin()::applyLootSense);
     }
 }
 

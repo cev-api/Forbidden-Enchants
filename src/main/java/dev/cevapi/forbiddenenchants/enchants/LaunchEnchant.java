@@ -57,7 +57,7 @@ public final class LaunchEnchant extends BaseForbiddenEnchant {
         }
         ItemStack chest = player.getInventory().getChestplate();
         boolean wearingElytra = chest != null && chest.getType() == Material.ELYTRA;
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(chest, EnchantType.LAUNCH);
+        int level = plugin().getEnchantLevel(chest, EnchantType.LAUNCH);
         onDoubleJump(level, wearingElytra, () -> {
             event.setCancelled(true);
             player.setFlying(false);
@@ -66,14 +66,14 @@ public final class LaunchEnchant extends BaseForbiddenEnchant {
             player.setVelocity(boost);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.PLAYERS, 1.0F, 1.2F);
             if (chest != null) {
-                ForbiddenEnchantsPlugin.instance().damageItemByPercent(player, EquipmentSlot.CHEST, chest, 0.05D);
+                plugin().damageItemByPercent(player, EquipmentSlot.CHEST, chest, 0.05D);
             }
         });
     }
 
     @Override
     public void onPlayerTick(@NotNull Player player, long tickCounter) {
-        ForbiddenEnchantsPlugin.instance().applyLaunchFlightState(player, player.getInventory().getChestplate());
+        plugin().applyLaunchFlightState(player, player.getInventory().getChestplate());
     }
 }
 

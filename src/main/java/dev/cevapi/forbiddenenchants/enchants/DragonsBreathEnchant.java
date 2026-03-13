@@ -103,26 +103,26 @@ public final class DragonsBreathEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack weapon = event.getBow();
-        if (weapon == null || weapon.getType() != Material.CROSSBOW || !ForbiddenEnchantsPlugin.instance().isRangedWeapon(weapon)) {
+        if (weapon == null || weapon.getType() != Material.CROSSBOW || !plugin().isRangedWeapon(weapon)) {
             return;
         }
         EquipmentSlot hand = event.getHand() == EquipmentSlot.OFF_HAND ? EquipmentSlot.OFF_HAND : EquipmentSlot.HAND;
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(weapon, player, hand);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.DRAGONS_BREATH);
-        tagProjectile(projectile, level, ForbiddenEnchantsPlugin.instance().dragonsBreathProjectileKey());
+        plugin().revealMysteryItemIfNeeded(weapon, player, hand);
+        int level = plugin().getEnchantLevel(weapon, EnchantType.DRAGONS_BREATH);
+        tagProjectile(projectile, level, plugin().dragonsBreathProjectileKey());
     }
 
     @Override
     public void onProjectileHit(@NotNull ProjectileHitEvent event, long tickCounter) {
         Projectile projectile = event.getEntity();
         Integer level = projectile.getPersistentDataContainer().get(
-                ForbiddenEnchantsPlugin.instance().dragonsBreathProjectileKey(),
+                plugin().dragonsBreathProjectileKey(),
                 PersistentDataType.INTEGER
         );
         if (level == null || level <= 0) {
             return;
         }
-        onImpact(ForbiddenEnchantsPlugin.instance(), projectile, projectile.getLocation().clone(), level);
+        onImpact(plugin(), projectile, projectile.getLocation().clone(), level);
     }
 }
 

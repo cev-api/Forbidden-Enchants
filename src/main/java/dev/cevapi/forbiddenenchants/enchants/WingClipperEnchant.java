@@ -79,12 +79,12 @@ public final class WingClipperEnchant extends BaseForbiddenEnchant {
         }
 
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.WING_CLIPPER);
+        int level = plugin().getEnchantLevel(weapon, EnchantType.WING_CLIPPER);
         onPlayerHit(
                 level,
-                ForbiddenEnchantsPlugin.instance().isSword(weapon),
+                plugin().isSword(weapon),
                 tickCounter,
-                blockedUntil -> ForbiddenEnchantsPlugin.instance().setWingClipperBlockedUntil(targetPlayer.getUniqueId(), blockedUntil),
+                blockedUntil -> plugin().setWingClipperBlockedUntil(targetPlayer.getUniqueId(), blockedUntil),
                 () -> ripElytraIfPresent(targetPlayer)
         );
     }
@@ -100,13 +100,16 @@ public final class WingClipperEnchant extends BaseForbiddenEnchant {
         targetPlayer.getInventory().setChestplate(new ItemStack(Material.AIR));
         int max = clipped.getType().getMaxDurability();
         int maxRemaining = Math.max(1, (int) Math.ceil(max * maxRemainingDurabilityFraction()));
-        ForbiddenEnchantsPlugin.instance().enforceDurabilityCap(clipped, maxRemaining, targetPlayer, EquipmentSlot.CHEST);
+        plugin().enforceDurabilityCap(clipped, maxRemaining, targetPlayer, EquipmentSlot.CHEST);
 
         java.util.Map<Integer, ItemStack> overflow = targetPlayer.getInventory().addItem(clipped);
         for (ItemStack extra : overflow.values()) {
             targetPlayer.getWorld().dropItemNaturally(targetPlayer.getLocation(), extra);
         }
-        targetPlayer.sendActionBar(Component.text("Wing Clipper ripped off your Elytra.", NamedTextColor.RED));
+        targetPlayer.sendActionBar(Component.text(
+                plugin().message("enchants.wing_clipper.ripped_elytra", "Wing Clipper ripped off your Elytra."),
+                NamedTextColor.RED
+        ));
     }
 }
 

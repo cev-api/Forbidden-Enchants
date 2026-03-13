@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 final class LibrarianTradeCommandHandler {
     private static final List<String> SUBCOMMANDS = List.of("help", "status", "list", "enable", "disable", "gui", "add", "remove", "clear");
@@ -49,7 +50,7 @@ final class LibrarianTradeCommandHandler {
             }
             case "gui", "menu" -> {
                 if (args.length > 3) {
-                    plugin.sendFeError(sender, "Usage: /fe librarian gui [player]");
+                    plugin.sendFeError(sender, msg("usage_gui", "Usage: /fe librarian gui [player]"));
                     yield true;
                 }
                 Player target = resolveTarget(sender, args.length == 3 ? args[2] : null);
@@ -64,7 +65,7 @@ final class LibrarianTradeCommandHandler {
             }
             case "add" -> {
                 if (args.length < 6 || args.length > 7) {
-                    plugin.sendFeError(sender, "Usage: /fe librarian add <enchant> <level> <chance> <emeralds> [books]");
+                    plugin.sendFeError(sender, msg("usage_add", "Usage: /fe librarian add <enchant> <level> <chance> <emeralds> [books]"));
                     yield true;
                 }
 
@@ -101,13 +102,13 @@ final class LibrarianTradeCommandHandler {
             }
             case "remove", "delete" -> {
                 if (args.length != 3) {
-                    plugin.sendFeError(sender, "Usage: /fe librarian remove <index>");
+                    plugin.sendFeError(sender, msg("usage_remove", "Usage: /fe librarian remove <index>"));
                     yield true;
                 }
                 int index = parseIndex(sender, args[2]);
                 List<LibrarianTradeEntry> sorted = sortedConfiguredTrades();
                 if (index < 1 || index > sorted.size()) {
-                    plugin.sendFeError(sender, "Index out of range. Use /fe librarian list.");
+                    plugin.sendFeError(sender, msg("index_out_of_range", "Index out of range. Use /fe librarian list."));
                     yield true;
                 }
                 LibrarianTradeEntry removed = sorted.get(index - 1);
@@ -125,7 +126,7 @@ final class LibrarianTradeCommandHandler {
                 yield true;
             }
             default -> {
-                plugin.sendFeError(sender, "Unknown librarian subcommand. Use /fe librarian help");
+                plugin.sendFeError(sender, msg("unknown_subcommand", "Unknown librarian subcommand. Use /fe librarian help"));
                 yield true;
             }
         };
@@ -182,13 +183,13 @@ final class LibrarianTradeCommandHandler {
     }
 
     private void sendHelp(@NotNull CommandSender sender) {
-        plugin.sendFeSuccess(sender, "Librarian Trade Commands:");
-        sender.sendMessage(net.kyori.adventure.text.Component.text(" - /fe librarian status | list", net.kyori.adventure.text.format.NamedTextColor.GRAY));
-        sender.sendMessage(net.kyori.adventure.text.Component.text(" - /fe librarian enable | disable", net.kyori.adventure.text.format.NamedTextColor.GRAY));
-        sender.sendMessage(net.kyori.adventure.text.Component.text(" - /fe librarian gui [player]", net.kyori.adventure.text.format.NamedTextColor.GRAY));
-        sender.sendMessage(net.kyori.adventure.text.Component.text(" - /fe librarian add <enchant> <level> <chance> <emeralds> [books]", net.kyori.adventure.text.format.NamedTextColor.GRAY));
-        sender.sendMessage(net.kyori.adventure.text.Component.text(" - /fe librarian remove <index>", net.kyori.adventure.text.format.NamedTextColor.GRAY));
-        sender.sendMessage(net.kyori.adventure.text.Component.text(" - /fe librarian clear", net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        plugin.sendFeSuccess(sender, msg("help_header", "Librarian Trade Commands:"));
+        sender.sendMessage(net.kyori.adventure.text.Component.text(msg("help_line_1", " - /fe librarian status | list"), net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        sender.sendMessage(net.kyori.adventure.text.Component.text(msg("help_line_2", " - /fe librarian enable | disable"), net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        sender.sendMessage(net.kyori.adventure.text.Component.text(msg("help_line_3", " - /fe librarian gui [player]"), net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        sender.sendMessage(net.kyori.adventure.text.Component.text(msg("help_line_4", " - /fe librarian add <enchant> <level> <chance> <emeralds> [books]"), net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        sender.sendMessage(net.kyori.adventure.text.Component.text(msg("help_line_5", " - /fe librarian remove <index>"), net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        sender.sendMessage(net.kyori.adventure.text.Component.text(msg("help_line_6", " - /fe librarian clear"), net.kyori.adventure.text.format.NamedTextColor.GRAY));
     }
 
     private void sendStatus(@NotNull CommandSender sender) {
@@ -229,7 +230,7 @@ final class LibrarianTradeCommandHandler {
     private @Nullable EnchantType parseEnchantType(@NotNull CommandSender sender, @NotNull String arg) {
         EnchantType type = EnchantType.fromArg(arg);
         if (type == null || plugin.isRetiredEnchant(type) || type.isAnvilOnlyUtilityBook()) {
-            plugin.sendFeError(sender, "Unknown enchant: " + arg);
+            plugin.sendFeError(sender, msg("unknown_enchant", "Unknown enchant: {enchant}", Map.of("enchant", arg)));
             return null;
         }
         return type;
@@ -243,14 +244,17 @@ final class LibrarianTradeCommandHandler {
             }
         } catch (NumberFormatException ignored) {
         }
-        plugin.sendFeError(sender, "Level for " + type.arg + " must be 1-" + type.maxLevel + ".");
+        plugin.sendFeError(
+                sender,
+                msg("level_out_of_range", "Level for {enchant} must be 1-{max}.", Map.of("enchant", type.arg, "max", String.valueOf(type.maxLevel)))
+        );
         return -1;
     }
 
     private @Nullable Double parseChance(@NotNull CommandSender sender, @NotNull String arg) {
         Double chance = StructureInjectorUtil.parseChancePercent(arg);
         if (chance == null) {
-            plugin.sendFeError(sender, "Chance must be 0-100.");
+            plugin.sendFeError(sender, msg("chance_range", "Chance must be 0-100."));
             return null;
         }
         return chance;
@@ -264,7 +268,7 @@ final class LibrarianTradeCommandHandler {
             }
         } catch (NumberFormatException ignored) {
         }
-        plugin.sendFeError(sender, fieldName + " must be 1-64.");
+        plugin.sendFeError(sender, msg("cost_range", "{field} must be 1-64.", Map.of("field", fieldName)));
         return -1;
     }
 
@@ -276,7 +280,7 @@ final class LibrarianTradeCommandHandler {
             }
         } catch (NumberFormatException ignored) {
         }
-        plugin.sendFeError(sender, "Book cost must be 0-64.");
+        plugin.sendFeError(sender, msg("book_cost_range", "Book cost must be 0-64."));
         return -1;
     }
 
@@ -284,7 +288,7 @@ final class LibrarianTradeCommandHandler {
         try {
             return Integer.parseInt(arg);
         } catch (NumberFormatException ignored) {
-            plugin.sendFeError(sender, "Index must be a number.");
+            plugin.sendFeError(sender, msg("index_not_number", "Index must be a number."));
             return -1;
         }
     }
@@ -293,7 +297,7 @@ final class LibrarianTradeCommandHandler {
         if (arg != null && !arg.isBlank()) {
             Player target = Bukkit.getPlayer(arg);
             if (target == null) {
-                plugin.sendFeError(sender, "Player not found: " + arg);
+                plugin.sendFeError(sender, msg("player_not_found", "Player not found: {player}", Map.of("player", arg)));
                 return null;
             }
             return target;
@@ -301,7 +305,15 @@ final class LibrarianTradeCommandHandler {
         if (sender instanceof Player player) {
             return player;
         }
-        plugin.sendFeError(sender, "Console must provide a target player.");
+        plugin.sendFeError(sender, msg("console_needs_target", "Console must provide a target player."));
         return null;
+    }
+
+    private @NotNull String msg(@NotNull String key, @NotNull String fallback) {
+        return plugin.message("librarian.command." + key, fallback);
+    }
+
+    private @NotNull String msg(@NotNull String key, @NotNull String fallback, @NotNull Map<String, String> placeholders) {
+        return plugin.message("librarian.command." + key, fallback, placeholders);
     }
 }

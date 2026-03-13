@@ -120,11 +120,11 @@ public final class RicochetEnchant extends BaseForbiddenEnchant {
         }
 
         ItemStack shield = getRaisedShield(defender);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(shield, EnchantType.RICOCHET);
+        int level = plugin().getEnchantLevel(shield, EnchantType.RICOCHET);
         if (!isActive(level)) {
             return;
         }
-        onProjectileBlocked(event, defender, projectile, ForbiddenEnchantsPlugin.instance().ricochetKey());
+        onProjectileBlocked(event, defender, projectile, plugin().ricochetKey());
     }
 
     private @NotNull ItemStack getRaisedShield(@NotNull Player player) {

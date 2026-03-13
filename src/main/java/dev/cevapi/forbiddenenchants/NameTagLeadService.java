@@ -79,15 +79,28 @@ final class NameTagLeadService {
             EnchantList.INSTANCE.appliedCurse().applyTo(target, cursedName, expireTick);
             playerItemUtilityService.consumeOneFromHand(player, hand);
             event.setCancelled(true);
-            player.sendActionBar(Component.text("Applied Curse set to " + cursedName, NamedTextColor.DARK_RED));
-            target.sendActionBar(Component.text("Your name has been cursed.", NamedTextColor.RED));
-            Component broadcast = Component.text("[Forbidden Enchants] ", NamedTextColor.DARK_PURPLE)
+            player.sendActionBar(Component.text(
+                    ForbiddenEnchantsPlugin.instance().message(
+                            "applied_curse.set_name",
+                            "Applied Curse set to {name}",
+                            Map.of("name", cursedName)
+                    ),
+                    NamedTextColor.DARK_RED
+            ));
+            target.sendActionBar(Component.text(
+                    ForbiddenEnchantsPlugin.instance().message(
+                            "applied_curse.target_notified",
+                            "Your name has been cursed."
+                    ),
+                    NamedTextColor.RED
+            ));
+            Component broadcast = Component.text(ForbiddenEnchantsPlugin.instance().message("fe.prefix", "[Forbidden Enchants] "), NamedTextColor.DARK_PURPLE)
                     .append(Component.text(player.getName(), NamedTextColor.LIGHT_PURPLE))
-                    .append(Component.text(" cursed ", NamedTextColor.GRAY))
+                    .append(Component.text(ForbiddenEnchantsPlugin.instance().message("applied_curse.broadcast_mid_1", " cursed "), NamedTextColor.GRAY))
                     .append(Component.text(target.getName(), NamedTextColor.RED))
-                    .append(Component.text(" with ", NamedTextColor.GRAY))
+                    .append(Component.text(ForbiddenEnchantsPlugin.instance().message("applied_curse.broadcast_mid_2", " with "), NamedTextColor.GRAY))
                     .append(Component.text(cursedName, NamedTextColor.DARK_RED))
-                    .append(Component.text(".", NamedTextColor.GRAY));
+                    .append(Component.text(ForbiddenEnchantsPlugin.instance().message("applied_curse.broadcast_suffix", "."), NamedTextColor.GRAY));
             for (Player online : Bukkit.getOnlinePlayers()) {
                 online.sendMessage(broadcast);
             }
@@ -105,7 +118,10 @@ final class NameTagLeadService {
             charmedPetSitAnchors.remove(mob.getUniqueId());
             playerItemUtilityService.consumeOneFromHand(player, hand);
             event.setCancelled(true);
-            player.sendActionBar(Component.text("Charmed Pet bound.", NamedTextColor.LIGHT_PURPLE));
+            player.sendActionBar(Component.text(
+                    ForbiddenEnchantsPlugin.instance().message("charmed_pet.bound", "Charmed Pet bound."),
+                    NamedTextColor.LIGHT_PURPLE
+            ));
         }
     }
 

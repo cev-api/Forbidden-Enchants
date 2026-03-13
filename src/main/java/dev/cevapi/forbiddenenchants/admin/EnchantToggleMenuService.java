@@ -34,7 +34,7 @@ final class EnchantToggleMenuService {
         Inventory inventory = Bukkit.createInventory(
                 holder,
                 TOGGLE_MENU_SIZE,
-                Component.text("Enchant Toggles", NamedTextColor.AQUA)
+                Component.text(plugin.message("menu.toggles.title", "Enchant Toggles"), NamedTextColor.AQUA)
                         .append(Component.text(" [" + (safePage + 1) + "/" + totalPages + "]", NamedTextColor.GRAY))
         );
         holder.attach(inventory);

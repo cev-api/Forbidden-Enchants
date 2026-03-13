@@ -77,17 +77,17 @@ public final class MarkedEnchant extends BaseForbiddenEnchant {
             return;
         }
         ItemStack weapon = event.getBow();
-        if (weapon == null || !ForbiddenEnchantsPlugin.instance().isRangedWeapon(weapon)) {
+        if (weapon == null || !plugin().isRangedWeapon(weapon)) {
             return;
         }
         EquipmentSlot hand = event.getHand() == EquipmentSlot.OFF_HAND ? EquipmentSlot.OFF_HAND : EquipmentSlot.HAND;
-        ForbiddenEnchantsPlugin.instance().revealMysteryItemIfNeeded(weapon, player, hand);
-        int level = ForbiddenEnchantsPlugin.instance().getEnchantLevel(weapon, EnchantType.MARKED);
+        plugin().revealMysteryItemIfNeeded(weapon, player, hand);
+        int level = plugin().getEnchantLevel(weapon, EnchantType.MARKED);
         if (!shouldTagProjectile(level)) {
             return;
         }
         projectile.getPersistentDataContainer().set(
-                ForbiddenEnchantsPlugin.instance().markedProjectileKey(),
+                plugin().markedProjectileKey(),
                 PersistentDataType.INTEGER,
                 level
         );
@@ -97,7 +97,7 @@ public final class MarkedEnchant extends BaseForbiddenEnchant {
     public void onProjectileHit(@NotNull ProjectileHitEvent event, long tickCounter) {
         Projectile projectile = event.getEntity();
         Integer level = projectile.getPersistentDataContainer().get(
-                ForbiddenEnchantsPlugin.instance().markedProjectileKey(),
+                plugin().markedProjectileKey(),
                 PersistentDataType.INTEGER
         );
         if (level == null || level <= 0) {
@@ -106,7 +106,7 @@ public final class MarkedEnchant extends BaseForbiddenEnchant {
         if (!(event.getHitEntity() instanceof Player target) || !(projectile.getShooter() instanceof Player owner)) {
             return;
         }
-        onProjectileHit(level, duration -> ForbiddenEnchantsPlugin.instance().applyMarkedTarget(target, owner.getUniqueId(), tickCounter + duration));
+        onProjectileHit(level, duration -> plugin().applyMarkedTarget(target, owner.getUniqueId(), tickCounter + duration));
     }
 
     @FunctionalInterface
@@ -129,7 +129,7 @@ public final class MarkedEnchant extends BaseForbiddenEnchant {
             return;
         }
 
-        event.setDamage(ForbiddenEnchantsPlugin.instance().applyMarkedDamageBoost(target, damagerId, event.getDamage(), tickCounter));
+        event.setDamage(plugin().applyMarkedDamageBoost(target, damagerId, event.getDamage(), tickCounter));
     }
 }
 

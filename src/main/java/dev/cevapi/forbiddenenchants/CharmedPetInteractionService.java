@@ -87,7 +87,11 @@ final class CharmedPetInteractionService {
         event.setCancelled(true);
         String petName = DisplayNameUtil.actionBarEntityName(clicked);
         player.sendActionBar(Component.text(
-                petName + (nextSitting ? " is sitting." : " is following."),
+                ForbiddenEnchantsPlugin.instance().message(
+                        nextSitting ? "charmed_pet.sit" : "charmed_pet.follow",
+                        nextSitting ? "{pet} is sitting." : "{pet} is following.",
+                        Map.of("pet", petName)
+                ),
                 NamedTextColor.GREEN
         ));
         Bukkit.getScheduler().runTask(schedulerPlugin, () -> {
@@ -118,7 +122,13 @@ final class CharmedPetInteractionService {
 
         if (target instanceof Villager && !player.isSneaking()) {
             event.setCancelled(true);
-            player.sendActionBar(Component.text("Sneak-right-click to leash villagers.", NamedTextColor.YELLOW));
+            player.sendActionBar(Component.text(
+                    ForbiddenEnchantsPlugin.instance().message(
+                            "charmed_pet.sneak_to_leash",
+                            "Sneak-right-click to leash villagers."
+                    ),
+                    NamedTextColor.YELLOW
+            ));
             return;
         }
 
@@ -162,7 +172,11 @@ final class CharmedPetInteractionService {
                 player.closeInventory();
             }
             player.sendActionBar(Component.text(
-                    "Removed leash from " + DisplayNameUtil.actionBarEntityName(villager) + ".",
+                    ForbiddenEnchantsPlugin.instance().message(
+                            "charmed_pet.removed_leash",
+                            "Removed leash from {pet}.",
+                            Map.of("pet", DisplayNameUtil.actionBarEntityName(villager))
+                    ),
                     NamedTextColor.YELLOW
             ));
         });
