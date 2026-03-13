@@ -1,6 +1,7 @@
 package dev.cevapi.forbiddenenchants;
 
 import dev.cevapi.forbiddenenchants.enchants.EnchantList;
+import io.papermc.paper.event.entity.EntityKnockbackEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -15,7 +16,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityKnockbackEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
@@ -100,7 +100,7 @@ final class FullForceDefenseService {
         if (knock == null) {
             return;
         }
-        event.setFinalKnockback(knock.clone());
+        event.setKnockback(knock.clone());
     }
 
     void onFullForceLanding(@NotNull EntityDamageEvent event) {
