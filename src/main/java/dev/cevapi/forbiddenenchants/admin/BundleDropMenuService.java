@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 final class BundleDropMenuService {
     private static final int MENU_SIZE = 54;
@@ -461,14 +462,17 @@ final class BundleDropMenuService {
         }
         List<Component> lore = meta.lore() == null ? new ArrayList<>() : new ArrayList<>(meta.lore());
         lore.add(Component.empty());
-        lore.add(Component.text("Index: " + (index + 1), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(
+                msg("menu.bundle.entry.index_line", "Index: {index}", Map.of("index", String.valueOf(index + 1))),
+                NamedTextColor.DARK_GRAY
+        ));
         if (reward.type() == BundleDropRewardType.MATERIAL) {
-            lore.add(Component.text("Left/Right: +/- count", NamedTextColor.GRAY));
-            lore.add(Component.text("Shift Left/Right: +/-8", NamedTextColor.GRAY));
+            lore.add(Component.text(msg("menu.bundle.entry.material_left_right", "Left/Right: +/- count"), NamedTextColor.GRAY));
+            lore.add(Component.text(msg("menu.bundle.entry.material_shift_left_right", "Shift Left/Right: +/-8"), NamedTextColor.GRAY));
         } else {
-            lore.add(Component.text("Left: duplicate this reward", NamedTextColor.GRAY));
+            lore.add(Component.text(msg("menu.bundle.entry.duplicate_reward", "Left: duplicate this reward"), NamedTextColor.GRAY));
         }
-        lore.add(Component.text("Middle: remove", NamedTextColor.RED));
+        lore.add(Component.text(msg("menu.bundle.entry.middle_remove", "Middle: remove"), NamedTextColor.RED));
         meta.lore(lore);
         item.setItemMeta(meta);
         return item;
@@ -483,9 +487,12 @@ final class BundleDropMenuService {
         }
         List<Component> lore = meta.lore() == null ? new ArrayList<>() : new ArrayList<>(meta.lore());
         lore.add(Component.empty());
-        lore.add(Component.text("Index: " + (index + 1), NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("Left: duplicate", NamedTextColor.GRAY));
-        lore.add(Component.text("Right/Middle: remove", NamedTextColor.RED));
+        lore.add(Component.text(
+                msg("menu.bundle.entry.index_line", "Index: {index}", Map.of("index", String.valueOf(index + 1))),
+                NamedTextColor.DARK_GRAY
+        ));
+        lore.add(Component.text(msg("menu.bundle.extra.left_duplicate", "Left: duplicate"), NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.bundle.extra.right_middle_remove", "Right/Middle: remove"), NamedTextColor.RED));
         meta.lore(lore);
         item.setItemMeta(meta);
         return item;
@@ -520,9 +527,12 @@ final class BundleDropMenuService {
         if (meta != null) {
             meta.displayName(Component.text(type.name().toLowerCase(Locale.ROOT), enabled ? NamedTextColor.GREEN : NamedTextColor.GRAY));
             meta.lore(List.of(
-                    Component.text("Chance: " + StructureInjectorUtil.formatPercent(chance), enabled ? NamedTextColor.GREEN : NamedTextColor.RED),
-                    Component.text("Left/Right: +/-1% (Shift +/-5%)", NamedTextColor.GRAY),
-                    Component.text("Middle: toggle on/off (uses default chance)", NamedTextColor.DARK_GRAY)
+                    Component.text(
+                            msg("menu.bundle.mobs.chance_line", "Chance: {chance}", Map.of("chance", StructureInjectorUtil.formatPercent(chance))),
+                            enabled ? NamedTextColor.GREEN : NamedTextColor.RED
+                    ),
+                    Component.text(msg("menu.bundle.mobs.left_right", "Left/Right: +/-1% (Shift +/-5%)"), NamedTextColor.GRAY),
+                    Component.text(msg("menu.bundle.mobs.middle_toggle", "Middle: toggle on/off (uses default chance)"), NamedTextColor.DARK_GRAY)
             ));
             item.setItemMeta(meta);
         }
@@ -598,8 +608,14 @@ final class BundleDropMenuService {
         ItemStack item = new ItemStack(enabled ? Material.LIME_DYE : Material.GRAY_DYE);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Bundle Drops: " + (enabled ? "Enabled" : "Disabled"), enabled ? NamedTextColor.GREEN : NamedTextColor.RED));
-            meta.lore(List.of(Component.text("Click to toggle runtime drop system.", NamedTextColor.GRAY)));
+            String state = enabled
+                    ? msg("menu.bundle.state.enabled", "Enabled")
+                    : msg("menu.bundle.state.disabled", "Disabled");
+            meta.displayName(Component.text(
+                    msg("menu.bundle.root.enabled_label", "Bundle Drops: {state}", Map.of("state", state)),
+                    enabled ? NamedTextColor.GREEN : NamedTextColor.RED
+            ));
+            meta.lore(List.of(Component.text(msg("menu.bundle.root.enabled_lore", "Click to toggle runtime drop system."), NamedTextColor.GRAY)));
             item.setItemMeta(meta);
         }
         return item;
@@ -609,11 +625,18 @@ final class BundleDropMenuService {
         ItemStack item = new ItemStack(Material.CLOCK);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Default Mob Chance: " + StructureInjectorUtil.formatPercent(plugin.getBundleDropChancePercent()), NamedTextColor.YELLOW));
+            meta.displayName(Component.text(
+                    msg(
+                            "menu.bundle.root.default_chance_label",
+                            "Default Mob Chance: {chance}",
+                            Map.of("chance", StructureInjectorUtil.formatPercent(plugin.getBundleDropChancePercent()))
+                    ),
+                    NamedTextColor.YELLOW
+            ));
             meta.lore(List.of(
-                    Component.text("Used when toggling mobs on with middle-click.", NamedTextColor.GRAY),
-                    Component.text("Left/Right: +/-1% (Shift +/-5%)", NamedTextColor.GRAY),
-                    Component.text("Middle: reset to 5%", NamedTextColor.DARK_GRAY)
+                    Component.text(msg("menu.bundle.root.default_chance_lore_1", "Used when toggling mobs on with middle-click."), NamedTextColor.GRAY),
+                    Component.text(msg("menu.bundle.root.default_chance_lore_2", "Left/Right: +/-1% (Shift +/-5%)"), NamedTextColor.GRAY),
+                    Component.text(msg("menu.bundle.root.default_chance_lore_3", "Middle: reset to 5%"), NamedTextColor.DARK_GRAY)
             ));
             item.setItemMeta(meta);
         }
@@ -630,8 +653,11 @@ final class BundleDropMenuService {
                     selected++;
                 }
             }
-            meta.displayName(Component.text("Select Mobs + Chances", NamedTextColor.AQUA));
-            meta.lore(List.of(Component.text("Mobs with chance > 0: " + selected, NamedTextColor.GRAY)));
+            meta.displayName(Component.text(msg("menu.bundle.root.mobs_label", "Select Mobs + Chances"), NamedTextColor.AQUA));
+            meta.lore(List.of(Component.text(
+                    msg("menu.bundle.root.mobs_selected_lore", "Mobs with chance > 0: {selected}", Map.of("selected", String.valueOf(selected))),
+                    NamedTextColor.GRAY
+            )));
             item.setItemMeta(meta);
         }
         return item;
@@ -643,10 +669,17 @@ final class BundleDropMenuService {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             NamedTextColor color = used >= 64 ? NamedTextColor.RED : NamedTextColor.YELLOW;
-            meta.displayName(Component.text("Bundle Capacity: " + used + "/64", color));
+            meta.displayName(Component.text(
+                    msg(
+                            "menu.bundle.root.capacity_label",
+                            "Bundle Capacity: {used}/64",
+                            Map.of("used", String.valueOf(used))
+                    ),
+                    color
+            ));
             meta.lore(List.of(
-                    Component.text("Shows effective bundle fill weight.", NamedTextColor.GRAY),
-                    Component.text("Non-stackable items consume large weight.", NamedTextColor.DARK_GRAY)
+                    Component.text(msg("menu.bundle.root.capacity_lore_1", "Shows effective bundle fill weight."), NamedTextColor.GRAY),
+                    Component.text(msg("menu.bundle.root.capacity_lore_2", "Non-stackable items consume large weight."), NamedTextColor.DARK_GRAY)
             ));
             item.setItemMeta(meta);
         }
@@ -658,7 +691,7 @@ final class BundleDropMenuService {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.displayName(Component.text(label, NamedTextColor.AQUA));
-            meta.lore(List.of(Component.text("Click to open", NamedTextColor.GRAY)));
+            meta.lore(List.of(Component.text(msg("menu.bundle.root.open_editor_lore", "Click to open"), NamedTextColor.GRAY)));
             item.setItemMeta(meta);
         }
         return item;
@@ -668,8 +701,11 @@ final class BundleDropMenuService {
         ItemStack item = new ItemStack(Material.TNT);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Clear Bundle Config", NamedTextColor.RED));
-            meta.lore(List.of(Component.text("Clears mobs, bundle rewards, and extra drops.", NamedTextColor.GRAY)));
+            meta.displayName(Component.text(msg("menu.bundle.root.clear_label", "Clear Bundle Config"), NamedTextColor.RED));
+            meta.lore(List.of(Component.text(
+                    msg("menu.bundle.root.clear_lore", "Clears mobs, bundle rewards, and extra drops."),
+                    NamedTextColor.GRAY
+            )));
             item.setItemMeta(meta);
         }
         return item;
@@ -679,7 +715,7 @@ final class BundleDropMenuService {
         ItemStack item = new ItemStack(Material.BARRIER);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Close", NamedTextColor.RED));
+            meta.displayName(Component.text(msg("menu.bundle.root.close_label", "Close"), NamedTextColor.RED));
             item.setItemMeta(meta);
         }
         return item;
@@ -689,8 +725,8 @@ final class BundleDropMenuService {
         ItemStack item = new ItemStack(Material.ARROW);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Back", NamedTextColor.AQUA));
-            meta.lore(List.of(Component.text("Return to bundle drop editor.", NamedTextColor.GRAY)));
+            meta.displayName(Component.text(msg("menu.bundle.back_label", "Back"), NamedTextColor.AQUA));
+            meta.lore(List.of(Component.text(msg("menu.bundle.back_lore", "Return to bundle drop editor."), NamedTextColor.GRAY)));
             item.setItemMeta(meta);
         }
         return item;
@@ -724,23 +760,23 @@ final class BundleDropMenuService {
             return item;
         }
 
-        meta.displayName(Component.text("Controls", NamedTextColor.YELLOW));
+        meta.displayName(Component.text(msg("menu.bundle.page_info.label", "Controls"), NamedTextColor.YELLOW));
         List<Component> lore = new ArrayList<>();
         switch (pageType) {
             case LOOT -> {
-                lore.add(Component.text("Click catalog entries to add loot.", NamedTextColor.GRAY));
-                lore.add(Component.text("From your inventory: click/shift-click to import.", NamedTextColor.GRAY));
+                lore.add(Component.text(msg("menu.bundle.page_info.loot_lore_1", "Click catalog entries to add loot."), NamedTextColor.GRAY));
+                lore.add(Component.text(msg("menu.bundle.page_info.inventory_import", "From your inventory: click/shift-click to import."), NamedTextColor.GRAY));
             }
             case EXTRA -> {
-                lore.add(Component.text("Add non-stackables dropped with the bundle.", NamedTextColor.GRAY));
-                lore.add(Component.text("From your inventory: click/shift-click to import.", NamedTextColor.GRAY));
+                lore.add(Component.text(msg("menu.bundle.page_info.extra_lore_1", "Add non-stackables dropped with the bundle."), NamedTextColor.GRAY));
+                lore.add(Component.text(msg("menu.bundle.page_info.inventory_import", "From your inventory: click/shift-click to import."), NamedTextColor.GRAY));
             }
             case REWARDS -> {
-                lore.add(Component.text("Left/Right: adjust material counts.", NamedTextColor.GRAY));
-                lore.add(Component.text("Middle: remove entry.", NamedTextColor.GRAY));
-                lore.add(Component.text("Import: click/shift-click items from your inventory.", NamedTextColor.DARK_GRAY));
+                lore.add(Component.text(msg("menu.bundle.page_info.rewards_lore_1", "Left/Right: adjust material counts."), NamedTextColor.GRAY));
+                lore.add(Component.text(msg("menu.bundle.page_info.rewards_lore_2", "Middle: remove entry."), NamedTextColor.GRAY));
+                lore.add(Component.text(msg("menu.bundle.page_info.rewards_lore_3", "Import: click/shift-click items from your inventory."), NamedTextColor.DARK_GRAY));
             }
-            default -> lore.add(Component.text("Use item clicks to edit entries.", NamedTextColor.GRAY));
+            default -> lore.add(Component.text(msg("menu.bundle.page_info.default_lore", "Use item clicks to edit entries."), NamedTextColor.GRAY));
         }
         meta.lore(lore);
         item.setItemMeta(meta);
@@ -753,15 +789,15 @@ final class BundleDropMenuService {
         if (meta == null) {
             return item;
         }
-        meta.displayName(Component.text("Inventory Import", NamedTextColor.AQUA));
+        meta.displayName(Component.text(msg("menu.bundle.import_hint.label", "Inventory Import"), NamedTextColor.AQUA));
         List<Component> lore = new ArrayList<>();
-        lore.add(Component.text("Drag onto this menu or click items below.", NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.bundle.import_hint.lore_1", "Drag onto this menu or click items below."), NamedTextColor.GRAY));
         if (pageType == BundleDropMenuPage.EXTRA) {
-            lore.add(Component.text("Extra drops only accept non-stackables.", NamedTextColor.DARK_GRAY));
+            lore.add(Component.text(msg("menu.bundle.import_hint.extra_lore", "Extra drops only accept non-stackables."), NamedTextColor.DARK_GRAY));
         } else if (pageType == BundleDropMenuPage.REWARDS) {
-            lore.add(Component.text("Imports become material entries in bundle rewards.", NamedTextColor.DARK_GRAY));
+            lore.add(Component.text(msg("menu.bundle.import_hint.rewards_lore", "Imports become material entries in bundle rewards."), NamedTextColor.DARK_GRAY));
         } else {
-            lore.add(Component.text("Loot imports merge by material type.", NamedTextColor.DARK_GRAY));
+            lore.add(Component.text(msg("menu.bundle.import_hint.loot_lore", "Loot imports merge by material type."), NamedTextColor.DARK_GRAY));
         }
         meta.lore(lore);
         item.setItemMeta(meta);
@@ -772,11 +808,11 @@ final class BundleDropMenuService {
         ItemStack item = new ItemStack(Material.WRITABLE_BOOK);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Quick Flow", NamedTextColor.YELLOW));
+            meta.displayName(Component.text(msg("menu.bundle.root.quick_flow_label", "Quick Flow"), NamedTextColor.YELLOW));
             meta.lore(List.of(
-                    Component.text("1) Set mob chances", NamedTextColor.GRAY),
-                    Component.text("2) Configure bundle rewards", NamedTextColor.GRAY),
-                    Component.text("3) Add optional extra non-stackables", NamedTextColor.GRAY)
+                    Component.text(msg("menu.bundle.root.quick_flow_lore_1", "1) Set mob chances"), NamedTextColor.GRAY),
+                    Component.text(msg("menu.bundle.root.quick_flow_lore_2", "2) Configure bundle rewards"), NamedTextColor.GRAY),
+                    Component.text(msg("menu.bundle.root.quick_flow_lore_3", "3) Add optional extra non-stackables"), NamedTextColor.GRAY)
             ));
             item.setItemMeta(meta);
         }
@@ -807,5 +843,15 @@ final class BundleDropMenuService {
             filler.setItemMeta(meta);
         }
         return filler;
+    }
+
+    private @NotNull String msg(@NotNull String key, @NotNull String fallback) {
+        return plugin.message(key, fallback);
+    }
+
+    private @NotNull String msg(@NotNull String key,
+                                @NotNull String fallback,
+                                @NotNull Map<String, String> placeholders) {
+        return plugin.message(key, fallback, placeholders);
     }
 }

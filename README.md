@@ -1,6 +1,6 @@
 # Forbidden Enchants (Paper 1.21.x)
 
-![AI LOGO LOL](https://i.imgur.com/w8nRrWX.png)
+![NOT AN AI LOGO LOL](https://i.imgur.com/thI0f0h.png)
 
 Forbidden Enchants is a Paper plugin for 1.21.x that adds 69 custom enchants, curses, spell books, and utility effects designed to push survival further than vanilla normally allows. Some are strong, some are disruptive, and some are deliberately unfair, but all of them are meant to create unusual situations, higher-stakes progression, and more server variety.
 
@@ -779,9 +779,3 @@ For mystery entries, include `minecraft:custom_data` with:
   - test `/fe give`, `/fe givebook`, `/fe giveitem`, `/fe mysterybook`, `/fe mysteryitem`, `/fe reload`, `/fe gui`, and injector/toggle interactions.
 
 Note: this repository currently has no scaffold script for new enchants; add them manually with the steps above.
-
-## Enchantment Requests
-
-![Kawaii](https://i.imgur.com/8BsLBc6.png)
-
-I am open to requests for new enchants! Just send a message via GitHub!

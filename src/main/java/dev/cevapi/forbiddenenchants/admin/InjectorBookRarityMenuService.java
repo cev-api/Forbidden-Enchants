@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 final class InjectorBookRarityMenuService {
     private static final int MENU_SIZE = 54;
@@ -50,11 +51,11 @@ final class InjectorBookRarityMenuService {
             inventory.setItem(slot++, createEntryItem(plugin, entries.get(i)));
         }
 
-        inventory.setItem(PREV_SLOT, createNavPane(safePage > 0, true));
-        inventory.setItem(NEXT_SLOT, createNavPane(safePage + 1 < totalPages, false));
-        inventory.setItem(BACK_SLOT, createBackPane());
+        inventory.setItem(PREV_SLOT, createNavPane(plugin, safePage > 0, true));
+        inventory.setItem(NEXT_SLOT, createNavPane(plugin, safePage + 1 < totalPages, false));
+        inventory.setItem(BACK_SLOT, createBackPane(plugin));
         inventory.setItem(APPLY_ITEMS_SLOT, createApplyItemsPane(plugin));
-        inventory.setItem(RESET_SLOT, createResetPane());
+        inventory.setItem(RESET_SLOT, createResetPane(plugin));
         player.openInventory(inventory);
     }
 
@@ -175,14 +176,28 @@ final class InjectorBookRarityMenuService {
             if (meta != null) {
                 meta.displayName(Component.text(entry.type.arg + " " + RomanNumeralUtil.toRoman(entry.level), NamedTextColor.GRAY));
                 List<Component> lore = new ArrayList<>();
-                lore.add(Component.text("Spawn enabled: " + (spawnEnabled ? "YES" : "NO"), spawnEnabled ? NamedTextColor.GREEN : NamedTextColor.RED));
-                lore.add(Component.text("Weight: " + formatWeight(weight) + (weight <= 0.0D ? " (disabled)" : ""), weight <= 0.0D ? NamedTextColor.RED : NamedTextColor.YELLOW));
+                String yes = msg(plugin, "menu.injector.rarity.state.yes", "YES");
+                String no = msg(plugin, "menu.injector.rarity.state.no", "NO");
+                String disabledSuffix = weight <= 0.0D
+                        ? msg(plugin, "menu.injector.rarity.entry.weight_disabled_suffix", " (disabled)")
+                        : "";
+                lore.add(Component.text(
+                        msg(plugin, "menu.injector.rarity.entry.spawn_line", "Spawn enabled: {state}", Map.of("state", spawnEnabled ? yes : no)),
+                        spawnEnabled ? NamedTextColor.GREEN : NamedTextColor.RED
+                ));
+                lore.add(Component.text(
+                        msg(plugin, "menu.injector.rarity.entry.weight_line", "Weight: {weight}{suffix}", Map.of(
+                                "weight", formatWeight(weight),
+                                "suffix", disabledSuffix
+                        )),
+                        weight <= 0.0D ? NamedTextColor.RED : NamedTextColor.YELLOW
+                ));
                 lore.addAll(List.of(
-                        Component.text("Left/Right: +/-0.1 (Shift: +/-1.0)", NamedTextColor.GRAY),
-                        Component.text("Q/Ctrl+Q: x2 / x0.5", NamedTextColor.GRAY),
-                        Component.text("F: toggle spawn enabled", NamedTextColor.GRAY),
-                        Component.text("Double-click: set 0 (disabled)", NamedTextColor.GRAY),
-                        Component.text("Middle: reset to 1.0", NamedTextColor.GRAY)
+                        Component.text(msg(plugin, "menu.injector.rarity.entry.left_right", "Left/Right: +/-0.1 (Shift: +/-1.0)"), NamedTextColor.GRAY),
+                        Component.text(msg(plugin, "menu.injector.rarity.entry.drop_scale", "Q/Ctrl+Q: x2 / x0.5"), NamedTextColor.GRAY),
+                        Component.text(msg(plugin, "menu.injector.rarity.entry.toggle_spawn", "F: toggle spawn enabled"), NamedTextColor.GRAY),
+                        Component.text(msg(plugin, "menu.injector.rarity.entry.double_click_disable", "Double-click: set 0 (disabled)"), NamedTextColor.GRAY),
+                        Component.text(msg(plugin, "menu.injector.rarity.entry.middle_reset", "Middle: reset to 1.0"), NamedTextColor.GRAY)
                 ));
                 meta.lore(lore);
                 barrier.setItemMeta(meta);
@@ -196,15 +211,23 @@ final class InjectorBookRarityMenuService {
             return item;
         }
         List<Component> lore = meta.lore() == null ? new ArrayList<>() : new ArrayList<>(meta.lore());
+        String yes = msg(plugin, "menu.injector.rarity.state.yes", "YES");
+        String no = msg(plugin, "menu.injector.rarity.state.no", "NO");
         lore.add(Component.empty());
-        lore.add(Component.text("Spawn enabled: " + (spawnEnabled ? "YES" : "NO"), spawnEnabled ? NamedTextColor.GREEN : NamedTextColor.RED));
-        lore.add(Component.text("Rarity Weight: " + formatWeight(weight), NamedTextColor.YELLOW));
-        lore.add(Component.text("Relative drop chance uses this weight.", NamedTextColor.GRAY));
-        lore.add(Component.text("Left/Right: +/-0.1 (Shift: +/-1.0)", NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("Q/Ctrl+Q: x2 / x0.5", NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("F: toggle spawn enabled", NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("Double-click: set 0 (disabled)", NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("Middle: reset to 1.0", NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(
+                msg(plugin, "menu.injector.rarity.entry.spawn_line", "Spawn enabled: {state}", Map.of("state", spawnEnabled ? yes : no)),
+                spawnEnabled ? NamedTextColor.GREEN : NamedTextColor.RED
+        ));
+        lore.add(Component.text(
+                msg(plugin, "menu.injector.rarity.entry.rarity_weight_line", "Rarity Weight: {weight}", Map.of("weight", formatWeight(weight))),
+                NamedTextColor.YELLOW
+        ));
+        lore.add(Component.text(msg(plugin, "menu.injector.rarity.entry.weight_usage", "Relative drop chance uses this weight."), NamedTextColor.GRAY));
+        lore.add(Component.text(msg(plugin, "menu.injector.rarity.entry.left_right", "Left/Right: +/-0.1 (Shift: +/-1.0)"), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(msg(plugin, "menu.injector.rarity.entry.drop_scale", "Q/Ctrl+Q: x2 / x0.5"), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(msg(plugin, "menu.injector.rarity.entry.toggle_spawn", "F: toggle spawn enabled"), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(msg(plugin, "menu.injector.rarity.entry.double_click_disable", "Double-click: set 0 (disabled)"), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(msg(plugin, "menu.injector.rarity.entry.middle_reset", "Middle: reset to 1.0"), NamedTextColor.DARK_GRAY));
         meta.lore(lore);
         item.setItemMeta(meta);
         return item;
@@ -226,34 +249,48 @@ final class InjectorBookRarityMenuService {
         return entries;
     }
 
-    private @NotNull ItemStack createNavPane(boolean enabled, boolean previous) {
+    private @NotNull ItemStack createNavPane(@NotNull ForbiddenEnchantsPlugin plugin, boolean enabled, boolean previous) {
         ItemStack pane = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
         ItemMeta meta = pane.getItemMeta();
         if (meta != null) {
-            String label = previous ? "<< Prev" : "Next >>";
+            String label = previous
+                    ? msg(plugin, "menu.injector.rarity.nav_prev_label", "<< Prev")
+                    : msg(plugin, "menu.injector.rarity.nav_next_label", "Next >>");
             meta.displayName(Component.text(label, enabled ? NamedTextColor.GREEN : NamedTextColor.DARK_GRAY));
             pane.setItemMeta(meta);
         }
         return pane;
     }
 
-    private @NotNull ItemStack createResetPane() {
+    private @NotNull ItemStack createResetPane(@NotNull ForbiddenEnchantsPlugin plugin) {
         ItemStack item = new ItemStack(Material.BRUSH);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Reset All Weights", NamedTextColor.RED));
-            meta.lore(List.of(Component.text("Click to reset all rarity weights to 1.0.", NamedTextColor.GRAY)));
+            meta.displayName(Component.text(
+                    msg(plugin, "menu.injector.rarity.reset_label", "Reset All Weights"),
+                    NamedTextColor.RED
+            ));
+            meta.lore(List.of(Component.text(
+                    msg(plugin, "menu.injector.rarity.reset_lore", "Click to reset all rarity weights to 1.0."),
+                    NamedTextColor.GRAY
+            )));
             item.setItemMeta(meta);
         }
         return item;
     }
 
-    private @NotNull ItemStack createBackPane() {
+    private @NotNull ItemStack createBackPane(@NotNull ForbiddenEnchantsPlugin plugin) {
         ItemStack item = new ItemStack(Material.ARROW);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Back To Injector", NamedTextColor.AQUA));
-            meta.lore(List.of(Component.text("Return to /fe injector gui.", NamedTextColor.GRAY)));
+            meta.displayName(Component.text(
+                    msg(plugin, "menu.injector.rarity.back_label", "Back To Injector"),
+                    NamedTextColor.AQUA
+            ));
+            meta.lore(List.of(Component.text(
+                    msg(plugin, "menu.injector.rarity.back_lore", "Return to /fe injector gui."),
+                    NamedTextColor.GRAY
+            )));
             item.setItemMeta(meta);
         }
         return item;
@@ -264,13 +301,21 @@ final class InjectorBookRarityMenuService {
         ItemStack item = new ItemStack(enabled ? Material.LIME_DYE : Material.GRAY_DYE);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
+            String state = enabled
+                    ? msg(plugin, "menu.injector.rarity.state.on", "ON")
+                    : msg(plugin, "menu.injector.rarity.state.off", "OFF");
             meta.displayName(Component.text(
-                    "Apply Weights To Enchanted Items: " + (enabled ? "ON" : "OFF"),
+                    msg(
+                            plugin,
+                            "menu.injector.rarity.apply_items_label",
+                            "Apply Weights To Enchanted Items: {state}",
+                            Map.of("state", state)
+                    ),
                     enabled ? NamedTextColor.GREEN : NamedTextColor.RED
             ));
             meta.lore(List.of(
-                    Component.text("ON: weights affect books and enchanted items.", NamedTextColor.GRAY),
-                    Component.text("OFF: weights affect books only.", NamedTextColor.DARK_GRAY)
+                    Component.text(msg(plugin, "menu.injector.rarity.apply_items_on", "ON: weights affect books and enchanted items."), NamedTextColor.GRAY),
+                    Component.text(msg(plugin, "menu.injector.rarity.apply_items_off", "OFF: weights affect books only."), NamedTextColor.DARK_GRAY)
             ));
             item.setItemMeta(meta);
         }
@@ -279,6 +324,17 @@ final class InjectorBookRarityMenuService {
 
     private @NotNull String formatWeight(double weight) {
         return String.format(java.util.Locale.ROOT, "%.1f", Math.max(0.0D, Math.round(weight * 10.0D) / 10.0D));
+    }
+
+    private @NotNull String msg(@NotNull ForbiddenEnchantsPlugin plugin, @NotNull String key, @NotNull String fallback) {
+        return plugin.message(key, fallback);
+    }
+
+    private @NotNull String msg(@NotNull ForbiddenEnchantsPlugin plugin,
+                                @NotNull String key,
+                                @NotNull String fallback,
+                                @NotNull Map<String, String> placeholders) {
+        return plugin.message(key, fallback, placeholders);
     }
 
     private record BookEntry(@NotNull EnchantType type, int level) {

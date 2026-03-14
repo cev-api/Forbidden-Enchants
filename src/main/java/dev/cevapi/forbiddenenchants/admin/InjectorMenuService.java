@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 final class InjectorMenuService {
@@ -345,19 +346,37 @@ final class InjectorMenuService {
                     configured ? NamedTextColor.GREEN : NamedTextColor.GRAY
             ));
             List<Component> lore = new ArrayList<>();
-            lore.add(Component.text(configured ? "Configured chance: " + StructureInjectorUtil.formatPercent(chance) : "Not configured", configured ? NamedTextColor.YELLOW : NamedTextColor.DARK_GRAY));
-            lore.add(Component.text("Loot type: " + vaultMode.type().id(), vaultMode.type() == InjectorLootMode.LootType.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE));
-            lore.add(Component.text("Curse state: " + vaultMode.curseState().id(), vaultMode.curseState() == InjectorLootMode.CurseState.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE));
-            lore.add(Component.text("Mystery state: " + vaultMystery.id(), vaultMystery == InjectorMysteryState.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE));
-            lore.add(Component.text("Acts like structure injector entry.", NamedTextColor.DARK_GRAY));
+            lore.add(Component.text(
+                    configured
+                            ? msg(
+                            "menu.injector.entry.configured_chance_line",
+                            "Configured chance: {chance}",
+                            Map.of("chance", StructureInjectorUtil.formatPercent(chance))
+                    )
+                            : msg("menu.injector.entry.not_configured", "Not configured"),
+                    configured ? NamedTextColor.YELLOW : NamedTextColor.DARK_GRAY
+            ));
+            lore.add(Component.text(
+                    msg("menu.injector.entry.loot_type_line", "Loot type: {type}", Map.of("type", vaultMode.type().id())),
+                    vaultMode.type() == InjectorLootMode.LootType.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE
+            ));
+            lore.add(Component.text(
+                    msg("menu.injector.entry.curse_state_line", "Curse state: {state}", Map.of("state", vaultMode.curseState().id())),
+                    vaultMode.curseState() == InjectorLootMode.CurseState.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE
+            ));
+            lore.add(Component.text(
+                    msg("menu.injector.entry.mystery_state_line", "Mystery state: {state}", Map.of("state", vaultMystery.id())),
+                    vaultMystery == InjectorMysteryState.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE
+            ));
+            lore.add(Component.text(msg("menu.injector.entry.vault_hint", "Acts like structure injector entry."), NamedTextColor.DARK_GRAY));
             lore.add(Component.empty());
-            lore.add(Component.text("Left: +1% (+0.1% below 1%)", NamedTextColor.GRAY));
-            lore.add(Component.text("Shift+Left: +5% (+0.5% below 5%)", NamedTextColor.GRAY));
-            lore.add(Component.text("Right: -1% (-0.1% below 1%, min 0.1%)", NamedTextColor.GRAY));
-            lore.add(Component.text("Middle: remove entry (set 0%)", NamedTextColor.GRAY));
-            lore.add(Component.text("Drop (Q): cycle loot type", NamedTextColor.GRAY));
-            lore.add(Component.text("Ctrl+Q: cycle curse state", NamedTextColor.GRAY));
-            lore.add(Component.text("F: cycle mystery state", NamedTextColor.GRAY));
+            lore.add(Component.text(msg("menu.injector.entry.left_click", "Left: +1% (+0.1% below 1%)"), NamedTextColor.GRAY));
+            lore.add(Component.text(msg("menu.injector.entry.shift_left_click", "Shift+Left: +5% (+0.5% below 5%)"), NamedTextColor.GRAY));
+            lore.add(Component.text(msg("menu.injector.entry.right_click", "Right: -1% (-0.1% below 1%, min 0.1%)"), NamedTextColor.GRAY));
+            lore.add(Component.text(msg("menu.injector.entry.middle_remove_entry", "Middle: remove entry (set 0%)"), NamedTextColor.GRAY));
+            lore.add(Component.text(msg("menu.injector.entry.drop_cycle_type", "Drop (Q): cycle loot type"), NamedTextColor.GRAY));
+            lore.add(Component.text(msg("menu.injector.entry.ctrl_drop_cycle_curse", "Ctrl+Q: cycle curse state"), NamedTextColor.GRAY));
+            lore.add(Component.text(msg("menu.injector.entry.offhand_cycle_mystery", "F: cycle mystery state"), NamedTextColor.GRAY));
             meta.lore(lore);
             item.setItemMeta(meta);
             return item;
@@ -376,20 +395,57 @@ final class InjectorMenuService {
 
         meta.displayName(Component.text(structure.getKey().toString(), configured ? NamedTextColor.GREEN : NamedTextColor.GRAY));
         List<Component> lore = new ArrayList<>();
-        lore.add(Component.text(configured ? "Configured chance: " + StructureInjectorUtil.formatPercent(chance) : "Not configured", configured ? NamedTextColor.YELLOW : NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("Loot type: " + lootMode.type().id(), lootMode.type() == InjectorLootMode.LootType.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE));
-        lore.add(Component.text("Curse state: " + lootMode.curseState().id(), lootMode.curseState() == InjectorLootMode.CurseState.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE));
-        lore.add(Component.text("Mystery state: " + mysteryState.id(), mysteryState == InjectorMysteryState.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE));
-        lore.add(Component.text("Combined mode: " + lootMode.id() + " + " + mysteryState.id(), NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("Mode: " + (mode == InjectorMenuMode.CONFIGURED ? "Configured only" : "All structures"), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(
+                configured
+                        ? msg(
+                        "menu.injector.entry.configured_chance_line",
+                        "Configured chance: {chance}",
+                        Map.of("chance", StructureInjectorUtil.formatPercent(chance))
+                )
+                        : msg("menu.injector.entry.not_configured", "Not configured"),
+                configured ? NamedTextColor.YELLOW : NamedTextColor.DARK_GRAY
+        ));
+        lore.add(Component.text(
+                msg("menu.injector.entry.loot_type_line", "Loot type: {type}", Map.of("type", lootMode.type().id())),
+                lootMode.type() == InjectorLootMode.LootType.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE
+        ));
+        lore.add(Component.text(
+                msg("menu.injector.entry.curse_state_line", "Curse state: {state}", Map.of("state", lootMode.curseState().id())),
+                lootMode.curseState() == InjectorLootMode.CurseState.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE
+        ));
+        lore.add(Component.text(
+                msg("menu.injector.entry.mystery_state_line", "Mystery state: {state}", Map.of("state", mysteryState.id())),
+                mysteryState == InjectorMysteryState.ALL ? NamedTextColor.GRAY : NamedTextColor.LIGHT_PURPLE
+        ));
+        lore.add(Component.text(
+                msg(
+                        "menu.injector.entry.combined_mode_line",
+                        "Combined mode: {loot_mode} + {mystery_state}",
+                        Map.of("loot_mode", lootMode.id(), "mystery_state", mysteryState.id())
+                ),
+                NamedTextColor.DARK_GRAY
+        ));
+        lore.add(Component.text(
+                msg(
+                        "menu.injector.entry.mode_line",
+                        "Mode: {mode}",
+                        Map.of(
+                                "mode",
+                                mode == InjectorMenuMode.CONFIGURED
+                                        ? msg("menu.injector.entry.mode_configured_only", "Configured only")
+                                        : msg("menu.injector.entry.mode_all_structures", "All structures")
+                        )
+                ),
+                NamedTextColor.DARK_GRAY
+        ));
         lore.add(Component.empty());
-        lore.add(Component.text("Left: +1% (+0.1% below 1%)", NamedTextColor.GRAY));
-        lore.add(Component.text("Shift+Left: +5% (+0.5% below 5%)", NamedTextColor.GRAY));
-        lore.add(Component.text("Right: -1% (-0.1% below 1%, min 0.1%)", NamedTextColor.GRAY));
-        lore.add(Component.text("Middle: remove structure", NamedTextColor.GRAY));
-        lore.add(Component.text("Drop (Q): cycle loot type", NamedTextColor.GRAY));
-        lore.add(Component.text("Ctrl+Q: cycle curse state", NamedTextColor.GRAY));
-        lore.add(Component.text("F: cycle mystery state", NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.injector.entry.left_click", "Left: +1% (+0.1% below 1%)"), NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.injector.entry.shift_left_click", "Shift+Left: +5% (+0.5% below 5%)"), NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.injector.entry.right_click", "Right: -1% (-0.1% below 1%, min 0.1%)"), NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.injector.entry.middle_remove_structure", "Middle: remove structure"), NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.injector.entry.drop_cycle_type", "Drop (Q): cycle loot type"), NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.injector.entry.ctrl_drop_cycle_curse", "Ctrl+Q: cycle curse state"), NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.injector.entry.offhand_cycle_mystery", "F: cycle mystery state"), NamedTextColor.GRAY));
         meta.lore(lore);
         item.setItemMeta(meta);
         return item;
@@ -399,7 +455,9 @@ final class InjectorMenuService {
         ItemStack pane = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
         ItemMeta meta = pane.getItemMeta();
         if (meta != null) {
-            String label = previous ? "<< Prev" : "Next >>";
+            String label = previous
+                    ? msg("menu.injector.nav_prev_label", "<< Prev")
+                    : msg("menu.injector.nav_next_label", "Next >>");
             meta.displayName(Component.text(label, enabled ? NamedTextColor.GREEN : NamedTextColor.DARK_GRAY));
             pane.setItemMeta(meta);
         }
@@ -411,10 +469,12 @@ final class InjectorMenuService {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.displayName(Component.text(
-                    mode == InjectorMenuMode.CONFIGURED ? "Switch: All Structures" : "Switch: Configured Only",
+                    mode == InjectorMenuMode.CONFIGURED
+                            ? msg("menu.injector.mode_switch_all_label", "Switch: All Structures")
+                            : msg("menu.injector.mode_switch_configured_label", "Switch: Configured Only"),
                     NamedTextColor.AQUA
             ));
-            meta.lore(List.of(Component.text("Click to cycle view mode.", NamedTextColor.GRAY)));
+            meta.lore(List.of(Component.text(msg("menu.injector.mode_pane_lore", "Click to cycle view mode."), NamedTextColor.GRAY)));
             item.setItemMeta(meta);
         }
         return item;
@@ -425,11 +485,14 @@ final class InjectorMenuService {
         ItemStack item = new ItemStack(enabled ? Material.LIME_DYE : Material.GRAY_DYE);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
+            String state = enabled
+                    ? msg("menu.injector.state.enabled", "Enabled")
+                    : msg("menu.injector.state.disabled", "Disabled");
             meta.displayName(Component.text(
-                    "Injector " + (enabled ? "Enabled" : "Disabled"),
+                    msg("menu.injector.enabled_pane_label", "Injector {state}", Map.of("state", state)),
                     enabled ? NamedTextColor.GREEN : NamedTextColor.RED
             ));
-            meta.lore(List.of(Component.text("Click to toggle global injector.", NamedTextColor.GRAY)));
+            meta.lore(List.of(Component.text(msg("menu.injector.enabled_pane_lore", "Click to toggle global injector."), NamedTextColor.GRAY)));
             item.setItemMeta(meta);
         }
         return item;
@@ -439,10 +502,13 @@ final class InjectorMenuService {
         ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Enchantment Rarity Editor", NamedTextColor.AQUA));
+            meta.displayName(Component.text(
+                    msg("menu.injector.rarity_pane_label", "Enchantment Rarity Editor"),
+                    NamedTextColor.AQUA
+            ));
             meta.lore(List.of(
-                    Component.text("Click to edit weighted rarity for each enchantment level.", NamedTextColor.GRAY),
-                    Component.text("Higher weight = more common in injector books.", NamedTextColor.DARK_GRAY)
+                    Component.text(msg("menu.injector.rarity_pane_lore_1", "Click to edit weighted rarity for each enchantment level."), NamedTextColor.GRAY),
+                    Component.text(msg("menu.injector.rarity_pane_lore_2", "Higher weight = more common in injector books."), NamedTextColor.DARK_GRAY)
             ));
             item.setItemMeta(meta);
         }
@@ -454,11 +520,17 @@ final class InjectorMenuService {
         ItemStack item = new ItemStack(enabled ? Material.BELL : Material.NOTE_BLOCK);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
+            String state = enabled
+                    ? msg("menu.injector.state.enabled", "Enabled")
+                    : msg("menu.injector.state.disabled", "Disabled");
             meta.displayName(Component.text(
-                    "Chest Add Message " + (enabled ? "Enabled" : "Disabled"),
+                    msg("menu.injector.notify_pane_label", "Chest Add Message {state}", Map.of("state", state)),
                     enabled ? NamedTextColor.GREEN : NamedTextColor.RED
             ));
-            meta.lore(List.of(Component.text("Click to toggle action-bar message on chest injection.", NamedTextColor.GRAY)));
+            meta.lore(List.of(Component.text(
+                    msg("menu.injector.notify_pane_lore", "Click to toggle action-bar message on chest injection."),
+                    NamedTextColor.GRAY
+            )));
             item.setItemMeta(meta);
         }
         return item;
@@ -468,8 +540,11 @@ final class InjectorMenuService {
         ItemStack item = new ItemStack(Material.TNT);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Clear All Structures", NamedTextColor.RED));
-            meta.lore(List.of(Component.text("Click to remove all configured structures.", NamedTextColor.GRAY)));
+            meta.displayName(Component.text(msg("menu.injector.clear_pane_label", "Clear All Structures"), NamedTextColor.RED));
+            meta.lore(List.of(Component.text(
+                    msg("menu.injector.clear_pane_lore", "Click to remove all configured structures."),
+                    NamedTextColor.GRAY
+            )));
             item.setItemMeta(meta);
         }
         return item;
@@ -504,6 +579,16 @@ final class InjectorMenuService {
 
     private static double roundToTenths(double value) {
         return Math.round(value * 10.0D) / 10.0D;
+    }
+
+    private @NotNull String msg(@NotNull String key, @NotNull String fallback) {
+        return plugin.message(key, fallback);
+    }
+
+    private @NotNull String msg(@NotNull String key,
+                                @NotNull String fallback,
+                                @NotNull Map<String, String> placeholders) {
+        return plugin.message(key, fallback, placeholders);
     }
 }
 

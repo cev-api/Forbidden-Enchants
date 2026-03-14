@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 final class LibrarianTradeMenuService {
     private static final int MENU_SIZE = 54;
@@ -245,14 +246,26 @@ final class LibrarianTradeMenuService {
             if (meta != null) {
                 meta.displayName(Component.text(entry.type.arg + " " + RomanNumeralUtil.toRoman(entry.level), NamedTextColor.GRAY));
                 meta.lore(List.of(
-                        Component.text("Not configured", NamedTextColor.DARK_GRAY),
-                        Component.text("Left: enable and +1% chance", NamedTextColor.GRAY),
-                        Component.text("Shift+Left: enable and +5% chance", NamedTextColor.GRAY),
-                        Component.text("Right: -1% (-0.1% below 1%, min 0.1%)", NamedTextColor.GRAY),
-                        Component.text("Q/Ctrl+Q: +/- emerald cost", NamedTextColor.GRAY),
-                        Component.text("F: +book cost", NamedTextColor.GRAY),
-                        Component.text("Middle: clear entry", NamedTextColor.GRAY),
-                        Component.text("Mode: " + (mode == LibrarianTradeMenuMode.ALL ? "All books" : "Configured"), NamedTextColor.DARK_GRAY)
+                        Component.text(msg("menu.librarian.entry.not_configured", "Not configured"), NamedTextColor.DARK_GRAY),
+                        Component.text(msg("menu.librarian.entry.left_enable", "Left: enable and +1% chance"), NamedTextColor.GRAY),
+                        Component.text(msg("menu.librarian.entry.shift_left_enable", "Shift+Left: enable and +5% chance"), NamedTextColor.GRAY),
+                        Component.text(msg("menu.librarian.entry.right_adjust", "Right: -1% (-0.1% below 1%, min 0.1%)"), NamedTextColor.GRAY),
+                        Component.text(msg("menu.librarian.entry.drop_emerald", "Q/Ctrl+Q: +/- emerald cost"), NamedTextColor.GRAY),
+                        Component.text(msg("menu.librarian.entry.offhand_book", "F: +book cost"), NamedTextColor.GRAY),
+                        Component.text(msg("menu.librarian.entry.middle_clear", "Middle: clear entry"), NamedTextColor.GRAY),
+                        Component.text(
+                                msg(
+                                        "menu.librarian.entry.mode_line",
+                                        "Mode: {mode}",
+                                        Map.of(
+                                                "mode",
+                                                mode == LibrarianTradeMenuMode.ALL
+                                                        ? msg("menu.librarian.entry.mode_all_books", "All books")
+                                                        : msg("menu.librarian.entry.mode_configured", "Configured")
+                                        )
+                                ),
+                                NamedTextColor.DARK_GRAY
+                        )
                 ));
                 item.setItemMeta(meta);
             }
@@ -267,15 +280,46 @@ final class LibrarianTradeMenuService {
 
         List<Component> lore = meta.lore() == null ? new ArrayList<>() : new ArrayList<>(meta.lore());
         lore.add(Component.empty());
-        lore.add(Component.text("Chance: " + StructureInjectorUtil.formatPercent(configured.chancePercent()), NamedTextColor.YELLOW));
-        lore.add(Component.text("Cost: " + configured.emeraldCost() + " emerald(s)"
-                + (configured.bookCost() > 0 ? " + " + configured.bookCost() + " book(s)" : ""), NamedTextColor.GRAY));
-        lore.add(Component.text("Left/Right: +/- chance (0.1% step below 1%)", NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("Shift Left/Right: +/-5% (0.5% step below 5%)", NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("Q/Ctrl+Q: +/- emerald cost", NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("F: +book cost", NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("Middle: disable this trade", NamedTextColor.DARK_GRAY));
-        lore.add(Component.text("Mode: " + (mode == LibrarianTradeMenuMode.ALL ? "All books" : "Configured"), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(
+                msg("menu.librarian.entry.chance_line", "Chance: {chance}", Map.of("chance", StructureInjectorUtil.formatPercent(configured.chancePercent()))),
+                NamedTextColor.YELLOW
+        ));
+        String booksPart = configured.bookCost() > 0
+                ? msg(
+                "menu.librarian.entry.cost_books_suffix",
+                " + {books} book(s)",
+                Map.of("books", String.valueOf(configured.bookCost()))
+        )
+                : "";
+        lore.add(Component.text(
+                msg(
+                        "menu.librarian.entry.cost_line",
+                        "Cost: {emeralds} emerald(s){books_part}",
+                        Map.of(
+                                "emeralds", String.valueOf(configured.emeraldCost()),
+                                "books_part", booksPart
+                        )
+                ),
+                NamedTextColor.GRAY
+        ));
+        lore.add(Component.text(msg("menu.librarian.entry.left_right", "Left/Right: +/- chance (0.1% step below 1%)"), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(msg("menu.librarian.entry.shift_left_right", "Shift Left/Right: +/-5% (0.5% step below 5%)"), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(msg("menu.librarian.entry.drop_emerald", "Q/Ctrl+Q: +/- emerald cost"), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(msg("menu.librarian.entry.offhand_book", "F: +book cost"), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(msg("menu.librarian.entry.middle_disable", "Middle: disable this trade"), NamedTextColor.DARK_GRAY));
+        lore.add(Component.text(
+                msg(
+                        "menu.librarian.entry.mode_line",
+                        "Mode: {mode}",
+                        Map.of(
+                                "mode",
+                                mode == LibrarianTradeMenuMode.ALL
+                                        ? msg("menu.librarian.entry.mode_all_books", "All books")
+                                        : msg("menu.librarian.entry.mode_configured", "Configured")
+                        )
+                ),
+                NamedTextColor.DARK_GRAY
+        ));
         meta.lore(lore);
         item.setItemMeta(meta);
         return item;
@@ -285,7 +329,9 @@ final class LibrarianTradeMenuService {
         ItemStack pane = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
         ItemMeta meta = pane.getItemMeta();
         if (meta != null) {
-            String label = previous ? "<< Prev" : "Next >>";
+            String label = previous
+                    ? msg("menu.librarian.nav_prev_label", "<< Prev")
+                    : msg("menu.librarian.nav_next_label", "Next >>");
             meta.displayName(Component.text(label, enabled ? NamedTextColor.GREEN : NamedTextColor.DARK_GRAY));
             pane.setItemMeta(meta);
         }
@@ -297,10 +343,12 @@ final class LibrarianTradeMenuService {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.displayName(Component.text(
-                    mode == LibrarianTradeMenuMode.CONFIGURED ? "Switch: All Books" : "Switch: Configured",
+                    mode == LibrarianTradeMenuMode.CONFIGURED
+                            ? msg("menu.librarian.mode_switch_all_label", "Switch: All Books")
+                            : msg("menu.librarian.mode_switch_configured_label", "Switch: Configured"),
                     NamedTextColor.AQUA
             ));
-            meta.lore(List.of(Component.text("Click to toggle list mode.", NamedTextColor.GRAY)));
+            meta.lore(List.of(Component.text(msg("menu.librarian.mode_pane_lore", "Click to toggle list mode."), NamedTextColor.GRAY)));
             item.setItemMeta(meta);
         }
         return item;
@@ -311,11 +359,14 @@ final class LibrarianTradeMenuService {
         ItemStack item = new ItemStack(enabled ? Material.LIME_DYE : Material.GRAY_DYE);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
+            String state = enabled
+                    ? msg("menu.librarian.state.enabled", "Enabled")
+                    : msg("menu.librarian.state.disabled", "Disabled");
             meta.displayName(Component.text(
-                    "Librarian Blend " + (enabled ? "Enabled" : "Disabled"),
+                    msg("menu.librarian.enabled_pane_label", "Librarian Blend {state}", Map.of("state", state)),
                     enabled ? NamedTextColor.GREEN : NamedTextColor.RED
             ));
-            meta.lore(List.of(Component.text("Click to toggle blend injection.", NamedTextColor.GRAY)));
+            meta.lore(List.of(Component.text(msg("menu.librarian.enabled_pane_lore", "Click to toggle blend injection."), NamedTextColor.GRAY)));
             item.setItemMeta(meta);
         }
         return item;
@@ -325,8 +376,14 @@ final class LibrarianTradeMenuService {
         ItemStack item = new ItemStack(Material.TNT);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Clear All Configured Trades", NamedTextColor.RED));
-            meta.lore(List.of(Component.text("Click to disable all configured librarian trades.", NamedTextColor.GRAY)));
+            meta.displayName(Component.text(
+                    msg("menu.librarian.clear_pane_label", "Clear All Configured Trades"),
+                    NamedTextColor.RED
+            ));
+            meta.lore(List.of(Component.text(
+                    msg("menu.librarian.clear_pane_lore", "Click to disable all configured librarian trades."),
+                    NamedTextColor.GRAY
+            )));
             item.setItemMeta(meta);
         }
         return item;
@@ -386,6 +443,16 @@ final class LibrarianTradeMenuService {
 
     private int clampInt(int value, int min, int max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    private @NotNull String msg(@NotNull String key, @NotNull String fallback) {
+        return plugin.message(key, fallback);
+    }
+
+    private @NotNull String msg(@NotNull String key,
+                                @NotNull String fallback,
+                                @NotNull Map<String, String> placeholders) {
+        return plugin.message(key, fallback, placeholders);
     }
 
     private record LibrarianBookEntry(@NotNull EnchantType type, int level) {

@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 final class EnchantToggleMenuService {
     private static final int TOGGLE_MENU_SIZE = 54;
@@ -146,13 +147,24 @@ final class EnchantToggleMenuService {
 
         meta.displayName(Component.text(type.displayName, fullyEnabled ? NamedTextColor.GREEN : NamedTextColor.RED));
         List<Component> lore = new ArrayList<>();
-        lore.add(Component.text("Use: " + (useEnabled ? "Enabled" : "Disabled"), useEnabled ? NamedTextColor.GREEN : NamedTextColor.RED));
-        lore.add(Component.text("Loot spawn: " + (spawnEnabled ? "Enabled" : "Disabled"), spawnEnabled ? NamedTextColor.GREEN : NamedTextColor.RED));
-        lore.add(Component.text("Slot: " + EnchantMaterialCatalog.requiredMaterialCategory(type), NamedTextColor.DARK_GRAY));
+        String enabled = msg("menu.toggles.state.enabled", "Enabled");
+        String disabled = msg("menu.toggles.state.disabled", "Disabled");
+        lore.add(Component.text(
+                msg("menu.toggles.entry.use_line", "Use: {state}", Map.of("state", useEnabled ? enabled : disabled)),
+                useEnabled ? NamedTextColor.GREEN : NamedTextColor.RED
+        ));
+        lore.add(Component.text(
+                msg("menu.toggles.entry.spawn_line", "Loot spawn: {state}", Map.of("state", spawnEnabled ? enabled : disabled)),
+                spawnEnabled ? NamedTextColor.GREEN : NamedTextColor.RED
+        ));
+        lore.add(Component.text(
+                msg("menu.toggles.entry.slot_line", "Slot: {slot}", Map.of("slot", EnchantMaterialCatalog.requiredMaterialCategory(type))),
+                NamedTextColor.DARK_GRAY
+        ));
         lore.add(Component.empty());
-        lore.add(Component.text("Left-click: Toggle use", NamedTextColor.GRAY));
-        lore.add(Component.text("Right-click: Toggle chest/vault spawn", NamedTextColor.GRAY));
-        lore.add(Component.text("Middle-click: Toggle both", NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.toggles.entry.left_click", "Left-click: Toggle use"), NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.toggles.entry.right_click", "Right-click: Toggle chest/vault spawn"), NamedTextColor.GRAY));
+        lore.add(Component.text(msg("menu.toggles.entry.middle_click", "Middle-click: Toggle both"), NamedTextColor.GRAY));
         meta.lore(lore);
         item.setItemMeta(meta);
         return item;
@@ -181,6 +193,16 @@ final class EnchantToggleMenuService {
             case TOTEM -> Material.TOTEM_OF_UNDYING;
             case POTION -> Material.POTION;
         };
+    }
+
+    private @NotNull String msg(@NotNull String key, @NotNull String fallback) {
+        return plugin.message(key, fallback);
+    }
+
+    private @NotNull String msg(@NotNull String key,
+                                @NotNull String fallback,
+                                @NotNull Map<String, String> placeholders) {
+        return plugin.message(key, fallback, placeholders);
     }
 }
 
