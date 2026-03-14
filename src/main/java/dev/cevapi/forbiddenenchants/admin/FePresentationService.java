@@ -75,11 +75,13 @@ final class FePresentationService {
         sendHelpLine(sender, "/" + label + " give <enchant> <level> [player]", plugin.message("fe.help.give_desc", "Give enchant book."));
         sendHelpLine(sender, "/" + label + " givebook <enchant> <level> [player]", plugin.message("fe.help.givebook_desc", "Give enchant book (explicit)."));
         sendHelpLine(sender, "/" + label + " giveitem <enchant> <level> <material> [player]", plugin.message("fe.help.giveitem_desc", "Give pre-enchanted gear."));
+        sendHelpLine(sender, "/" + label + " artifact <name> [player]", plugin.message("fe.help.artifact_desc", "Give a custom artifact item."));
         sendHelpLine(sender, "/" + label + " mysterybook <slot> [player]", plugin.message("fe.help.mysterybook_desc", "Give obfuscated random enchant book for a slot."));
         sendHelpLine(sender, "/" + label + " mysteryitem <material> [player]", plugin.message("fe.help.mysteryitem_desc", "Give obfuscated random pre-enchanted item."));
         sendHelpLine(sender, "/" + label + " reload", plugin.message("fe.help.reload_desc", "Reload config.yml and messages.yml."));
         sendHelpLine(sender, "/" + label + " injector <...>", plugin.message("fe.help.injector_desc", "Structure-based loot injection controls."));
         sendHelpLine(sender, "/" + label + " librarian <...>", plugin.message("fe.help.librarian_desc", "Librarian forbidden-book trade editor and controls."));
+        sendHelpLine(sender, "/" + label + " enchanting <...>", plugin.message("fe.help.enchanting_desc", "Enchanting-table forbidden-book injector editor and controls."));
         sendHelpLine(sender, "/" + label + " bundle <...>", plugin.message("fe.help.bundle_desc", "Mob bundle-drop editor and controls."));
         sendHelpLine(sender, "/" + label + " toggles [player]", plugin.message("fe.help.toggles_desc", "Toggle enchant use and chest/vault spawning."));
     }

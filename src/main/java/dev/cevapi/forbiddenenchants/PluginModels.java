@@ -188,6 +188,42 @@ enum LibrarianTradeMenuMode {
 record LibrarianTradeEntry(@NotNull EnchantType type, int level, double chancePercent, int emeraldCost, int bookCost) {
 }
 
+final class EnchantingTableMenuHolder implements InventoryHolder {
+    private final EnchantingTableMenuMode mode;
+    private final int page;
+    private Inventory inventory;
+
+    EnchantingTableMenuHolder(@NotNull EnchantingTableMenuMode mode, int page) {
+        this.mode = mode;
+        this.page = page;
+    }
+
+    @NotNull EnchantingTableMenuMode mode() {
+        return mode;
+    }
+
+    int page() {
+        return page;
+    }
+
+    void attach(@NotNull Inventory inventory) {
+        this.inventory = inventory;
+    }
+
+    @Override
+    public @NotNull Inventory getInventory() {
+        return Objects.requireNonNull(inventory, "enchanting table menu inventory");
+    }
+}
+
+enum EnchantingTableMenuMode {
+    CONFIGURED,
+    ALL
+}
+
+record EnchantingTableBookEntry(@NotNull EnchantType type, int level, double chancePercent) {
+}
+
 record BookSpec(EnchantType type, int level) {
 }
 

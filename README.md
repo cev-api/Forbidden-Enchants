@@ -1,10 +1,10 @@
 # Forbidden Enchants (Paper 1.21.x)
 
-![AI LOGO LOL](https://i.imgur.com/w8nRrWX.png)
+![NOT AN AI LOGO LOL](https://i.imgur.com/thI0f0h.png)
 
 Forbidden Enchants is a Paper plugin for 1.21.x that adds 69 custom enchants, curses, spell books, and utility effects designed to push survival further than vanilla normally allows. Some are strong, some are disruptive, and some are deliberately unfair, but all of them are meant to create unusual situations, higher-stakes progression, and more server variety.
 
-This is not just a pack of extra enchants. It also includes a full set of in-game admin tools for controlling how those enchants are distributed and balanced. With `/fe gui`, `/fe injector gui`, `/fe bundle gui`, `/fe librarian gui`, and `/fe toggles`, you can manage item access, loot injection, bundle drops, villager trades, and per-enchant runtime settings directly in-game without constantly editing config files or restarting the server.
+This is not just a pack of extra enchants. It also includes a full set of in-game admin tools for controlling how those enchants are distributed and balanced. With `/fe gui`, `/fe injector gui`, `/fe bundle gui`, `/fe librarian gui`, `/fe enchanting gui`, and `/fe toggles`, you can manage item access, loot injection, bundle drops, villager trades, enchanting-table injection, and per-enchant runtime settings directly in-game without constantly editing config files or restarting the server.
 
 If you want a plugin that can make an SMP less predictable while still giving admins direct control over how chaotic it gets, Forbidden Enchants is built for that.
 
@@ -19,6 +19,10 @@ If you want a plugin that can make an SMP less predictable while still giving ad
 - `/fe librarian` command suite for librarian trade blend setup (`help`, `status|list`, `enable`, `disable`, `add`, `remove`, `clear`, `gui|menu`).
 - `/fe librarian gui` visual editor with all-book + configured views, per-book chance, and cost tuning.
 - Librarian blend mode keeps vanilla/datapack trade generation and appends configured forbidden-book offers by per-trade chance.
+- `/fe enchanting` command suite for enchanting-table injection setup (`help`, `status|list`, `enable`, `disable`, `add`, `remove`, `clear`, `xp`, `gui|menu`).
+- `/fe enchanting gui` visual editor for book-only enchanting-table injection, per-book chance tuning, and XP-threshold control.
+- Enchanting-table injector only applies to book enchants when the selected offer cost meets the configured threshold (default `35`).
+- Enchanting-table power extension supports extra nearby boosters (skeleton skull `+5`, candles `+1`) with a capped `+30` bonus (offer cap `60`).
 - `/fe toggles` GUI for per-enchant enable/disable controls (usage and chest/vault spawning), with aliases `settings` and `enchanttoggles`.
 - Generate both enchant books and pre-enchanted gear items directly.
 - Anvil application flow for helmets, chestplates, and boots.
@@ -57,7 +61,7 @@ Use injector when you want fast setup and configurable randomization from in-gam
 
 Output jar:
 
-- `build/libs/forbidden-enchants-1.0.0.jar`
+- `build/libs/forbidden-enchants-1.0.3.jar`
 
 ## Install
 
@@ -66,9 +70,9 @@ Output jar:
 3. Restart server (or use a full plugin reload strategy you trust).
 
 
-## 5 Main GUI Menus
+## 6 Main GUI Menus
 
-This plugin has five main admin GUIs, each for a different workflow:
+This plugin has six main admin GUIs, each for a different workflow:
 
 1. `/fe gui` (Creative-style admin picker)
    - Purpose: manually give forbidden books/items to players for admin distribution, balancing checks, and testing.
@@ -110,7 +114,21 @@ This plugin has five main admin GUIs, each for a different workflow:
 
     ![LIBRARY](https://i.imgur.com/GP1eJwi.png)
 
-4. `/fe toggles` (Per-enchant runtime/spawn controls)
+4. `/fe enchanting gui` (Enchanting-table injector editor)
+   - Purpose: configure which forbidden books can replace enchanting-table book outcomes, plus chance and XP threshold.
+   - Book-only design: only enchanted books are configurable/injectable here.
+   - Supports all-books and configured-only view modes.
+   - Per-book controls:
+     - Left/Right clicks: increase/decrease injection chance
+     - `Middle`: remove/disable that configured book
+   - Root controls:
+     - Enable/disable enchanting-table injector
+     - Open configured-only page
+     - Add book from held item
+     - Clear all configured books
+     - Tune minimum offer XP cost required before any configured book can inject (`1-60`, default `35`)
+
+5. `/fe toggles` (Per-enchant runtime/spawn controls)
    - Purpose: toggle each enchant's runtime usage and injector spawn state without editing config files manually.
    - Shows all enchant families, including potion enchants and utility books (not only standard enchanted-book entries).
    - Per-entry controls:
@@ -120,7 +138,7 @@ This plugin has five main admin GUIs, each for a different workflow:
 
     ![Toggles](https://i.imgur.com/wge3afS.png)
 
-5. `/fe bundle gui` (Mob bundle-drop editor)
+6. `/fe bundle gui` (Mob bundle-drop editor)
    - Purpose: configure a bundle that mobs can drop, including exact contents and per-mob drop chances.
    - Reward sources:
      - Forbidden enchant books
@@ -151,11 +169,15 @@ This plugin has five main admin GUIs, each for a different workflow:
   - `spawn_enabled` can be toggled from `/fe toggles` and from the injector rarity editor (`F` on an entry).
   - `librarian_trades.*` stores librarian trade enable state + configured offers (chance + costs).
   - `bundle_drop.*` stores mob bundle-drop enabled state, default chance, per-mob chances, rewards, and extra drops.
+  - `enchanting_table_injector.*` stores enchanting-table injector enabled state, configured book entries, and minimum offer XP threshold.
   - `messages.yml` stores configurable user-facing text used by menus/action bars/help output.
 - Defaults:
   - Structure injector default chance: `5.0%`.
   - Trial vault default chance fallback: `7.5%` for normal and ominous when config values are missing.
   - Injector rarity toggle default: `true` (weights apply to both books and enchanted items).
+  - Enchanting-table injector default XP threshold: `35`.
+  - Extended enchanting-table power bonus cap: `+30` (max offer cost `60`).
+  - Extra enchanting-table power sources: skeleton skull/wall skull `+5`, candle variants `+1`.
 
 ## Commands
 
@@ -177,6 +199,9 @@ This plugin has five main admin GUIs, each for a different workflow:
 /fe librarian <...>
 /fe librariantrades <...>
 /fe libtrades <...>
+/fe enchanting <...>
+/fe enchantingtable <...>
+/fe enchanttable <...>
 /fe toggles [player]
 /fe settings [player]
 /fe enchanttoggles [player]
@@ -221,6 +246,22 @@ Permission: `forbiddenenchants.admin` (default: op).
 /fe librarian add <enchant> <level> <chance> <emeralds> [books]
 /fe librarian remove <index>
 /fe librarian clear
+```
+
+#### Enchanting subcommands:
+
+```text
+/fe enchanting help
+/fe enchanting status
+/fe enchanting list
+/fe enchanting enable
+/fe enchanting disable
+/fe enchanting gui [player]
+/fe enchanting menu [player]
+/fe enchanting add <enchant> <level> <chance>
+/fe enchanting remove <index>
+/fe enchanting clear
+/fe enchanting xp <1-60>
 ```
 
 #### Bundle subcommands:
@@ -283,6 +324,11 @@ Permission: `forbiddenenchants.admin` (default: op).
 /fe librarian add void_grasp 1 15 32 2
 /fe librarian gui
 /fe librarian remove 2
+/fe enchanting status
+/fe enchanting enable
+/fe enchanting add divine_vision 1 20
+/fe enchanting xp 35
+/fe enchanting gui
 /fe toggles
 ```
 
@@ -686,7 +732,9 @@ The plugin is split into focused layers:
   - `enchants/EnchantList` builds the runtime dispatcher from `EnchantType.values()`.
 - **Rules and item pipeline**: `EnchantStateService`, `EnchantRuleCoreService`, `EnchantEventRuleService`, `EnchantBookFactoryService`, `MysteryItemService`.
 - **Feature services**: combat/mob/effect systems (`GraspCombatService`, `WitheringStrikeService`, `VexatiousService`, `FullPocketsService`, `TemporalSicknessService`, etc.).
-- **Injector subsystem**: `runtime/StructureInjectorRuntimeService`, `admin/InjectorCommandHandler`, `admin/InjectorMenuService`, `InjectorLootMode`, `InjectorMysteryState`.
+- **Injector subsystem**:
+  - Structure/vault: `runtime/StructureInjectorRuntimeService`, `admin/InjectorCommandHandler`, `admin/InjectorMenuService`, `InjectorLootMode`, `InjectorMysteryState`.
+  - Enchanting table: `admin/EnchantingTableInjectorCommandHandler`, `admin/EnchantingTableInjectorMenuService`, runtime hooks in `EnchantEventRuleService`.
 - **Librarian trade subsystem**: `LibrarianTradeService`, `admin/LibrarianTradeCommandHandler`, `admin/LibrarianTradeMenuService`.
 - **Presentation/admin UX**: `admin/FeCommandHandler`, `admin/FePresentationService`, `admin/FeMenuService`, `admin/FeCatalogService`, `admin/EnchantToggleMenuService`, `admin/InjectorMessagingUtil`.
 - **Persistence/config**: `config/ConfigPersistenceService` and `config/MessagesService`.
@@ -697,7 +745,7 @@ The plugin is split into focused layers:
   - `ForbiddenEnchantsPlugin.java`: composition root and shared runtime state.
   - `ForbiddenEnchantsListener.java`: Bukkit event routing.
   - `EnchantType.java`: canonical enchant registry + compatibility metadata.
-  - `admin/`: FE command + admin GUIs + injector/librarian/bundle command handlers and messaging helpers.
+  - `admin/`: FE command + admin GUIs + injector/librarian/enchanting/bundle command handlers and messaging helpers.
   - `config/`: persisted config readers/writers (`ConfigPersistenceService`, `MessagesService`).
   - `runtime/`: runtime-only systems (`StructureInjectorRuntimeService`, `BundleDropRuntimeService`).
   - `LibrarianTradeService.java`: librarian trade runtime hooks.
@@ -709,7 +757,7 @@ The plugin is split into focused layers:
   - one class per enchant (`*Enchant.java`)
 - `src/main/resources/`
   - `plugin.yml`: command + plugin metadata
-  - `config.yml`: persisted defaults/state (`structure_injector`, `enchant_controls`, `librarian_trades`)
+  - `config.yml`: persisted defaults/state (`structure_injector`, `enchant_controls`, `librarian_trades`, `enchanting_table_injector`, `bundle_drop`)
   - `messages.yml`: customizable text for FE menus/help/action-bar messages
 - `examples/`
   - all datapack-style loot table examples (books + mystery books/items + weighted/category pools)
@@ -779,9 +827,3 @@ For mystery entries, include `minecraft:custom_data` with:
   - test `/fe give`, `/fe givebook`, `/fe giveitem`, `/fe mysterybook`, `/fe mysteryitem`, `/fe reload`, `/fe gui`, and injector/toggle interactions.
 
 Note: this repository currently has no scaffold script for new enchants; add them manually with the steps above.
-
-## Enchantment Requests
-
-![Kawaii](https://i.imgur.com/8BsLBc6.png)
-
-I am open to requests for new enchants! Just send a message via GitHub!

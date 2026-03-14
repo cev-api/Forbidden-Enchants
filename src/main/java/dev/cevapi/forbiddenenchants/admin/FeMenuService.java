@@ -42,7 +42,7 @@ final class FeMenuService {
     private void openMenu(@NotNull Player player, @NotNull FeMenuCategory category, int page) {
         plugin.ensureMenuPagesBuilt();
 
-        List<EnchantType> visible = typesForCategory(category);
+        List<MenuPage> visible = pagesForCategory(category);
         int totalPages = Math.max(1, visible.size());
         int safePage = Math.max(0, Math.min(page, totalPages - 1));
         if (category == FeMenuCategory.ALL) {
@@ -50,28 +50,35 @@ final class FeMenuService {
         }
 
         FeMenuHolder holder = new FeMenuHolder(safePage, category);
-        EnchantType pageType = visible.isEmpty() ? null : visible.get(Math.min(safePage, visible.size() - 1));
-        String title = pageType == null
+        MenuPage pageEntry = visible.isEmpty() ? null : visible.get(Math.min(safePage, visible.size() - 1));
+        EnchantType pageType = pageEntry == null ? null : pageEntry.enchantType();
+        String title = pageEntry == null
                 ? plugin.message(
                 "menu.fe.title_category",
                 "Forbidden {category}",
                 java.util.Map.of("category", categoryLabel(category))
         )
-                : plugin.message(
+                : pageType != null
+                ? plugin.message(
                 "menu.fe.title_enchant",
                 "Forbidden {enchant}",
                 java.util.Map.of("enchant", pageType.displayName)
+                )
+                : plugin.message(
+                "menu.fe.title_enchant",
+                "Forbidden {enchant}",
+                java.util.Map.of("enchant", artifactDisplayName(pageEntry.artifactKey()))
         );
         Inventory inventory = Bukkit.createInventory(
                 holder,
                 FE_MENU_SIZE,
-                Component.text(title + " ", pageType == null ? NamedTextColor.WHITE : pageType.color)
+                Component.text(title + " ", pageType == null ? NamedTextColor.AQUA : pageType.color)
                         .append(Component.text("(" + (safePage + 1) + "/" + totalPages + ")", NamedTextColor.WHITE))
         );
         holder.attach(inventory);
 
-        if (pageType != null) {
-            List<ItemStack> pageItems = pageItemsForType(pageType);
+        if (pageEntry != null) {
+            List<ItemStack> pageItems = pageItemsFor(pageEntry);
             for (int slot = 0; slot < Math.min(FE_MENU_PAGE_SIZE, pageItems.size()); slot++) {
                 inventory.setItem(slot, plugin.toMenuDisplayItem(pageItems.get(slot)));
             }
@@ -113,7 +120,7 @@ final class FeMenuService {
         event.setCancelled(true);
         int rawSlot = event.getRawSlot();
         FeMenuCategory category = holder.category();
-        List<EnchantType> visible = typesForCategory(category);
+        List<MenuPage> visible = pagesForCategory(category);
         int totalPages = Math.max(1, visible.size());
         int pageStep = event.isRightClick() ? 5 : 1;
 
@@ -153,7 +160,7 @@ final class FeMenuService {
         if (holder.page() < 0 || holder.page() >= visible.size()) {
             return;
         }
-        List<ItemStack> pageItems = pageItemsForType(visible.get(holder.page()));
+        List<ItemStack> pageItems = pageItemsFor(visible.get(holder.page()));
         if (rawSlot >= pageItems.size()) {
             return;
         }
@@ -180,6 +187,19 @@ final class FeMenuService {
                 return;
             }
         }
+    }
+
+    private @NotNull List<MenuPage> pagesForCategory(@NotNull FeMenuCategory category) {
+        List<MenuPage> pages = new ArrayList<>();
+        for (EnchantType type : typesForCategory(category)) {
+            pages.add(new MenuPage(type, null));
+        }
+        for (String artifactKey : plugin.artifactKeys()) {
+            if (matchesArtifactCategory(artifactKey, category)) {
+                pages.add(new MenuPage(null, artifactKey));
+            }
+        }
+        return pages;
     }
 
     private @NotNull List<EnchantType> typesForCategory(@NotNull FeMenuCategory category) {
@@ -232,6 +252,17 @@ final class FeMenuService {
         };
     }
 
+    private @NotNull List<ItemStack> pageItemsFor(@NotNull MenuPage page) {
+        if (page.enchantType() == null) {
+            ItemStack artifact = page.artifactKey() == null ? null : plugin.createArtifactItem(page.artifactKey());
+            if (artifact == null) {
+                return List.of();
+            }
+            return List.of(artifact);
+        }
+        return pageItemsForType(page.enchantType());
+    }
+
     private @NotNull List<ItemStack> pageItemsForType(@NotNull EnchantType type) {
         List<EnchantType> all = plugin.activeEnchantTypes();
         int index = all.indexOf(type);
@@ -239,6 +270,32 @@ final class FeMenuService {
             return List.of();
         }
         return plugin.menuPages().get(index);
+    }
+
+    private boolean matchesArtifactCategory(@NotNull String artifactKey, @NotNull FeMenuCategory category) {
+        ItemStack artifact = plugin.createArtifactItem(artifactKey);
+        if (artifact == null) {
+            return false;
+        }
+        Material type = artifact.getType();
+        return switch (category) {
+            case ALL -> true;
+            case POTIONS -> type == Material.POTION;
+            case ARMORS -> type == Material.DIAMOND_BOOTS;
+            case OTHER -> type == Material.STICK;
+            case WEAPONS, TOTEMS, BOOKS -> false;
+        };
+    }
+
+    private @NotNull String artifactDisplayName(@Nullable String artifactKey) {
+        if (artifactKey == null) {
+            return "Artifact";
+        }
+        ItemStack artifact = plugin.createArtifactItem(artifactKey);
+        if (artifact == null) {
+            return artifactKey;
+        }
+        return plugin.describeItem(artifact);
     }
 
     private @Nullable FeMenuCategory categoryForSlot(int slot) {
@@ -295,6 +352,9 @@ final class FeMenuService {
             case POTIONS -> plugin.message("menu.fe.categories.potions", "Potions");
             case OTHER -> plugin.message("menu.fe.categories.other", "Other");
         };
+    }
+
+    private record MenuPage(@Nullable EnchantType enchantType, @Nullable String artifactKey) {
     }
 }
 

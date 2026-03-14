@@ -29,6 +29,11 @@ librarian_trades:
       emeralds: 16
       books: 1
 
+enchanting_table_injector:
+  enabled: false
+  xp_cost: 35
+  books: []
+
 bundle_drop:
   enabled: false
   chance: 5.0 # default chance used when quickly enabling mobs in the bundle GUI

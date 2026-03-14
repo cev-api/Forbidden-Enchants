@@ -85,6 +85,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     private final List<BundleDropReward> bundleDropRewards = new ArrayList<>();
     private final List<ItemStack> bundleDropExtraDrops = new ArrayList<>();
     private final List<LibrarianTradeEntry> librarianTrades = new ArrayList<>();
+    private final List<EnchantingTableBookEntry> enchantingTableInjectorBooks = new ArrayList<>();
     private final List<Structure> allStructures = new ArrayList<>();
     private final CompassTrackingService compassTrackingService = new CompassTrackingService();
     private final MessagesService messagesService = new MessagesService(this);
@@ -100,6 +101,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     private final InjectorMenuService injectorMenuService = new InjectorMenuService(this);
     private final InjectorBookRarityMenuService injectorBookRarityMenuService = new InjectorBookRarityMenuService();
     private final LibrarianTradeMenuService librarianTradeMenuService = new LibrarianTradeMenuService(this);
+    private final EnchantingTableInjectorMenuService enchantingTableInjectorMenuService = new EnchantingTableInjectorMenuService(this);
     private final EnchantToggleMenuService enchantToggleMenuService = new EnchantToggleMenuService(this);
     private final FeMenuService feMenuService = new FeMenuService(this);
     private final EnchantBookFactoryService enchantBookFactoryService = new EnchantBookFactoryService(this);
@@ -108,6 +110,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     private final EnchantRuleCoreService enchantRuleCoreService = new EnchantRuleCoreService(enchantStateService);
     private final PlayerAttributeService playerAttributeService = new PlayerAttributeService(enchantRuleCoreService);
     private final EnchantEventRuleService enchantEventRuleService = new EnchantEventRuleService(
+            this,
             this::enchantStateServiceInternal,
             this::itemClassificationServiceInternal,
             enchantBookFactoryService,
@@ -203,6 +206,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
             lastPlayerDeathLocations
     );
     private final SpellEffectService spellEffectService = new SpellEffectService(this);
+    private final CustomArtifactService customArtifactService = new CustomArtifactService(this);
     private final ItemClassificationService itemClassificationService = new ItemClassificationService(this);
     private final NameTagLeadService nameTagLeadService = new NameTagLeadService(
             this::enchantStateServiceInternal,
@@ -273,6 +277,8 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
     private boolean bundleDropEnabled;
     private double bundleDropChancePercent = 5.0D;
     private boolean librarianTradesEnabled;
+    private boolean enchantingTableInjectorEnabled;
+    private int enchantingTableInjectorXpCost = 35;
     private long tickCounter;
 
     @Override
@@ -319,6 +325,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
             loadEnchantToggleSettings();
             loadBundleDropSettings();
             loadLibrarianTradeSettings();
+            loadEnchantingTableInjectorSettings();
         } catch (Throwable t) {
             resetConfigBackedAdminSystems();
             getLogger().warning("Config-backed admin systems disabled due to startup error: "
@@ -347,6 +354,9 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         bundleDropExtraDrops.clear();
         librarianTradesEnabled = false;
         librarianTrades.clear();
+        enchantingTableInjectorEnabled = false;
+        enchantingTableInjectorXpCost = 35;
+        enchantingTableInjectorBooks.clear();
     }
 
     private void registerMainListener() {
@@ -364,12 +374,14 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
                 injectorMenuService,
                 injectorBookRarityMenuService,
                 librarianTradeMenuService,
+                enchantingTableInjectorMenuService,
                 bundleDropMenuService,
                 enchantToggleMenuService,
                 librarianTradeService,
                 enchantEventRuleService,
                 graspCombatService,
                 spellEffectService,
+                customArtifactService,
                 bundleDropRuntimeService
         ), this);
     }
@@ -409,6 +421,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         travelDurabilityLastLocation.clear();
         travelDurabilityDistance.clear();
         feCatalogService.clear();
+        customArtifactService.clearRuntime();
         fullForceLastProcTick.clear();
         fullForceExplosionImmuneUntil.clear();
         shockwaveTotemArmedUntil.clear();
@@ -423,6 +436,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         bundleDropRewards.clear();
         bundleDropExtraDrops.clear();
         librarianTrades.clear();
+        enchantingTableInjectorBooks.clear();
         allStructures.clear();
         enchantStateService.clearToggles();
     }
@@ -459,6 +473,14 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         configPersistenceService.saveLibrarianTradeSettings();
     }
 
+    private void loadEnchantingTableInjectorSettings() {
+        configPersistenceService.loadEnchantingTableInjectorSettings();
+    }
+
+    void saveEnchantingTableInjectorSettings() {
+        configPersistenceService.saveEnchantingTableInjectorSettings();
+    }
+
     private void runTickEffects() {
         tickCounter += 1;
         tickMaintenanceService.processFullForceKnockbackOverrides(tickCounter);
@@ -468,6 +490,7 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         enchantmentAllyService.processTick(tickCounter);
         tickMaintenanceService.processCharmedPets();
         spellEffectService.processTick(tickCounter);
+        customArtifactService.processTick(tickCounter);
         enchantLifecycleHooksService.processTick(tickCounter);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -642,6 +665,14 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
 
     @Nullable ItemStack createEnchantedItem(@NotNull EnchantType type, int level, @NotNull Material material) {
         return enchantBookFactoryService.createEnchantedItem(type, level, material);
+    }
+
+    @Nullable ItemStack createArtifactItem(@NotNull String key) {
+        return customArtifactService.createArtifactItem(key);
+    }
+
+    @NotNull List<String> artifactKeys() {
+        return customArtifactService.artifactKeys();
     }
 
     @NotNull ItemStack createMysteryBook(@NotNull ArmorSlot slot) {
@@ -1024,6 +1055,10 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         librarianTradeMenuService.openMenu(target, page);
     }
 
+    void openEnchantingTableInjectorMenu(@NotNull Player target, int page) {
+        enchantingTableInjectorMenuService.openMenu(target, page);
+    }
+
     void openBundleDropMenu(@NotNull Player target) {
         bundleDropMenuService.openRoot(target);
     }
@@ -1047,6 +1082,26 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
 
     @NotNull List<LibrarianTradeEntry> librarianTrades() {
         return librarianTrades;
+    }
+
+    boolean isEnchantingTableInjectorEnabled() {
+        return enchantingTableInjectorEnabled;
+    }
+
+    void setEnchantingTableInjectorEnabled(boolean enabled) {
+        enchantingTableInjectorEnabled = enabled;
+    }
+
+    int getEnchantingTableInjectorXpCost() {
+        return enchantingTableInjectorXpCost;
+    }
+
+    void setEnchantingTableInjectorXpCost(int xpCost) {
+        enchantingTableInjectorXpCost = Math.max(1, Math.min(60, xpCost));
+    }
+
+    @NotNull List<EnchantingTableBookEntry> enchantingTableInjectorBooks() {
+        return enchantingTableInjectorBooks;
     }
 
     public void giveOrDrop(@NotNull Player target, @NotNull ItemStack item) {

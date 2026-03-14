@@ -265,6 +265,67 @@ final class ConfigPersistenceService {
         plugin.saveConfig();
     }
 
+    void loadEnchantingTableInjectorSettings() {
+        plugin.saveDefaultConfig();
+        plugin.reloadConfig();
+
+        FileConfiguration config = plugin.getConfig();
+        plugin.enchantingTableInjectorBooks().clear();
+
+        ConfigurationSection root = config.getConfigurationSection("enchanting_table_injector");
+        if (root == null) {
+            plugin.setEnchantingTableInjectorEnabled(false);
+            plugin.setEnchantingTableInjectorXpCost(35);
+            saveEnchantingTableInjectorSettings();
+            return;
+        }
+
+        plugin.setEnchantingTableInjectorEnabled(root.getBoolean("enabled", false));
+        plugin.setEnchantingTableInjectorXpCost(clamp(parseInt(root.get("xp_cost"), 35), 1, 60));
+
+        List<?> rawEntries = root.getList("books", new ArrayList<>());
+        for (Object rawEntry : rawEntries) {
+            if (!(rawEntry instanceof Map<?, ?> map)) {
+                continue;
+            }
+            String enchantArg = String.valueOf(map.get("enchant"));
+            EnchantType type = EnchantType.fromArg(enchantArg);
+            if (type == null || plugin.isRetiredEnchant(type) || type.isAnvilOnlyUtilityBook()) {
+                continue;
+            }
+
+            int level = parseInt(map.get("level"), 1);
+            if (level < 1 || level > type.maxLevel) {
+                continue;
+            }
+
+            double chance = clampChance(parseDouble(map.get("chance"), 0.0D));
+            if (chance > 0.0D) {
+                plugin.enchantingTableInjectorBooks().removeIf(entry -> entry.type() == type && entry.level() == level);
+                plugin.enchantingTableInjectorBooks().add(new EnchantingTableBookEntry(type, level, chance));
+            }
+        }
+
+        saveEnchantingTableInjectorSettings();
+    }
+
+    void saveEnchantingTableInjectorSettings() {
+        plugin.getConfig().set("enchanting_table_injector.enabled", plugin.isEnchantingTableInjectorEnabled());
+        plugin.getConfig().set("enchanting_table_injector.xp_cost", plugin.getEnchantingTableInjectorXpCost());
+        plugin.getConfig().set("enchanting_table_injector.books", null);
+
+        List<Map<String, Object>> serialized = new ArrayList<>();
+        for (EnchantingTableBookEntry entry : plugin.enchantingTableInjectorBooks()) {
+            serialized.add(Map.of(
+                    "enchant", entry.type().arg,
+                    "level", entry.level(),
+                    "chance", entry.chancePercent()
+            ));
+        }
+        plugin.getConfig().set("enchanting_table_injector.books", serialized);
+        plugin.saveConfig();
+    }
+
     void loadBundleDropSettings() {
         plugin.saveDefaultConfig();
         plugin.reloadConfig();

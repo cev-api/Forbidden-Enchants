@@ -21,6 +21,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.loot.Lootable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -56,6 +57,9 @@ final class StructureInjectorRuntimeService {
                 return;
             }
             if (!(block.getState() instanceof Container) || !(block.getState() instanceof TileState tileState)) {
+                return;
+            }
+            if (!isGeneratedLootContainer(tileState)) {
                 return;
             }
 
@@ -492,6 +496,13 @@ final class StructureInjectorRuntimeService {
                 && holderBlock.getX() == block.getX()
                 && holderBlock.getY() == block.getY()
                 && holderBlock.getZ() == block.getZ();
+    }
+
+    private boolean isGeneratedLootContainer(@NotNull TileState tileState) {
+        if (!(tileState instanceof Lootable lootable)) {
+            return false;
+        }
+        return lootable.getLootTable() != null;
     }
 
     private @Nullable WeightedBookEntry pickWeightedBook(@NotNull List<WeightedBookEntry> books) {

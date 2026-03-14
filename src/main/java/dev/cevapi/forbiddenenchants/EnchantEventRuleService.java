@@ -1,9 +1,14 @@
 package dev.cevapi.forbiddenenchants;
 
 import dev.cevapi.forbiddenenchants.enchants.EnchantList;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Tag;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentOffer;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.event.player.PlayerItemDamageEvent;
@@ -16,18 +21,29 @@ import org.bukkit.block.ShulkerBox;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 final class EnchantEventRuleService {
+    private static final int MAX_EXTRA_ENCHANTING_POWER = 30;
+    private static final int MAX_ENCHANTING_COST = 60;
+    private static final int SKELETON_SKULL_POWER = 5;
+    private static final int CANDLE_POWER = 1;
+
+    private final ForbiddenEnchantsPlugin plugin;
     private final Supplier<EnchantStateService> enchantStateServiceSupplier;
     private final Supplier<ItemClassificationService> itemClassificationServiceSupplier;
     private final EnchantBookFactoryService enchantBookFactoryService;
     private final EnchantRuleCoreService enchantRuleCoreService;
 
-    EnchantEventRuleService(@NotNull Supplier<EnchantStateService> enchantStateServiceSupplier,
+    EnchantEventRuleService(@NotNull ForbiddenEnchantsPlugin plugin,
+                            @NotNull Supplier<EnchantStateService> enchantStateServiceSupplier,
                             @NotNull Supplier<ItemClassificationService> itemClassificationServiceSupplier,
                             @NotNull EnchantBookFactoryService enchantBookFactoryService,
                             @NotNull EnchantRuleCoreService enchantRuleCoreService) {
+        this.plugin = plugin;
         this.enchantStateServiceSupplier = enchantStateServiceSupplier;
         this.itemClassificationServiceSupplier = itemClassificationServiceSupplier;
         this.enchantBookFactoryService = enchantBookFactoryService;
@@ -117,6 +133,10 @@ final class EnchantEventRuleService {
     }
 
     void onEnchantItem(@NotNull EnchantItemEvent event) {
+        if (tryInjectEnchantingTableForbiddenBook(event)) {
+            return;
+        }
+
         if (enchantRuleCoreService.hasAnyVisionHelmetEnchant(event.getItem())) {
             event.setCancelled(true);
             return;
@@ -165,6 +185,24 @@ final class EnchantEventRuleService {
                     event.setCancelled(true);
                     return;
                 }
+            }
+        }
+    }
+
+    void onPrepareItemEnchant(@NotNull PrepareItemEnchantEvent event) {
+        Block table = event.getEnchantBlock();
+        EnchantmentOffer[] offers = event.getOffers();
+        if (table == null || offers == null) {
+            return;
+        }
+
+        int extraPower = calculateExtraEnchantingPower(table);
+        if (extraPower <= 0) {
+            return;
+        }
+        for (EnchantmentOffer offer : offers) {
+            if (offer != null) {
+                offer.setCost(clampInt(offer.getCost() + extraPower, 1, MAX_ENCHANTING_COST));
             }
         }
     }
@@ -318,6 +356,102 @@ final class EnchantEventRuleService {
                 || type == Material.MACE
                 || name.endsWith("_SPEAR")
                 || name.equals("SPEAR");
+    }
+
+    private boolean tryInjectEnchantingTableForbiddenBook(@NotNull EnchantItemEvent event) {
+        if (!plugin.isEnchantingTableInjectorEnabled()) {
+            return false;
+        }
+        if (event.getItem().getType() != Material.BOOK) {
+            return false;
+        }
+        int selectedCost = event.getExpLevelCost();
+        int requiredCost = plugin.getEnchantingTableInjectorXpCost();
+        if (selectedCost < requiredCost) {
+            return false;
+        }
+        EnchantingTableBookEntry selected = rollConfiguredEnchantingTableBook();
+        if (selected == null) {
+            return false;
+        }
+        ItemStack injected = plugin.createBook(selected.type(), selected.level());
+        if (injected == null) {
+            return false;
+        }
+
+        event.setExpLevelCost(requiredCost);
+        org.bukkit.inventory.Inventory inventory = event.getInventory();
+        ItemStack replacement = injected.clone();
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            ItemStack current = inventory.getItem(0);
+            if (current == null || current.getType() == Material.AIR) {
+                return;
+            }
+            replacement.setAmount(1);
+            inventory.setItem(0, replacement);
+        });
+        return true;
+    }
+
+    private EnchantingTableBookEntry rollConfiguredEnchantingTableBook() {
+        List<EnchantingTableBookEntry> entries = new ArrayList<>();
+        double total = 0.0D;
+        for (EnchantingTableBookEntry entry : plugin.enchantingTableInjectorBooks()) {
+            if (entry.chancePercent() <= 0.0D) {
+                continue;
+            }
+            if (plugin.isRetiredEnchant(entry.type()) || !plugin.isEnchantSpawnEnabled(entry.type())) {
+                continue;
+            }
+            entries.add(entry);
+            total += Math.max(0.0D, Math.min(100.0D, entry.chancePercent()));
+        }
+        if (entries.isEmpty() || total <= 0.0D) {
+            return null;
+        }
+
+        double procChance = Math.min(100.0D, total);
+        if (ThreadLocalRandom.current().nextDouble(100.0D) >= procChance) {
+            return null;
+        }
+
+        double weightedRoll = ThreadLocalRandom.current().nextDouble(total);
+        double cumulative = 0.0D;
+        for (EnchantingTableBookEntry entry : entries) {
+            cumulative += Math.max(0.0D, Math.min(100.0D, entry.chancePercent()));
+            if (weightedRoll <= cumulative) {
+                return entry;
+            }
+        }
+        return entries.get(entries.size() - 1);
+    }
+
+    private int calculateExtraEnchantingPower(@NotNull Block enchantingTable) {
+        int extra = 0;
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dy = -1; dy <= 2; dy++) {
+                for (int dz = -3; dz <= 3; dz++) {
+                    if (dx == 0 && dy == 0 && dz == 0) {
+                        continue;
+                    }
+                    Block nearby = enchantingTable.getRelative(dx, dy, dz);
+                    Material type = nearby.getType();
+                    if (type == Material.SKELETON_SKULL || type == Material.SKELETON_WALL_SKULL) {
+                        extra += SKELETON_SKULL_POWER;
+                    } else if (Tag.CANDLES.isTagged(type)) {
+                        extra += CANDLE_POWER;
+                    }
+                    if (extra >= MAX_EXTRA_ENCHANTING_POWER) {
+                        return MAX_EXTRA_ENCHANTING_POWER;
+                    }
+                }
+            }
+        }
+        return Math.min(extra, MAX_EXTRA_ENCHANTING_POWER);
+    }
+
+    private int clampInt(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
     }
 }
 

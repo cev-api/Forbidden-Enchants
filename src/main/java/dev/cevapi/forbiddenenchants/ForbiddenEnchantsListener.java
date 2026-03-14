@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -54,12 +55,14 @@ final class ForbiddenEnchantsListener implements Listener {
     private final InjectorMenuService injectorMenuService;
     private final InjectorBookRarityMenuService injectorBookRarityMenuService;
     private final LibrarianTradeMenuService librarianTradeMenuService;
+    private final EnchantingTableInjectorMenuService enchantingTableInjectorMenuService;
     private final BundleDropMenuService bundleDropMenuService;
     private final EnchantToggleMenuService enchantToggleMenuService;
     private final LibrarianTradeService librarianTradeService;
     private final EnchantEventRuleService enchantEventRuleService;
     private final GraspCombatService graspCombatService;
     private final SpellEffectService spellEffectService;
+    private final CustomArtifactService customArtifactService;
     private final BundleDropRuntimeService bundleDropRuntimeService;
 
     ForbiddenEnchantsListener(@NotNull LongSupplier tickCounterSupplier,
@@ -75,12 +78,14 @@ final class ForbiddenEnchantsListener implements Listener {
                               @NotNull InjectorMenuService injectorMenuService,
                               @NotNull InjectorBookRarityMenuService injectorBookRarityMenuService,
                               @NotNull LibrarianTradeMenuService librarianTradeMenuService,
+                              @NotNull EnchantingTableInjectorMenuService enchantingTableInjectorMenuService,
                               @NotNull BundleDropMenuService bundleDropMenuService,
                               @NotNull EnchantToggleMenuService enchantToggleMenuService,
                               @NotNull LibrarianTradeService librarianTradeService,
                               @NotNull EnchantEventRuleService enchantEventRuleService,
                               @NotNull GraspCombatService graspCombatService,
                               @NotNull SpellEffectService spellEffectService,
+                              @NotNull CustomArtifactService customArtifactService,
                               @NotNull BundleDropRuntimeService bundleDropRuntimeService) {
         this.tickCounterSupplier = tickCounterSupplier;
         this.interactionRestrictionService = interactionRestrictionService;
@@ -95,12 +100,14 @@ final class ForbiddenEnchantsListener implements Listener {
         this.injectorMenuService = injectorMenuService;
         this.injectorBookRarityMenuService = injectorBookRarityMenuService;
         this.librarianTradeMenuService = librarianTradeMenuService;
+        this.enchantingTableInjectorMenuService = enchantingTableInjectorMenuService;
         this.bundleDropMenuService = bundleDropMenuService;
         this.enchantToggleMenuService = enchantToggleMenuService;
         this.librarianTradeService = librarianTradeService;
         this.enchantEventRuleService = enchantEventRuleService;
         this.graspCombatService = graspCombatService;
         this.spellEffectService = spellEffectService;
+        this.customArtifactService = customArtifactService;
         this.bundleDropRuntimeService = bundleDropRuntimeService;
     }
 
@@ -137,13 +144,28 @@ final class ForbiddenEnchantsListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onCustomArtifactInteract(@NotNull PlayerInteractEvent event) {
+        customArtifactService.onPlayerInteract(event);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSpellPotionConsume(@NotNull PlayerItemConsumeEvent event) {
         spellEffectService.onPlayerItemConsume(event, tickCounterSupplier.getAsLong());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onCustomArtifactConsume(@NotNull PlayerItemConsumeEvent event) {
+        customArtifactService.onPlayerItemConsume(event);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSpellMove(@NotNull PlayerMoveEvent event) {
         spellEffectService.onPlayerMove(event, tickCounterSupplier.getAsLong());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onCustomArtifactMove(@NotNull PlayerMoveEvent event) {
+        customArtifactService.onPlayerMove(event, tickCounterSupplier.getAsLong());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -177,6 +199,9 @@ final class ForbiddenEnchantsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onFullForceImpact(@NotNull EntityDamageByEntityEvent event) { fullForceDefenseService.onFullForceImpact(event, tickCounterSupplier.getAsLong()); }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onCustomArtifactDamage(@NotNull EntityDamageByEntityEvent event) { customArtifactService.onEntityDamageByEntity(event); }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onFullForceKnockback(@NotNull EntityKnockbackEvent event) { fullForceDefenseService.onFullForceKnockback(event, tickCounterSupplier.getAsLong()); }
@@ -221,6 +246,7 @@ final class ForbiddenEnchantsListener implements Listener {
     public void onPlayerDeath(@NotNull PlayerDeathEvent event) {
         playerLifecycleService.onPlayerDeath(event);
         spellEffectService.onPlayerDeath(event.getEntity().getUniqueId());
+        customArtifactService.onPlayerDeath(event.getEntity());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -317,6 +343,12 @@ final class ForbiddenEnchantsListener implements Listener {
     public void onLibrarianTradeMenuDrag(@NotNull InventoryDragEvent event) { librarianTradeMenuService.onMenuDrag(event); }
 
     @EventHandler(ignoreCancelled = true)
+    public void onEnchantingTableInjectorMenuClick(@NotNull InventoryClickEvent event) { enchantingTableInjectorMenuService.onMenuClick(event); }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onEnchantingTableInjectorMenuDrag(@NotNull InventoryDragEvent event) { enchantingTableInjectorMenuService.onMenuDrag(event); }
+
+    @EventHandler(ignoreCancelled = true)
     public void onBundleDropMenuClick(@NotNull InventoryClickEvent event) { bundleDropMenuService.onMenuClick(event); }
 
     @EventHandler(ignoreCancelled = true)
@@ -328,13 +360,23 @@ final class ForbiddenEnchantsListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onEnchantToggleMenuDrag(@NotNull InventoryDragEvent event) { enchantToggleMenuService.onMenuDrag(event); }
 
+    @EventHandler(ignoreCancelled = false)
+    public void onPrepareAnvil(@NotNull PrepareAnvilEvent event) {
+        customArtifactService.onPrepareAnvil(event);
+        if (event.getResult() == null) {
+            return;
+        }
+        enchantEventRuleService.onPrepareAnvil(event);
+    }
+
     @EventHandler(ignoreCancelled = true)
-    public void onPrepareAnvil(@NotNull PrepareAnvilEvent event) { enchantEventRuleService.onPrepareAnvil(event); }
+    public void onPrepareItemEnchant(@NotNull PrepareItemEnchantEvent event) { enchantEventRuleService.onPrepareItemEnchant(event); }
 
     @EventHandler(ignoreCancelled = true)
     public void onEnchantItem(@NotNull EnchantItemEvent event) {
         long tickCounter = tickCounterSupplier.getAsLong();
         spellEffectService.onEnchantItem(event, tickCounter);
+        customArtifactService.onEnchantItem(event);
         if (event.isCancelled()) {
             return;
         }
