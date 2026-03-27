@@ -2,7 +2,7 @@
 
 ![NOT AN AI LOGO LOL](https://i.imgur.com/thI0f0h.png)
 
-Forbidden Enchants is a Paper plugin for 1.21.x that adds 69 custom enchants, curses, spell books, and utility effects designed to push survival further than vanilla normally allows. Some are strong, some are disruptive, and some are deliberately unfair, but all of them are meant to create unusual situations, higher-stakes progression, and more server variety.
+Forbidden Enchants is a Paper plugin for 1.21.x that adds 82 custom enchants, curses, spell books, and utility effects designed to push survival further than vanilla normally allows. Some are strong, some are disruptive, and some are deliberately unfair, but all of them are meant to create unusual situations, higher-stakes progression, and more server variety.
 
 This is not just a pack of extra enchants. It also includes a full set of in-game admin tools for controlling how those enchants are distributed and balanced. With `/fe gui`, `/fe injector gui`, `/fe bundle gui`, `/fe librarian gui`, `/fe enchanting gui`, and `/fe toggles`, you can manage item access, loot injection, bundle drops, villager trades, enchanting-table injection, and per-enchant runtime settings directly in-game without constantly editing config files or restarting the server.
 
@@ -26,7 +26,7 @@ If you want a plugin that can make an SMP less predictable while still giving ad
 - `/fe toggles` GUI for per-enchant enable/disable controls (usage and chest/vault spawning), with aliases `settings` and `enchanttoggles`.
 - Generate both enchant books and pre-enchanted gear items directly.
 - Anvil application flow for helmets, chestplates, and boots.
-- 69 custom enchants with level support where configured.
+- 82 custom enchants with level support where configured.
 - Loot-table compatible book detection via `custom_model_data`.
 - Loot-table compatible gear detection via `custom_model_data` fallback.
 - Helmet-only balancing rules for the vision enchants.
@@ -405,6 +405,19 @@ Permission: `forbiddenenchants.admin` (default: op).
 | Temporal Displacement | Potion (spell) | I-III | Crafted by combining a water bottle + Temporal Displacement book in an anvil. Slows all players/mobs within 20 blocks to very low speed for 10s/30s/60s (caster unaffected). |
 | Kismet | Pickaxe/Shovel/Axe (Binding Curse) | I | On first block break with that tool, fate locks forever at 50/50: either all valid broken blocks drop double, or all valid broken blocks drop nothing. Works with Silk Touch rules; duplicated shulker-box drops are always emptied. |
 | Administrative Aspirations | Sword | I-II | On player hit: I instantly kicks target player (25% sword durability cost), II bans for 5 minutes with message `Banned by Administrative Aspirations Sword for 5 Minutes` then kicks (50% sword durability cost). On mob hit: teleports mob to world spawn, announces it to attacker, and costs 2% sword durability. Incompatible with Mending and Unbreaking. |
+| Miners Void Step | Potion (spell) | I | Crafted by combining a water bottle + Miners Void Step book in an anvil. Drink to teleport to safe surface if underground, or nearest safe low cave if already above ground. |
+| Swap | Potion (spell) | I | Crafted by combining a water bottle + Swap book in an anvil. Drink to swap position with nearest player; if none online, teleport to spawn. |
+| Farmer's Dream | Boots | I | Wearing boots grows crops underfoot instantly; breaks after 500 moved blocks; no Mending/Unbreaking. |
+| Lava Step | Boots | I | Wearing boots creates temporary lava path and grants fire resistance; breaks after 1000 moved blocks; no Mending/Unbreaking. |
+| Vitality Thief | Potion (spell) | I | Crafted by combining a water bottle + Vitality Thief book in an anvil. Drink to swap health/vitality with nearest player; if none, kill nearby mobs for golden hearts until cap. |
+| Life Spirit | Potion (spell) | I-III | Crafted by combining a water bottle + Life Spirit book in an anvil. Drink to gain +1/+2/+3 hearts by level. One gained heart is removed on each death. |
+| Life Steal | Potion (spell) | I-III | Crafted by combining a water bottle + Life Steal book in an anvil. Drink to steal +1/+2/+3 hearts by level from nearest player and add it to yourself. If the target is at 3 hearts or less, they die. Stolen hearts are removed on death. |
+| Void Stick | Breeze Rod | I-III | Left-click to teleport forward up to 200/500/1000 blocks by level. Breaks after 5 uses. |
+| Fireball | Blaze Rod | I-II | Left-click to launch a fireball in your facing direction. Breaks after 50/100 uses by level. |
+| Magnetism | Weapons/Tools | I-IV | While held in main/offhand, pulls nearby item entities and XP orbs in a 5/10/15/30 block radius. Pull targets are feet-level and stop when your inventory has no empty slot. |
+| Cursed Magnetism | Weapons (Binding Curse) | I-IV | While held in main/offhand, slowly pulls nearby mobs toward you in a 10/20/30/40 block radius. Applies Binding Curse automatically. |
+| True Silence | Boots | I | While worn, your player is silent and mobs ignore you unless they are within 2 blocks. |
+| Bed Time | Potion (spell) | I | Crafted by combining a water bottle + Bed Time book in an anvil. Drink to teleport to your bed respawn location; if none is set, teleport to world spawn. |
 
 ## What Can / Can't Be Applied
 
@@ -413,8 +426,9 @@ Permission: `forbiddenenchants.admin` (default: op).
 | Helmets | Vision set: Divine Vision **or** Miners Intuition **or** Loot Sense **or** Aquatic Sacrifice **or** The Hated One; plus Creepers Influence / Vexatious / Wololo / The Seeker | Vision-set enchants are mutually exclusive with each other. Wololo applies Binding Curse automatically. The Seeker blocks Mending/Unbreaking. |
 | Chestplates | Extended Grasp **or** Void Grasp **or** Miasma Form, plus The Unyielding and/or Evokers Revenge and/or Illusioners Revenge; also Proud Warrior, Sisko's Solution, Borg Technology | Grasp/Miasma Form are mutually exclusive. Evokers Revenge, Illusioners Revenge, Proud Warrior, and Sisko's Solution apply Binding Curse automatically. Proud Warrior / Sisko's Solution / Borg Technology must be solo enchants on the item. |
 | Leggings | Full Pockets, Pocket Dimension | Can coexist on the same leggings. |
-| Boots | Masquerade **or** Ascension, plus Forbidden Agility and/or Locked Out; also Warp 9.5 and No Fall | Masquerade/Ascension are mutually exclusive. Locked Out applies Binding Curse automatically. Warp 9.5 must be a solo enchant on the item. No Fall is incompatible with Feather Falling, Mending, and Unbreaking. |
+| Boots | Masquerade **or** Ascension **or** Farmer's Dream **or** Lava Step **or** True Silence, plus Forbidden Agility and/or Locked Out; also Warp 9.5 and No Fall | Masquerade/Ascension/Farmer's Dream/Lava Step/True Silence are mutually exclusive. Locked Out applies Binding Curse automatically. Warp 9.5 must be a solo enchant on the item. No Fall is incompatible with Feather Falling, Mending, and Unbreaking. Farmer's Dream and Lava Step strip/block Mending and Unbreaking. |
 | Swords | Incite Fear, Blindness, Administrative Aspirations, Sonic Panic, Tracker | Administrative Aspirations blocks/strips Mending and Unbreaking. |
+| Weapons/Tools | Magnetism (weapons/tools), Cursed Magnetism (weapons only) | Cursed Magnetism applies Binding Curse automatically. |
 | Bow/Crossbow | Miasma **or** Charm **or** Dragons Breath **or** Explosive Reaction | Mutually exclusive with each other. Miasma is additionally incompatible with Power, Punch, Flame, Infinity, Multishot, Quick Charge, Piercing. Dragons Breath and Explosive Reaction are now incompatible with any other enchant (vanilla or custom). |
 | Tridents/Spears | Withering Strike, Instant Death, Staff Of The Evoker | Withering Strike and Instant Death apply to tridents only and trigger on thrown-trident hits. Both are solo trident enchants (cannot combine with other enchants on that trident). Staff Of The Evoker expects spear-type materials if available; trident fallback is used on non-1.21.11/no-spear-material setups and applies on melee and left-click cast. |
 | Elytra | Launch | Enables double-jump launch while grounded and drains 5% durability per launch. |
@@ -426,7 +440,8 @@ Permission: `forbiddenenchants.admin` (default: op).
 | Leads | Get Over Here! | Allows enchanted leads to leash villagers (must sneak-right-click). |
 | Shields | Knockback, Ricochet | Can coexist on one shield. |
 | Totem Of Undying | Shockwave, Mujahideen, The Pretender | Triggers when the enchanted totem is consumed. |
-| Potions (Water Bottles in anvil) | Out Of Phase **or** Silence **or** Quitter **or** Infected **or** Joint Sleep **or** Limitless Vision **or** One Plus **or** Temporal Displacement | Spell potions are mutually exclusive with each other and crafted via water bottle + matching enchanted book. |
+| Potions (Water Bottles in anvil) | Out Of Phase **or** Silence **or** Quitter **or** Infected **or** Joint Sleep **or** Limitless Vision **or** One Plus **or** Temporal Displacement **or** Miners Void Step **or** Swap **or** Vitality Thief **or** Life Spirit **or** Life Steal **or** Bed Time | Spell potions are mutually exclusive with each other and crafted via water bottle + matching enchanted book. |
+| Rods | Void Stick (Breeze Rod), Fireball (Blaze Rod) | Void Stick and Fireball are mutually exclusive rod enchants. |
 | Wrong slot items | None | Anvil/book and `giveitem` validation prevent wrong-slot application. |
 
 ## Per-Enchant Compatibility Matrix
@@ -465,7 +480,7 @@ Permission: `forbiddenenchants.admin` (default: op).
 | Staff Of The Evoker | None (single spear custom enchant in current set) | None (custom-enchant conflict-wise) |
 | Vexatious | Most other helmet enchants except helmet-exclusives below | None (custom-enchant conflict-wise) |
 | Wololo | Most other helmet enchants except helmet-exclusives below | None (custom-enchant conflict-wise) |
-| Locked Out | Masquerade or Ascension, Forbidden Agility | None (custom-enchant conflict-wise) |
+| Locked Out | Masquerade or Ascension or Farmer's Dream or Lava Step or True Silence, Forbidden Agility, No Fall | None (custom-enchant conflict-wise) |
 | Evokers Revenge | The Unyielding, and one of Extended Grasp/Void Grasp/Miasma Form | None (custom-enchant conflict-wise) |
 | Illusioners Revenge | The Unyielding, and one of Extended Grasp/Void Grasp/Miasma Form | None (custom-enchant conflict-wise) |
 | The Seeker | Most other helmet enchants except helmet-exclusives below | Mending, Unbreaking |
@@ -488,22 +503,33 @@ Permission: `forbiddenenchants.admin` (default: op).
 | The Pretender | Shockwave, Mujahideen | None (custom-enchant conflict-wise) |
 | Proud Warrior | None (must be sole enchant on the chestplate) | Any other vanilla/custom enchant |
 | Sisko's Solution | None (must be sole enchant on the chestplate) | Any other vanilla/custom enchant |
-| No Fall | Masquerade or Ascension, Forbidden Agility, Locked Out, Warp 9.5 | Feather Falling, Mending, Unbreaking |
+| No Fall | Masquerade or Ascension or Farmer's Dream or Lava Step or True Silence, Forbidden Agility, Locked Out | Feather Falling, Mending, Unbreaking |
 | Borg Technology | None (must be sole enchant on the chestplate) | Any other vanilla/custom enchant |
 | Warp 9.5 | None (must be sole enchant on the boots) | Any other vanilla/custom enchant |
 | Instant Death | None (must be sole enchant on the trident) | Withering Strike and any other vanilla/custom enchant |
-| Out Of Phase | None (single spell potion enchant) | Silence, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement |
-| Silence | None (single spell potion enchant) | Out Of Phase, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement |
-| Quitter | None (single spell potion enchant) | Out Of Phase, Silence, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement |
-| Infected | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement |
-| Joint Sleep | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Limitless Vision, One Plus, Temporal Displacement |
-| Limitless Vision | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, One Plus, Temporal Displacement |
-| One Plus | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, Limitless Vision, Temporal Displacement |
-| Temporal Displacement | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus |
+| Out Of Phase | None (single spell potion enchant) | Silence, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement, Miners Void Step, Swap, Vitality Thief, Life Spirit, Life Steal, Bed Time |
+| Silence | None (single spell potion enchant) | Out Of Phase, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement, Miners Void Step, Swap, Vitality Thief, Life Spirit, Life Steal, Bed Time |
+| Quitter | None (single spell potion enchant) | Out Of Phase, Silence, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement, Miners Void Step, Swap, Vitality Thief, Life Spirit, Life Steal, Bed Time |
+| Infected | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement, Miners Void Step, Swap, Vitality Thief, Life Spirit, Life Steal, Bed Time |
 | The Duplicator | N/A (anvil transform book) | N/A |
 | The Philosophers Book | N/A (anvil transform book) | N/A |
-
-
+| Joint Sleep | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Limitless Vision, One Plus, Temporal Displacement, Miners Void Step, Swap, Vitality Thief, Life Spirit, Life Steal, Bed Time |
+| Limitless Vision | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, One Plus, Temporal Displacement, Miners Void Step, Swap, Vitality Thief, Life Spirit, Life Steal, Bed Time |
+| One Plus | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, Limitless Vision, Temporal Displacement, Miners Void Step, Swap, Vitality Thief, Life Spirit, Life Steal, Bed Time |
+| Temporal Displacement | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus, Miners Void Step, Swap, Vitality Thief, Life Spirit, Life Steal, Bed Time |
+| Miners Void Step | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement, Swap, Vitality Thief, Life Spirit, Life Steal, Bed Time |
+| Swap | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement, Miners Void Step, Vitality Thief, Life Spirit, Life Steal, Bed Time |
+| Farmer's Dream | Forbidden Agility, Locked Out, No Fall | Masquerade, Ascension, Lava Step, True Silence, Mending, Unbreaking |
+| Lava Step | Forbidden Agility, Locked Out, No Fall | Masquerade, Ascension, Farmer's Dream, True Silence, Mending, Unbreaking |
+| Vitality Thief | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement, Miners Void Step, Swap, Life Spirit, Life Steal, Bed Time |
+| Life Spirit | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement, Miners Void Step, Swap, Vitality Thief, Life Steal, Bed Time |
+| Life Steal | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement, Miners Void Step, Swap, Vitality Thief, Life Spirit, Bed Time |
+| Void Stick | None (single rod custom enchant in current set) | Fireball |
+| Fireball | None (single rod custom enchant in current set) | Void Stick |
+| Magnetism | Most weapon/tool enchants on valid items | None (custom conflict-wise; material/slot rules still apply) |
+| Cursed Magnetism | Most weapon enchants on valid items | None (custom conflict-wise; material/slot rules still apply) |
+| True Silence | Forbidden Agility, Locked Out, No Fall | Masquerade, Ascension, Farmer's Dream, Lava Step |
+| Bed Time | None (single spell potion enchant) | Out Of Phase, Silence, Quitter, Infected, Joint Sleep, Limitless Vision, One Plus, Temporal Displacement, Miners Void Step, Swap, Vitality Thief, Life Spirit, Life Steal |
 
 ## Miners Intuition Material Mapping
 
@@ -640,6 +666,19 @@ Type index order:
 67. `temporal_displacement`
 68. `kismet`
 69. `administrative_aspirations`
+70. `miners_void_step`
+71. `swap`
+72. `farmers_dream`
+73. `lava_step`
+74. `vitality_thief`
+75. `life_spirit`
+76. `life_steal`
+77. `void_stick`
+78. `fireball`
+79. `magnetism`
+80. `cursed_magnetism`
+81. `true_silence`
+82. `bed_time`
 
 So the generated IDs are:
 
@@ -712,6 +751,19 @@ So the generated IDs are:
 - Temporal Displacement I/II/III: `930671`, `930672`, `930673`
 - Kismet I: `930681`
 - Administrative Aspirations I/II: `930691`, `930692`
+- Miners Void Step I: `930701`
+- Swap I: `930711`
+- Farmer's Dream I: `930721`
+- Lava Step I: `930731`
+- Vitality Thief I: `930741`
+- Life Spirit I/II/III: `930751`, `930752`, `930753`
+- Life Steal I/II/III: `930761`, `930762`, `930763`
+- Void Stick I/II/III: `930771`, `930772`, `930773`
+- Fireball I/II: `930781`, `930782`
+- Magnetism I/II/III/IV: `930791`, `930792`, `930793`, `930794`
+- Cursed Magnetism I/II/III/IV: `930801`, `930802`, `930803`, `930804`
+- True Silence I: `930811`
+- Bed Time I: `930821`
 
 ## Notes / Caveats
 

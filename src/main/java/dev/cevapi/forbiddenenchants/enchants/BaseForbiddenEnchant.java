@@ -105,6 +105,7 @@ public abstract class BaseForbiddenEnchant implements ForbiddenEnchantDefinition
             case AXE -> "Apply to any axe in an anvil.";
             case MACE -> "Apply to a mace in an anvil.";
             case BRUSH -> "Apply to a brush in an anvil.";
+            case ROD -> "Apply to a rod in an anvil.";
             case NAMETAG -> "Apply to a name tag in an anvil.";
             case LEAD -> "Apply to a lead in an anvil.";
             case SHIELD -> "Apply to a shield in an anvil.";

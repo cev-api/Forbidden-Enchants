@@ -24,12 +24,12 @@ final class NearbyEffectsService {
     }
 
     void pullNearbyExperienceOrbs(@NotNull Player player, double radius) {
-        Location eye = player.getEyeLocation();
+        Location feet = player.getLocation().add(0.0D, 0.1D, 0.0D);
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
             if (!(entity instanceof ExperienceOrb orb) || !orb.isValid() || orb.isDead()) {
                 continue;
             }
-            Vector toward = eye.toVector().subtract(orb.getLocation().toVector());
+            Vector toward = feet.toVector().subtract(orb.getLocation().toVector());
             if (toward.lengthSquared() < 0.0001D) {
                 continue;
             }
@@ -38,12 +38,12 @@ final class NearbyEffectsService {
     }
 
     void pullNearbyItems(@NotNull Player player, double radius) {
-        Location eye = player.getEyeLocation();
+        Location feet = player.getLocation().add(0.0D, 0.1D, 0.0D);
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
             if (!(entity instanceof Item item) || !item.isValid() || item.isDead()) {
                 continue;
             }
-            Vector toward = eye.toVector().subtract(item.getLocation().toVector());
+            Vector toward = feet.toVector().subtract(item.getLocation().toVector());
             if (toward.lengthSquared() < 0.0001D) {
                 continue;
             }

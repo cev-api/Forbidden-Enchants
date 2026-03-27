@@ -2,35 +2,26 @@ package dev.cevapi.forbiddenenchants;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
-import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.Container;
-import org.bukkit.block.TileState;
 import org.bukkit.block.Vault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.generator.structure.GeneratedStructure;
-import org.bukkit.generator.structure.Structure;
-import org.bukkit.inventory.BlockInventoryHolder;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.event.world.LootGenerateEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.loot.Lootable;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -42,97 +33,64 @@ final class StructureInjectorRuntimeService {
         this.plugin = plugin;
     }
 
-    void onStructureInjectorOpen(@NotNull PlayerInteractEvent event) {
+    void onLootGenerate(@NotNull LootGenerateEvent event) {
         if (!plugin.isStructureInjectorEnabled() || plugin.structureInjectChances().isEmpty()) {
             return;
         }
-
         try {
-            if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            if (event.getLootTable() == null || event.getLootTable().getKey() == null) {
+                return;
+            }
+            String lootTableId = event.getLootTable().getKey().toString().toLowerCase(Locale.ROOT);
+            Set<String> aliases = structureAliasesForLootTable(lootTableId);
+            if (aliases.isEmpty()) {
                 return;
             }
 
-            Block block = event.getClickedBlock();
-            if (block == null) {
-                return;
-            }
-            if (!(block.getState() instanceof Container) || !(block.getState() instanceof TileState tileState)) {
-                return;
-            }
-            if (!isGeneratedLootContainer(tileState)) {
-                return;
-            }
-
-            PersistentDataContainer data = tileState.getPersistentDataContainer();
-            if (data.has(plugin.structureInjectAppliedKey(), PersistentDataType.BYTE)) {
-                return;
-            }
-
+            NamespacedKey matchedKey = null;
             double bestChance = 0.0D;
-            Structure matchedStructure = null;
             for (Map.Entry<NamespacedKey, Double> entry : plugin.structureInjectChances().entrySet()) {
-                Structure structure = Registry.STRUCTURE.get(entry.getKey());
-                if (structure == null || !isBlockInsideStructure(block, structure)) {
+                if (!aliases.contains(entry.getKey().toString().toLowerCase(Locale.ROOT))) {
                     continue;
                 }
                 if (entry.getValue() > bestChance) {
                     bestChance = entry.getValue();
-                    matchedStructure = structure;
+                    matchedKey = entry.getKey();
                 }
             }
-            if (matchedStructure == null) {
+            if (matchedKey == null) {
                 return;
             }
-
-            data.set(plugin.structureInjectAppliedKey(), PersistentDataType.BYTE, (byte) 1);
-            tileState.update(true, false);
-
             if (ThreadLocalRandom.current().nextDouble(100.0D) > bestChance) {
                 return;
             }
 
-            Player player = event.getPlayer();
-            InjectorLootMode lootMode = plugin.structureInjectLootMode(matchedStructure.getKey());
-            InjectorMysteryState mysteryState = plugin.structureInjectMysteryState(matchedStructure.getKey());
+            InjectorLootMode lootMode = plugin.structureInjectLootMode(matchedKey);
+            InjectorMysteryState mysteryState = plugin.structureInjectMysteryState(matchedKey);
             ItemStack injected = createRandomInjectedLoot(lootMode, mysteryState);
             if (injected == null) {
                 return;
             }
 
-            Structure finalMatchedStructure = matchedStructure;
-            Block finalBlock = block;
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (!(finalBlock.getState() instanceof Container postContainer)) {
-                    return;
-                }
+            List<ItemStack> loot = new ArrayList<>(event.getLoot());
+            loot.add(injected.clone());
+            event.setLoot(loot);
 
-                Inventory destination;
-                Inventory top = player.getOpenInventory().getTopInventory();
-                if (isViewingBlockInventory(top, finalBlock)) {
-                    destination = top;
-                } else {
-                    destination = postContainer.getInventory();
-                }
-
-                ItemStack toInsert = injected.clone();
-                destination.addItem(toInsert).values().forEach(overflow -> finalBlock.getWorld().dropItemNaturally(finalBlock.getLocation().add(0.5D, 0.8D, 0.5D), overflow));
-
-                if (plugin.isStructureInjectNotifyOnAdd()) {
-                    player.sendActionBar(Component.text(
-                            plugin.message(
-                                    "injector.added_actionbar",
-                                    "Structure injector: added {item} ({structure}, {loot_mode}, {mystery_state}).",
-                                    Map.of(
-                                            "item", plugin.describeItem(injected),
-                                            "structure", finalMatchedStructure.getKey().getKey(),
-                                            "loot_mode", lootMode.id(),
-                                            "mystery_state", mysteryState.id()
-                                    )
-                            ),
-                            NamedTextColor.LIGHT_PURPLE
-                    ));
-                }
-            }, 1L);
+            if (plugin.isStructureInjectNotifyOnAdd() && event.getEntity() instanceof Player player) {
+                player.sendActionBar(Component.text(
+                        plugin.message(
+                                "injector.added_actionbar",
+                                "Structure injector: added {item} ({structure}, {loot_mode}, {mystery_state}).",
+                                Map.of(
+                                        "item", plugin.describeItem(injected),
+                                        "structure", matchedKey.getKey(),
+                                        "loot_mode", lootMode.id(),
+                                        "mystery_state", mysteryState.id()
+                                )
+                        ),
+                        NamedTextColor.LIGHT_PURPLE
+                ));
+            }
         } catch (Throwable t) {
             plugin.disableStructureInjectorDueToRuntimeError(t);
         }
@@ -467,42 +425,127 @@ final class StructureInjectorRuntimeService {
         return null;
     }
 
-    private boolean isBlockInsideStructure(@NotNull Block block, @NotNull Structure structure) {
-        World world = block.getWorld();
-        int chunkX = block.getChunk().getX();
-        int chunkZ = block.getChunk().getZ();
-        for (GeneratedStructure generated : world.getStructures(chunkX, chunkZ, structure)) {
-            if (generated.getBoundingBox().contains(
-                    block.getX() + 0.5D,
-                    block.getY() + 0.5D,
-                    block.getZ() + 0.5D
-            )) {
-                return true;
+    private @NotNull Set<String> structureAliasesForLootTable(@NotNull String lootTableId) {
+        Set<String> out = new LinkedHashSet<>();
+        int colon = lootTableId.indexOf(':');
+        if (colon <= 0 || colon + 1 >= lootTableId.length()) {
+            return out;
+        }
+        String namespace = lootTableId.substring(0, colon).toLowerCase(Locale.ROOT);
+        String path = lootTableId.substring(colon + 1).toLowerCase(Locale.ROOT);
+        if (!isLikelyStructureContainerTable(path)) {
+            return out;
+        }
+        String marker = "chests/";
+        int idx = path.indexOf(marker);
+        String tablePath = (idx >= 0 && idx + marker.length() < path.length())
+                ? path.substring(idx + marker.length())
+                : path;
+
+        addStructureAliasCandidates(out, namespace, tablePath);
+
+        if (tablePath.startsWith("trial_chambers/") || tablePath.startsWith("trial_chamber/")) {
+            if (tablePath.contains("ominous")) {
+                out.add(namespace + ":trial_chambers_ominous_vault");
+            } else if (tablePath.contains("vault") || tablePath.contains("reward")) {
+                out.add(namespace + ":trial_chambers_vault");
+            } else {
+                out.add(namespace + ":trial_chambers");
             }
         }
-        return false;
+        return out;
     }
 
-    private boolean isViewingBlockInventory(@Nullable Inventory inventory, @NotNull Block block) {
-        if (inventory == null) {
-            return false;
+    private void addStructureAliasCandidates(@NotNull Set<String> out,
+                                             @NotNull String namespace,
+                                             @NotNull String tablePath) {
+        String[] parts = tablePath.split("/");
+        if (parts.length > 0) {
+            String first = parts[0];
+            if (!first.isBlank()) {
+                out.add(namespace + ":" + first);
+            }
+            String last = parts[parts.length - 1];
+            if (!last.isBlank()) {
+                out.add(namespace + ":" + last);
+            }
         }
-        InventoryHolder holder = inventory.getHolder();
-        if (!(holder instanceof BlockInventoryHolder blockHolder)) {
-            return false;
+
+        String leaf = parts.length == 0 ? tablePath : parts[parts.length - 1];
+        if (leaf.isBlank()) {
+            return;
         }
-        Block holderBlock = blockHolder.getBlock();
-        return holderBlock.getWorld().equals(block.getWorld())
-                && holderBlock.getX() == block.getX()
-                && holderBlock.getY() == block.getY()
-                && holderBlock.getZ() == block.getZ();
+
+        String containerKind = extractContainerKind(leaf);
+        if (containerKind != null) {
+            out.add(namespace + ":" + containerKind);
+        }
+
+        String trimmed = leaf;
+        String[] suffixes = {"_chest", "_barrel", "_crate", "_supply", "_loot", "_cache"};
+        boolean hadContainerSuffix = false;
+        for (String suffix : suffixes) {
+            if (trimmed.endsWith(suffix) && trimmed.length() > suffix.length()) {
+                trimmed = trimmed.substring(0, trimmed.length() - suffix.length());
+                hadContainerSuffix = true;
+                break;
+            }
+        }
+        if (!trimmed.isBlank() && !hadContainerSuffix) {
+            out.add(namespace + ":" + trimmed);
+            if (trimmed.endsWith("s") && trimmed.length() > 1) {
+                out.add(namespace + ":" + trimmed.substring(0, trimmed.length() - 1));
+            }
+        }
+
+        if (!hadContainerSuffix) {
+            String[] tokens = trimmed.split("_");
+            if (tokens.length >= 2) {
+                out.add(namespace + ":" + tokens[0] + "_" + tokens[1]);
+            }
+            if (tokens.length >= 3) {
+                out.add(namespace + ":" + tokens[0] + "_" + tokens[1] + "_" + tokens[2]);
+            }
+        }
     }
 
-    private boolean isGeneratedLootContainer(@NotNull TileState tileState) {
-        if (!(tileState instanceof Lootable lootable)) {
-            return false;
+    private @Nullable String extractContainerKind(@NotNull String leaf) {
+        String lower = leaf.toLowerCase(Locale.ROOT);
+        String[] kinds = {"chest", "barrel", "crate", "supply", "loot", "cache", "treasure", "reward", "vault"};
+        for (String kind : kinds) {
+            if (lower.equals(kind)
+                    || lower.equals(kind + "s")
+                    || lower.endsWith("_" + kind)
+                    || lower.endsWith("_" + kind + "s")) {
+                return kind;
+            }
         }
-        return lootable.getLootTable() != null;
+        return null;
+    }
+
+    private boolean isLikelyStructureContainerTable(@NotNull String path) {
+        String lower = path.toLowerCase(Locale.ROOT);
+        String[] denyPrefixes = {
+                "blocks/", "block/",
+                "entities/", "entity/",
+                "items/", "item/",
+                "gameplay/", "gifts/", "gift/",
+                "sheep/", "archeology/", "archaeology/"
+        };
+        for (String prefix : denyPrefixes) {
+            if (lower.startsWith(prefix)) {
+                return false;
+            }
+        }
+        return lower.contains("chest")
+                || lower.contains("barrel")
+                || lower.contains("crate")
+                || lower.contains("cache")
+                || lower.contains("supply")
+                || lower.contains("treasure")
+                || lower.contains("vault")
+                || lower.contains("reward")
+                || lower.startsWith("chests/");
     }
 
     private @Nullable WeightedBookEntry pickWeightedBook(@NotNull List<WeightedBookEntry> books) {

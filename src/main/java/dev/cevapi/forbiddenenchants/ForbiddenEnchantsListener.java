@@ -37,6 +37,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.event.world.LootGenerateEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.LongSupplier;
@@ -62,7 +63,6 @@ final class ForbiddenEnchantsListener implements Listener {
     private final EnchantEventRuleService enchantEventRuleService;
     private final GraspCombatService graspCombatService;
     private final SpellEffectService spellEffectService;
-    private final CustomArtifactService customArtifactService;
     private final BundleDropRuntimeService bundleDropRuntimeService;
 
     ForbiddenEnchantsListener(@NotNull LongSupplier tickCounterSupplier,
@@ -85,7 +85,6 @@ final class ForbiddenEnchantsListener implements Listener {
                               @NotNull EnchantEventRuleService enchantEventRuleService,
                               @NotNull GraspCombatService graspCombatService,
                               @NotNull SpellEffectService spellEffectService,
-                              @NotNull CustomArtifactService customArtifactService,
                               @NotNull BundleDropRuntimeService bundleDropRuntimeService) {
         this.tickCounterSupplier = tickCounterSupplier;
         this.interactionRestrictionService = interactionRestrictionService;
@@ -107,7 +106,6 @@ final class ForbiddenEnchantsListener implements Listener {
         this.enchantEventRuleService = enchantEventRuleService;
         this.graspCombatService = graspCombatService;
         this.spellEffectService = spellEffectService;
-        this.customArtifactService = customArtifactService;
         this.bundleDropRuntimeService = bundleDropRuntimeService;
     }
 
@@ -136,16 +134,17 @@ final class ForbiddenEnchantsListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onMobTarget(@NotNull EntityTargetLivingEntityEvent event) { EnchantList.INSTANCE.dispatchMobTarget(event, tickCounterSupplier.getAsLong()); }
+    public void onMobTarget(@NotNull EntityTargetLivingEntityEvent event) {
+        spellEffectService.onMobTarget(event);
+        if (event.isCancelled()) {
+            return;
+        }
+        EnchantList.INSTANCE.dispatchMobTarget(event, tickCounterSupplier.getAsLong());
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSpellUseBlockedBySilence(@NotNull PlayerInteractEvent event) {
         spellEffectService.onPlayerInteract(event, tickCounterSupplier.getAsLong());
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onCustomArtifactInteract(@NotNull PlayerInteractEvent event) {
-        customArtifactService.onPlayerInteract(event);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -154,19 +153,10 @@ final class ForbiddenEnchantsListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onCustomArtifactConsume(@NotNull PlayerItemConsumeEvent event) {
-        customArtifactService.onPlayerItemConsume(event);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSpellMove(@NotNull PlayerMoveEvent event) {
         spellEffectService.onPlayerMove(event, tickCounterSupplier.getAsLong());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onCustomArtifactMove(@NotNull PlayerMoveEvent event) {
-        customArtifactService.onPlayerMove(event, tickCounterSupplier.getAsLong());
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onMiasmaInteraction(@NotNull PlayerInteractEvent event) {
@@ -181,6 +171,9 @@ final class ForbiddenEnchantsListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onGreedDropItem(@NotNull PlayerDropItemEvent event) { interactionRestrictionService.onGreedDropItem(event); }
+
+    @EventHandler(ignoreCancelled = false)
+    public void onSpellDropItem(@NotNull PlayerDropItemEvent event) { spellEffectService.onPlayerDropItem(event, tickCounterSupplier.getAsLong()); }
 
     @EventHandler(ignoreCancelled = true)
     public void onLaunchDoubleJump(@NotNull PlayerToggleFlightEvent event) {
@@ -201,9 +194,6 @@ final class ForbiddenEnchantsListener implements Listener {
     public void onFullForceImpact(@NotNull EntityDamageByEntityEvent event) { fullForceDefenseService.onFullForceImpact(event, tickCounterSupplier.getAsLong()); }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onCustomArtifactDamage(@NotNull EntityDamageByEntityEvent event) { customArtifactService.onEntityDamageByEntity(event); }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onFullForceKnockback(@NotNull EntityKnockbackEvent event) { fullForceDefenseService.onFullForceKnockback(event, tickCounterSupplier.getAsLong()); }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -218,8 +208,8 @@ final class ForbiddenEnchantsListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onFullPocketsOpen(@NotNull PlayerInteractEvent event) { fullPocketsService.onOpen(event); }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onStructureInjectorOpen(@NotNull PlayerInteractEvent event) { structureInjectorRuntimeService.onStructureInjectorOpen(event); }
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onStructureLootGenerate(@NotNull LootGenerateEvent event) { structureInjectorRuntimeService.onLootGenerate(event); }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onTrialVaultInjector(@NotNull PlayerInteractEvent event) { structureInjectorRuntimeService.onTrialVaultInjector(event); }
@@ -246,7 +236,6 @@ final class ForbiddenEnchantsListener implements Listener {
     public void onPlayerDeath(@NotNull PlayerDeathEvent event) {
         playerLifecycleService.onPlayerDeath(event);
         spellEffectService.onPlayerDeath(event.getEntity().getUniqueId());
-        customArtifactService.onPlayerDeath(event.getEntity());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -362,10 +351,6 @@ final class ForbiddenEnchantsListener implements Listener {
 
     @EventHandler(ignoreCancelled = false)
     public void onPrepareAnvil(@NotNull PrepareAnvilEvent event) {
-        customArtifactService.onPrepareAnvil(event);
-        if (event.getResult() == null) {
-            return;
-        }
         enchantEventRuleService.onPrepareAnvil(event);
     }
 
@@ -376,7 +361,6 @@ final class ForbiddenEnchantsListener implements Listener {
     public void onEnchantItem(@NotNull EnchantItemEvent event) {
         long tickCounter = tickCounterSupplier.getAsLong();
         spellEffectService.onEnchantItem(event, tickCounter);
-        customArtifactService.onEnchantItem(event);
         if (event.isCancelled()) {
             return;
         }
@@ -394,5 +378,9 @@ final class ForbiddenEnchantsListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onGraspAttack(@NotNull PlayerAnimationEvent event) { graspCombatService.onGraspAttack(event); }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onSpellAnimation(@NotNull PlayerAnimationEvent event) { spellEffectService.onPlayerAnimation(event, tickCounterSupplier.getAsLong()); }
+
 }
 

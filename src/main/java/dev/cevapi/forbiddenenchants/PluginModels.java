@@ -7,6 +7,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,22 +80,28 @@ enum InjectorMenuMode {
     ALL
 }
 
+enum InjectorNamespaceScope {
+    ALL,
+    VANILLA,
+    DATAPACK
+}
+
 enum VaultEntryType {
     NORMAL,
     OMINOUS
 }
 
 final class InjectorEntry {
-    final @Nullable Structure structure;
+    final @Nullable NamespacedKey structureKey;
     final @Nullable VaultEntryType vaultType;
 
-    private InjectorEntry(@Nullable Structure structure, @Nullable VaultEntryType vaultType) {
-        this.structure = structure;
+    private InjectorEntry(@Nullable NamespacedKey structureKey, @Nullable VaultEntryType vaultType) {
+        this.structureKey = structureKey;
         this.vaultType = vaultType;
     }
 
-    static @NotNull InjectorEntry structure(@NotNull Structure structure) {
-        return new InjectorEntry(structure, null);
+    static @NotNull InjectorEntry structure(@NotNull NamespacedKey key) {
+        return new InjectorEntry(key, null);
     }
 
     static @NotNull InjectorEntry vault(@NotNull VaultEntryType type) {
@@ -104,16 +111,22 @@ final class InjectorEntry {
 
 final class InjectorMenuHolder implements InventoryHolder {
     private final InjectorMenuMode mode;
+    private final InjectorNamespaceScope scope;
     private final int page;
     private Inventory inventory;
 
-    InjectorMenuHolder(@NotNull InjectorMenuMode mode, int page) {
+    InjectorMenuHolder(@NotNull InjectorMenuMode mode, @NotNull InjectorNamespaceScope scope, int page) {
         this.mode = mode;
+        this.scope = scope;
         this.page = page;
     }
 
     @NotNull InjectorMenuMode mode() {
         return mode;
+    }
+
+    @NotNull InjectorNamespaceScope scope() {
+        return scope;
     }
 
     int page() {

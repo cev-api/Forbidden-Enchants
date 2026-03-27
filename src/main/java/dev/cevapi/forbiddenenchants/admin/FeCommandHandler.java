@@ -6,7 +6,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +55,6 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
             case "toggles", "settings", "enchanttoggles" -> handleToggleGui(sender, args);
             case "give", "givebook" -> handleGiveBook(sender, args);
             case "giveitem" -> handleGiveItem(sender, args);
-            case "artifact", "giveartifact" -> handleGiveArtifact(sender, args);
             case "mysterybook" -> handleGiveMysteryBook(sender, args);
             case "mysteryitem" -> handleGiveMysteryItem(sender, args);
             case "reload" -> handleReload(sender);
@@ -80,14 +78,13 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
                                                 @NotNull String alias,
                                                 @NotNull String[] args) {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], List.of("help", "list", "gui", "menu", "toggles", "settings", "enchanttoggles", "give", "givebook", "giveitem", "artifact", "giveartifact", "mysterybook", "mysteryitem", "reload", "injector", "librarian", "enchanting", "bundle", "bundledrop", "mobbundle"), new ArrayList<>());
+            return StringUtil.copyPartialMatches(args[0], List.of("help", "list", "gui", "menu", "toggles", "settings", "enchanttoggles", "give", "givebook", "giveitem", "mysterybook", "mysteryitem", "reload", "injector", "librarian", "enchanting", "bundle", "bundledrop", "mobbundle"), new ArrayList<>());
         }
 
         boolean isGiveBook = args[0].equalsIgnoreCase("give") || args[0].equalsIgnoreCase("givebook");
         boolean isGiveItem = args[0].equalsIgnoreCase("giveitem");
         boolean isMysteryBook = args[0].equalsIgnoreCase("mysterybook");
         boolean isMysteryItem = args[0].equalsIgnoreCase("mysteryitem");
-        boolean isArtifact = args[0].equalsIgnoreCase("artifact") || args[0].equalsIgnoreCase("giveartifact");
         boolean isGui = args[0].equalsIgnoreCase("gui") || args[0].equalsIgnoreCase("menu");
         boolean isToggleGui = args[0].equalsIgnoreCase("toggles")
                 || args[0].equalsIgnoreCase("settings")
@@ -170,7 +167,7 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 2 && isMysteryBook) {
-            return StringUtil.copyPartialMatches(args[1], List.of("helmet", "chestplate", "elytra", "leggings", "boots", "armor", "compass", "sword", "ranged", "trident", "spear", "hoe", "axe", "mace", "nametag", "lead", "shield", "totem"), new ArrayList<>());
+            return StringUtil.copyPartialMatches(args[1], List.of("helmet", "chestplate", "elytra", "leggings", "boots", "armor", "compass", "sword", "ranged", "trident", "spear", "hoe", "axe", "mace", "brush", "rod", "nametag", "lead", "shield", "totem", "potion"), new ArrayList<>());
         }
 
         if (args.length == 3 && isMysteryBook) {
@@ -183,15 +180,6 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 3 && isMysteryItem) {
-            List<String> players = Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
-            return StringUtil.copyPartialMatches(args[2], players, new ArrayList<>());
-        }
-
-        if (args.length == 2 && isArtifact) {
-            return StringUtil.copyPartialMatches(args[1], plugin.artifactKeys(), new ArrayList<>());
-        }
-
-        if (args.length == 3 && isArtifact) {
             List<String> players = Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
             return StringUtil.copyPartialMatches(args[2], players, new ArrayList<>());
         }
@@ -401,33 +389,6 @@ final class FeCommandHandler implements CommandExecutor, TabCompleter {
                         "gave_mystery_item",
                         "Gave mystery {material} to {player}.",
                         Map.of("material", DisplayNameUtil.toDisplayName(material), "player", target.getName())
-                )
-        );
-        return true;
-    }
-
-    private boolean handleGiveArtifact(@NotNull CommandSender sender, @NotNull String[] args) {
-        if (args.length < 2 || args.length > 3) {
-            plugin.sendFeError(sender, msg("usage_artifact", "Usage: /fe artifact <name> [player]"));
-            return true;
-        }
-        Player target = resolveTarget(sender, args.length >= 3 ? args[2] : null);
-        if (target == null) {
-            return true;
-        }
-        ItemStack artifact = plugin.createArtifactItem(args[1]);
-        if (artifact == null) {
-            plugin.sendFeError(sender, msg("unknown_artifact", "Unknown artifact: {artifact}", Map.of("artifact", args[1])));
-            return true;
-        }
-
-        plugin.giveOrDrop(target, artifact);
-        plugin.sendFeSuccess(
-                sender,
-                msg(
-                        "gave_artifact",
-                        "Gave artifact {artifact} to {player}.",
-                        Map.of("artifact", plugin.describeItem(artifact), "player", target.getName())
                 )
         );
         return true;

@@ -6,9 +6,11 @@ import dev.cevapi.forbiddenenchants.enchants.AquaticSacrificeEnchant;
 import dev.cevapi.forbiddenenchants.enchants.AscensionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.BlindnessEnchant;
 import dev.cevapi.forbiddenenchants.enchants.BorgTechnologyEnchant;
+import dev.cevapi.forbiddenenchants.enchants.BedTimeEnchant;
 import dev.cevapi.forbiddenenchants.enchants.CharmEnchant;
 import dev.cevapi.forbiddenenchants.enchants.CharmedPetEnchant;
 import dev.cevapi.forbiddenenchants.enchants.CreepersInfluenceEnchant;
+import dev.cevapi.forbiddenenchants.enchants.CursedMagnetismEnchant;
 import dev.cevapi.forbiddenenchants.enchants.DisarmEnchant;
 import dev.cevapi.forbiddenenchants.enchants.DivineVisionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.DragonsBreathEnchant;
@@ -17,6 +19,8 @@ import dev.cevapi.forbiddenenchants.enchants.ExtendedGraspEnchant;
 import dev.cevapi.forbiddenenchants.enchants.ExplosiveReactionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.ForbiddenAgilityEnchant;
 import dev.cevapi.forbiddenenchants.enchants.ForbiddenEnchantDefinition;
+import dev.cevapi.forbiddenenchants.enchants.FarmersDreamEnchant;
+import dev.cevapi.forbiddenenchants.enchants.FireballEnchant;
 import dev.cevapi.forbiddenenchants.enchants.FullForceEnchant;
 import dev.cevapi.forbiddenenchants.enchants.FullPocketsEnchant;
 import dev.cevapi.forbiddenenchants.enchants.GetOverHereEnchant;
@@ -27,15 +31,20 @@ import dev.cevapi.forbiddenenchants.enchants.InciteFearEnchant;
 import dev.cevapi.forbiddenenchants.enchants.IllusionersRevengeEnchant;
 import dev.cevapi.forbiddenenchants.enchants.JointSleepEnchant;
 import dev.cevapi.forbiddenenchants.enchants.KismetEnchant;
+import dev.cevapi.forbiddenenchants.enchants.LavaStepEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LaunchEnchant;
+import dev.cevapi.forbiddenenchants.enchants.LifeSpiritEnchant;
+import dev.cevapi.forbiddenenchants.enchants.LifeStealEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LimitlessVisionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LockedOutEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LootSenseEnchant;
 import dev.cevapi.forbiddenenchants.enchants.LumberjackEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MarkedEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MasqueradeEnchant;
+import dev.cevapi.forbiddenenchants.enchants.MagnetismEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MiasmaEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MiasmaFormEnchant;
+import dev.cevapi.forbiddenenchants.enchants.MinersVoidStepEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MinersIntuitionEnchant;
 import dev.cevapi.forbiddenenchants.enchants.MujahideenEnchant;
 import dev.cevapi.forbiddenenchants.enchants.NoFallEnchant;
@@ -62,14 +71,18 @@ import dev.cevapi.forbiddenenchants.enchants.ThePretenderEnchant;
 import dev.cevapi.forbiddenenchants.enchants.TheSeekerEnchant;
 import dev.cevapi.forbiddenenchants.enchants.TheUnyieldingEnchant;
 import dev.cevapi.forbiddenenchants.enchants.TrackerEnchant;
+import dev.cevapi.forbiddenenchants.enchants.TrueSilenceEnchant;
 import dev.cevapi.forbiddenenchants.enchants.VexatiousEnchant;
+import dev.cevapi.forbiddenenchants.enchants.VitalityThiefEnchant;
 import dev.cevapi.forbiddenenchants.enchants.VoidGraspEnchant;
+import dev.cevapi.forbiddenenchants.enchants.VoidStickEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WingClipperEnchant;
 import dev.cevapi.forbiddenenchants.enchants.InstantDeathEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WitheringStrikeEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WololoEnchant;
 import dev.cevapi.forbiddenenchants.enchants.WarpNineFiveEnchant;
 import dev.cevapi.forbiddenenchants.enchants.InfectedEnchant;
+import dev.cevapi.forbiddenenchants.enchants.SwapEnchant;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -151,7 +164,20 @@ public enum EnchantType {
     ONE_PLUS(66, new OnePlusEnchant()),
     TEMPORAL_DISPLACEMENT(67, new TemporalDisplacementEnchant()),
     KISMET(68, new KismetEnchant()),
-    ADMINISTRATIVE_ASPIRATIONS(69, new AdministrativeAspirationsEnchant());
+    ADMINISTRATIVE_ASPIRATIONS(69, new AdministrativeAspirationsEnchant()),
+    MINERS_VOID_STEP(70, new MinersVoidStepEnchant()),
+    SWAP(71, new SwapEnchant()),
+    FARMERS_DREAM(72, new FarmersDreamEnchant()),
+    LAVA_STEP(73, new LavaStepEnchant()),
+    VITALITY_THIEF(74, new VitalityThiefEnchant()),
+    LIFE_SPIRIT(75, new LifeSpiritEnchant()),
+    LIFE_STEAL(76, new LifeStealEnchant()),
+    VOID_STICK(77, new VoidStickEnchant()),
+    FIREBALL(78, new FireballEnchant()),
+    MAGNETISM(79, new MagnetismEnchant()),
+    CURSED_MAGNETISM(80, new CursedMagnetismEnchant()),
+    TRUE_SILENCE(81, new TrueSilenceEnchant()),
+    BED_TIME(82, new BedTimeEnchant());
 
     private static final Map<String, EnchantType> BY_ARG = new HashMap<>();
     private static final Map<Integer, EnchantType> BY_MODEL_TYPE_INDEX = new HashMap<>();
@@ -178,12 +204,13 @@ public enum EnchantType {
 
         setExclusiveGroup("helmet_primary", DIVINE_VISION, MINERS_INTUITION, LOOT_SENSE, AQUATIC_SACRIFICE, THE_HATED_ONE);
         setExclusiveGroup("chest_primary", EXTENDED_GRASP, VOID_GRASP, MIASMA_FORM);
-        setExclusiveGroup("boots_primary", MASQUERADE, ASCENSION);
+        setExclusiveGroup("boots_primary", MASQUERADE, ASCENSION, FARMERS_DREAM, LAVA_STEP, TRUE_SILENCE);
         setExclusiveGroup("ranged_primary", MIASMA, CHARM, DRAGONS_BREATH, EXPLOSIVE_REACTION);
+        setExclusiveGroup("rod_primary", VOID_STICK, FIREBALL);
         setExclusiveGroup("hoe_primary", HEALING_TOUCH, PETTY_THIEF);
         setExclusiveGroup("compass_primary", GRAVE_ROBBER, POCKET_SEEKER);
         setExclusiveGroup("nametag_primary", CHARMED_PET, APPLIED_CURSE);
-        setExclusiveGroup("potion_primary", OUT_OF_PHASE, SILENCE, QUITTER, INFECTED, JOINT_SLEEP, LIMITLESS_VISION, ONE_PLUS, TEMPORAL_DISPLACEMENT);
+        setExclusiveGroup("potion_primary", OUT_OF_PHASE, SILENCE, QUITTER, INFECTED, JOINT_SLEEP, LIMITLESS_VISION, ONE_PLUS, TEMPORAL_DISPLACEMENT, MINERS_VOID_STEP, SWAP, VITALITY_THIEF, LIFE_SPIRIT, LIFE_STEAL, BED_TIME);
 
         addMutualIncompatibility(DRAGONS_BREATH, EXPLOSIVE_REACTION);
 
@@ -198,11 +225,12 @@ public enum EnchantType {
                 TEMPORAL_SICKNESS,
                 PROUD_WARRIOR,
                 SISKOS_SOLUTION,
-                KISMET
+                KISMET,
+                CURSED_MAGNETISM
         ));
 
         STRIPS_VANILLA_ENCHANTS.addAll(EnumSet.of(DIVINE_VISION, MINERS_INTUITION, LOOT_SENSE));
-        STRIPS_MENDING_UNBREAKING.addAll(EnumSet.of(HEALING_TOUCH, THE_SEEKER, ADMINISTRATIVE_ASPIRATIONS));
+        STRIPS_MENDING_UNBREAKING.addAll(EnumSet.of(HEALING_TOUCH, THE_SEEKER, ADMINISTRATIVE_ASPIRATIONS, FARMERS_DREAM, LAVA_STEP));
         DURABILITY_PENALTY_ENCHANTS.addAll(EnumSet.of(
                 DIVINE_VISION,
                 MINERS_INTUITION,

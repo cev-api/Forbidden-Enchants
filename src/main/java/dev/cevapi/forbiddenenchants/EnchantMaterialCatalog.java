@@ -122,6 +122,15 @@ public final class EnchantMaterialCatalog {
             );
             case MACE -> List.of(Material.MACE);
             case BRUSH -> List.of(Material.BRUSH);
+            case ROD -> {
+                List<Material> rods = new ArrayList<>();
+                Material breezeRod = materialIfPresent("BREEZE_ROD");
+                if (breezeRod != null) {
+                    rods.add(breezeRod);
+                }
+                rods.add(Material.BLAZE_ROD);
+                yield rods;
+            }
             case NAMETAG -> List.of(Material.NAME_TAG);
             case LEAD -> List.of(Material.LEAD);
             case SHIELD -> List.of(Material.SHIELD);
@@ -144,6 +153,22 @@ public final class EnchantMaterialCatalog {
         }
         if (type == EnchantType.WITHERING_STRIKE) {
             return List.of(Material.TRIDENT.name().toLowerCase(Locale.ROOT));
+        }
+        if (type == EnchantType.MAGNETISM) {
+            return weaponAndToolMaterialSuggestions();
+        }
+        if (type == EnchantType.CURSED_MAGNETISM) {
+            return weaponMaterialSuggestions();
+        }
+        if (type == EnchantType.FIREBALL) {
+            return List.of(Material.BLAZE_ROD.name().toLowerCase(Locale.ROOT));
+        }
+        if (type == EnchantType.VOID_STICK) {
+            Material breezeRod = materialIfPresent("BREEZE_ROD");
+            if (breezeRod != null) {
+                return List.of(breezeRod.name().toLowerCase(Locale.ROOT));
+            }
+            return List.of();
         }
         return materialSuggestions(type.slot);
     }
@@ -176,6 +201,7 @@ public final class EnchantMaterialCatalog {
             case AXE -> "an axe";
             case MACE -> "a mace";
             case BRUSH -> "a brush";
+            case ROD -> "a rod";
             case NAMETAG -> "a name tag";
             case LEAD -> "a lead";
             case SHIELD -> "a shield";
@@ -191,7 +217,58 @@ public final class EnchantMaterialCatalog {
         if (type == EnchantType.WITHERING_STRIKE) {
             return "a trident";
         }
+        if (type == EnchantType.MAGNETISM) {
+            return "a weapon or tool";
+        }
+        if (type == EnchantType.CURSED_MAGNETISM) {
+            return "a weapon";
+        }
+        if (type == EnchantType.FIREBALL) {
+            return "a blaze rod";
+        }
+        if (type == EnchantType.VOID_STICK) {
+            return "a breeze rod";
+        }
         return requiredMaterialCategory(type.slot);
+    }
+
+    private static @NotNull List<String> weaponAndToolMaterialSuggestions() {
+        List<String> out = new ArrayList<>();
+        for (Material material : Material.values()) {
+            String name = material.name();
+            if (name.endsWith("_SWORD")
+                    || name.endsWith("_AXE")
+                    || name.endsWith("_PICKAXE")
+                    || name.endsWith("_SHOVEL")
+                    || name.endsWith("_HOE")
+                    || name.endsWith("_SPEAR")
+                    || name.equals("SPEAR")
+                    || material == Material.BOW
+                    || material == Material.CROSSBOW
+                    || material == Material.TRIDENT
+                    || material == Material.MACE) {
+                out.add(name.toLowerCase(Locale.ROOT));
+            }
+        }
+        return out;
+    }
+
+    private static @NotNull List<String> weaponMaterialSuggestions() {
+        List<String> out = new ArrayList<>();
+        for (Material material : Material.values()) {
+            String name = material.name();
+            if (name.endsWith("_SWORD")
+                    || name.endsWith("_AXE")
+                    || name.endsWith("_SPEAR")
+                    || name.equals("SPEAR")
+                    || material == Material.BOW
+                    || material == Material.CROSSBOW
+                    || material == Material.TRIDENT
+                    || material == Material.MACE) {
+                out.add(name.toLowerCase(Locale.ROOT));
+            }
+        }
+        return out;
     }
 }
 

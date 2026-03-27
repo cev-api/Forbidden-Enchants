@@ -37,6 +37,7 @@ public final class SlotParsingUtil {
             case "axe" -> ArmorSlot.AXE;
             case "mace" -> ArmorSlot.MACE;
             case "brush" -> ArmorSlot.BRUSH;
+            case "rod", "stick", "blaze_rod", "breeze_rod" -> ArmorSlot.ROD;
             case "nametag", "name_tag", "name-tag" -> ArmorSlot.NAMETAG;
             case "lead", "leash" -> ArmorSlot.LEAD;
             case "shield" -> ArmorSlot.SHIELD;
@@ -78,6 +79,7 @@ public final class SlotParsingUtil {
             case AXE -> "axe";
             case MACE -> "mace";
             case BRUSH -> "brush";
+            case ROD -> "rod";
             case NAMETAG -> "name tag";
             case LEAD -> "lead";
             case SHIELD -> "shield";

@@ -109,7 +109,7 @@ final class EnchantEventRuleService {
             return;
         }
 
-        if (!itemClassificationServiceSupplier.get().isArmorPieceForSlot(base, book.type().slot)) {
+        if (requiresSlotMatch(book.type()) && !itemClassificationServiceSupplier.get().isArmorPieceForSlot(base, book.type().slot)) {
             event.setResult(null);
             return;
         }
@@ -130,6 +130,12 @@ final class EnchantEventRuleService {
 
         event.setResult(result);
         inventory.setRepairCost(6 + (book.level() * 2));
+    }
+
+    private boolean requiresSlotMatch(@NotNull EnchantType type) {
+        return type != EnchantType.MAGNETISM
+                && type != EnchantType.CURSED_MAGNETISM
+                && type != EnchantType.KISMET;
     }
 
     void onEnchantItem(@NotNull EnchantItemEvent event) {

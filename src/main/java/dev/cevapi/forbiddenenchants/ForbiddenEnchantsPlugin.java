@@ -206,7 +206,6 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
             lastPlayerDeathLocations
     );
     private final SpellEffectService spellEffectService = new SpellEffectService(this);
-    private final CustomArtifactService customArtifactService = new CustomArtifactService(this);
     private final ItemClassificationService itemClassificationService = new ItemClassificationService(this);
     private final NameTagLeadService nameTagLeadService = new NameTagLeadService(
             this::enchantStateServiceInternal,
@@ -381,7 +380,6 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
                 enchantEventRuleService,
                 graspCombatService,
                 spellEffectService,
-                customArtifactService,
                 bundleDropRuntimeService
         ), this);
     }
@@ -421,7 +419,6 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         travelDurabilityLastLocation.clear();
         travelDurabilityDistance.clear();
         feCatalogService.clear();
-        customArtifactService.clearRuntime();
         fullForceLastProcTick.clear();
         fullForceExplosionImmuneUntil.clear();
         shockwaveTotemArmedUntil.clear();
@@ -490,7 +487,6 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
         enchantmentAllyService.processTick(tickCounter);
         tickMaintenanceService.processCharmedPets();
         spellEffectService.processTick(tickCounter);
-        customArtifactService.processTick(tickCounter);
         enchantLifecycleHooksService.processTick(tickCounter);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -665,14 +661,6 @@ public final class ForbiddenEnchantsPlugin extends JavaPlugin {
 
     @Nullable ItemStack createEnchantedItem(@NotNull EnchantType type, int level, @NotNull Material material) {
         return enchantBookFactoryService.createEnchantedItem(type, level, material);
-    }
-
-    @Nullable ItemStack createArtifactItem(@NotNull String key) {
-        return customArtifactService.createArtifactItem(key);
-    }
-
-    @NotNull List<String> artifactKeys() {
-        return customArtifactService.artifactKeys();
     }
 
     @NotNull ItemStack createMysteryBook(@NotNull ArmorSlot slot) {

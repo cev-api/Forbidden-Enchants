@@ -75,7 +75,6 @@ final class FePresentationService {
         sendHelpLine(sender, "/" + label + " give <enchant> <level> [player]", plugin.message("fe.help.give_desc", "Give enchant book."));
         sendHelpLine(sender, "/" + label + " givebook <enchant> <level> [player]", plugin.message("fe.help.givebook_desc", "Give enchant book (explicit)."));
         sendHelpLine(sender, "/" + label + " giveitem <enchant> <level> <material> [player]", plugin.message("fe.help.giveitem_desc", "Give pre-enchanted gear."));
-        sendHelpLine(sender, "/" + label + " artifact <name> [player]", plugin.message("fe.help.artifact_desc", "Give a custom artifact item."));
         sendHelpLine(sender, "/" + label + " mysterybook <slot> [player]", plugin.message("fe.help.mysterybook_desc", "Give obfuscated random enchant book for a slot."));
         sendHelpLine(sender, "/" + label + " mysteryitem <material> [player]", plugin.message("fe.help.mysteryitem_desc", "Give obfuscated random pre-enchanted item."));
         sendHelpLine(sender, "/" + label + " reload", plugin.message("fe.help.reload_desc", "Reload config.yml and messages.yml."));

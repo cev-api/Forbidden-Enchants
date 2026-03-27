@@ -192,6 +192,7 @@ final class EnchantToggleMenuService {
             case SHIELD -> Material.SHIELD;
             case TOTEM -> Material.TOTEM_OF_UNDYING;
             case POTION -> Material.POTION;
+            case ROD -> Material.BLAZE_ROD;
         };
     }
 

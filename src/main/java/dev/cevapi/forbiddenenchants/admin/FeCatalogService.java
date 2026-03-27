@@ -101,6 +101,22 @@ final class FeCatalogService {
         if (type == EnchantType.STAFF_OF_THE_EVOKER) {
             materials.remove(Material.TRIDENT);
         }
+        if (type == EnchantType.MAGNETISM) {
+            materials.clear();
+            materials.addAll(List.of(
+                    Material.DIAMOND_PICKAXE,
+                    Material.DIAMOND_AXE,
+                    Material.DIAMOND_SWORD,
+                    Material.DIAMOND_SHOVEL
+            ));
+        }
+        if (type == EnchantType.CURSED_MAGNETISM) {
+            materials.clear();
+            materials.addAll(List.of(
+                    Material.DIAMOND_AXE,
+                    Material.DIAMOND_SWORD
+            ));
+        }
         if (type == EnchantType.MINERS_INTUITION) {
             Material copperHelmet = EnchantMaterialCatalog.materialIfPresent("COPPER_HELMET");
             if (copperHelmet != null) {

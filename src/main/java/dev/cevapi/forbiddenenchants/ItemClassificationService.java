@@ -41,6 +41,7 @@ final class ItemClassificationService {
             case AXE -> isAxe(stack);
             case MACE -> isMace(stack);
             case BRUSH -> isBrush(stack);
+            case ROD -> isRod(stack);
             case NAMETAG -> isNameTag(stack);
             case LEAD -> isLead(stack);
             case SHIELD -> isShield(stack);
@@ -94,14 +95,27 @@ final class ItemClassificationService {
         if (type == EnchantType.WITHERING_STRIKE) {
             return material == Material.TRIDENT;
         }
+        if (type == EnchantType.FIREBALL) {
+            return material == Material.BLAZE_ROD;
+        }
+        if (type == EnchantType.VOID_STICK) {
+            Material breezeRod = EnchantMaterialCatalog.materialIfPresent("BREEZE_ROD");
+            return breezeRod != null && material == breezeRod;
+        }
         if (type == EnchantType.KISMET) {
             String name = material.name();
             return name.endsWith("_PICKAXE") || name.endsWith("_SHOVEL") || name.endsWith("_AXE");
         }
+        if (type == EnchantType.MAGNETISM) {
+            return isWeaponOrToolMaterial(material);
+        }
+        if (type == EnchantType.CURSED_MAGNETISM) {
+            return isWeaponMaterial(material);
+        }
 
         ItemStack probe = new ItemStack(material);
         return switch (type.slot) {
-            case HELMET, CHESTPLATE, ELYTRA, LEGGINGS, BOOTS, ARMOR, COMPASS, RANGED, TRIDENT, SPEAR, HOE, AXE, MACE, BRUSH, NAMETAG, LEAD, SHIELD, TOTEM, POTION ->
+            case HELMET, CHESTPLATE, ELYTRA, LEGGINGS, BOOTS, ARMOR, COMPASS, RANGED, TRIDENT, SPEAR, HOE, AXE, MACE, BRUSH, ROD, NAMETAG, LEAD, SHIELD, TOTEM, POTION ->
                     isArmorPieceForSlot(probe, type.slot);
             case SWORD -> isSword(probe);
         };
@@ -141,6 +155,38 @@ final class ItemClassificationService {
 
     private boolean isBrush(@Nullable ItemStack stack) {
         return stack != null && stack.getType() == Material.BRUSH;
+    }
+
+    private boolean isRod(@Nullable ItemStack stack) {
+        if (stack == null || stack.getType() == Material.AIR) {
+            return false;
+        }
+        Material type = stack.getType();
+        Material breezeRod = EnchantMaterialCatalog.materialIfPresent("BREEZE_ROD");
+        return type == Material.BLAZE_ROD || (breezeRod != null && type == breezeRod);
+    }
+
+    private boolean isWeaponOrToolMaterial(@NotNull Material material) {
+        String name = material.name();
+        if (isWeaponMaterial(material)) {
+            return true;
+        }
+        return name.endsWith("_PICKAXE")
+                || name.endsWith("_SHOVEL")
+                || name.endsWith("_HOE");
+    }
+
+    private boolean isWeaponMaterial(@NotNull Material material) {
+        String name = material.name();
+        if (name.endsWith("_SWORD")
+                || name.endsWith("_AXE")
+                || material == Material.BOW
+                || material == Material.CROSSBOW
+                || material == Material.TRIDENT
+                || material == Material.MACE) {
+            return true;
+        }
+        return name.equals("SPEAR") || name.endsWith("_SPEAR");
     }
 }
 

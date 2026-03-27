@@ -73,9 +73,6 @@ final class ConfigPersistenceService {
                 if (key == null) {
                     continue;
                 }
-                if (Registry.STRUCTURE.get(key) == null) {
-                    continue;
-                }
                 double chance = clampChance(structuresSection.getDouble(rawKey, 0.0D));
                 plugin.structureInjectChances().put(key, chance);
             }
@@ -85,7 +82,7 @@ final class ConfigPersistenceService {
         if (lootModeSection != null) {
             for (String rawKey : lootModeSection.getKeys(false)) {
                 NamespacedKey key = NamespacedKey.fromString(rawKey);
-                if (key == null || Registry.STRUCTURE.get(key) == null) {
+                if (key == null) {
                     continue;
                 }
                 InjectorLootMode mode = InjectorLootMode.fromString(lootModeSection.getString(rawKey));
@@ -103,7 +100,7 @@ final class ConfigPersistenceService {
         if (mysteryStateSection != null) {
             for (String rawKey : mysteryStateSection.getKeys(false)) {
                 NamespacedKey key = NamespacedKey.fromString(rawKey);
-                if (key == null || Registry.STRUCTURE.get(key) == null) {
+                if (key == null) {
                     continue;
                 }
                 InjectorMysteryState state = InjectorMysteryState.fromString(mysteryStateSection.getString(rawKey));
@@ -122,7 +119,7 @@ final class ConfigPersistenceService {
                     continue;
                 }
                 NamespacedKey key = NamespacedKey.fromString(rawKey);
-                if (key == null || Registry.STRUCTURE.get(key) == null) {
+                if (key == null) {
                     continue;
                 }
                 if (!plugin.structureInjectMysteryStates().containsKey(key)) {
