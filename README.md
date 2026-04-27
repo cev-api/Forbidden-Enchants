@@ -1,6 +1,6 @@
 # Forbidden Enchants (Paper 1.21.x)
 
-![NOT AN AI LOGO LOL](https://i.imgur.com/thI0f0h.png)
+![NOT AN AI LOGO LOL](https://i.imgur.com/smgJ6H5.png)
 
 Forbidden Enchants is a Paper plugin for 1.21.x that adds 82 custom enchants, curses, spell books, and utility effects designed to push survival further than vanilla normally allows. Some are strong, some are disruptive, and some are deliberately unfair, but all of them are meant to create unusual situations, higher-stakes progression, and more server variety.
 
